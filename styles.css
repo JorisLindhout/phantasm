@@ -187,7 +187,6 @@ canvas {
         .template-grid-line {
             position: absolute;
             background: rgba(0, 221, 255, 0.4);
-            border: 1px solid var(--primary-color);
         }
 
         .template-grid-line.vertical {
@@ -332,6 +331,78 @@ canvas {
     0% { opacity: 0.3; }
     50% { opacity: 0.7; }
     100% { opacity: 0.3; }
+}
+
+/* Controls */
+.controls {
+    background: rgba(17, 17, 17, 0.8);
+    border: 1px solid var(--piece-border);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.controls h3 {
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 300;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-group label {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.control-group select,
+.control-group input[type="checkbox"] {
+    background: var(--canvas-background);
+    border: 1px solid var(--piece-border);
+    color: var(--text-color);
+    padding: 5px 10px;
+    border-radius: var(--border-radius-small);
+    font-size: 0.9rem;
+}
+
+.control-group select:focus,
+.control-group input[type="checkbox"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(0, 221, 255, 0.3);
+}
+
+.control-group button {
+    background: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all var(--transition-speed) ease;
+}
+
+.control-group button:hover {
+    background: #00B8E6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 221, 255, 0.3);
+}
+
+.control-group button:active {
+    transform: translateY(0);
 }
 
 /* Info Text */

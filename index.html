@@ -30,6 +30,25 @@
                 </div>
             </div>
         </div>
+        <div class="controls">
+            <h3>Grid Controls</h3>
+            <div class="control-group">
+                <label for="gridSize">Grid Size:</label>
+                <select id="gridSize" onchange="changeGridSize()">
+                    <option value="4" selected>4x4 (16 pieces)</option>
+                    <option value="5">5x5 (25 pieces)</option>
+                    <option value="6">6x6 (36 pieces)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="wavyEnabled">Wavy Grid:</label>
+                <input type="checkbox" id="wavyEnabled" onchange="toggleWavyGrid()">
+            </div>
+            <div class="control-group">
+                <button onclick="debugGrid()">Debug Grid</button>
+                <button onclick="resetPieces()">Reset Pieces</button>
+            </div>
+        </div>
         <div class="info">
             Original SVG: 850×478px | Canvas: 1700×956px (2x scale) | Tethered Pieces
         </div>

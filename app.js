@@ -165,16 +165,16 @@
         // Create 4x4 grid (5 lines in each direction)
         const gridSize = CONFIG.GRID.SIZE;
         
-        // Create vertical lines
-        for (let i = 0; i <= gridSize; i++) {
+        // Create vertical lines (internal only, no border lines)
+        for (let i = 1; i < gridSize; i++) {
             const line = document.createElement('div');
             line.className = 'template-grid-line vertical';
             line.style.left = `${(i / gridSize) * 100}%`;
             gridLines.appendChild(line);
         }
         
-        // Create horizontal lines
-        for (let i = 0; i <= gridSize; i++) {
+        // Create horizontal lines (internal only, no border lines)
+        for (let i = 1; i < gridSize; i++) {
             const line = document.createElement('div');
             line.className = 'template-grid-line horizontal';
             line.style.top = `${(i / gridSize) * 100}%`;
@@ -605,7 +605,74 @@
     }
 }
 
+// Global reference to the canvas instance
+let canvasInstance = null;
+
+// Grid control functions
+function changeGridSize() {
+    const gridSizeSelect = document.getElementById('gridSize');
+    const newSize = parseInt(gridSizeSelect.value);
+    
+    console.log(`Changing grid size to ${newSize}x${newSize}`);
+    
+    // Update the config
+    CONFIG.GRID.SIZE = newSize;
+    
+    // Recreate the grid and pieces
+    if (canvasInstance) {
+        canvasInstance.createGrid();
+        canvasInstance.createPieces();
+        console.log(`Grid updated to ${newSize}x${newSize} - ${newSize * newSize} pieces`);
+    }
+}
+
+function toggleWavyGrid() {
+    const wavyCheckbox = document.getElementById('wavyEnabled');
+    const isEnabled = wavyCheckbox.checked;
+    
+    console.log(`Wavy grid ${isEnabled ? 'enabled' : 'disabled'}`);
+    
+    // For now, just log - wavy implementation will come next
+    if (isEnabled) {
+        console.log('Wavy grid feature not yet implemented');
+        wavyCheckbox.checked = false;
+        alert('Wavy grid feature will be implemented in the next step');
+    }
+}
+
+function debugGrid() {
+    if (canvasInstance) {
+        console.log('=== GRID DEBUG INFO ===');
+        console.log(`Grid Size: ${CONFIG.GRID.SIZE}x${CONFIG.GRID.SIZE}`);
+        console.log(`Total Pieces: ${canvasInstance.pieces.length}`);
+        console.log('Piece Details:');
+        
+        canvasInstance.pieces.forEach((piece, index) => {
+            console.log(`  ${index + 1}. ${piece.id} - Row: ${piece.row}, Col: ${piece.col}`);
+        });
+        
+        console.log('Template Canvas Dimensions:', {
+            width: canvasInstance.templateCanvas.width,
+            height: canvasInstance.templateCanvas.height,
+            styleWidth: canvasInstance.templateCanvas.style.width,
+            styleHeight: canvasInstance.templateCanvas.style.height
+        });
+        
+        console.log('Workspace Container Dimensions:', {
+            width: document.getElementById('piecesContainer').offsetWidth,
+            height: document.getElementById('piecesContainer').offsetHeight
+        });
+    }
+}
+
+function resetPieces() {
+    if (canvasInstance) {
+        console.log('Resetting pieces to original positions');
+        canvasInstance.createPieces();
+    }
+}
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new SVGCanvas();
+    canvasInstance = new SVGCanvas();
 });
