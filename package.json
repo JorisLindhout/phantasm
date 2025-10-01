@@ -1,0 +1,17 @@
+{
+  "name": "fluidlock",
+  "version": "1.0.0",
+  "description": "FluidLock - SVG Canvas Application",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "keywords": ["svg", "canvas", "responsive", "fluidlock"],
+  "author": "",
+  "license": "MIT"
+}

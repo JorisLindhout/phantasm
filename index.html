@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FluidLock - SVG Canvas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>FluidLock</h1>
+        <div class="canvases-wrapper">
+            <div class="canvas-section">
+                <h2>Original Image</h2>
+                <div class="canvas-container">
+                    <div class="loading" id="loading">Loading SVG...</div>
+                    <canvas id="svgCanvas"></canvas>
+                    <div class="grid-overlay" id="gridOverlay">
+                        <div class="grid-lines" id="gridLines"></div>
+                        <div class="grid-labels" id="gridLabels"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="canvas-section">
+                <h2>Grid Pieces</h2>
+                <div class="canvas-container">
+                    <div class="pieces-container" id="piecesContainer">
+                        <!-- Individual pieces will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="info">
+            Original SVG: 850×478px | Canvas: 1700×956px (2x scale) | Tethered Pieces
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

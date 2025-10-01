@@ -1,0 +1,281 @@
+/* FluidLock Styles */
+
+/* Configuration Variables */
+:root {
+    /* Colors */
+    --primary-color: #00DDFF;
+    --background-color: #1a1a1a;
+    --canvas-background: #111111;
+    --text-color: #ffffff;
+    --text-muted: #888;
+    
+    /* Snap Highlight Colors */
+    --snap-highlight-bg: rgba(0, 255, 100, 0.3);
+    --snap-highlight-border: #00FF64;
+    
+    /* Piece Colors */
+    --piece-border: rgba(0, 221, 255, 0.2);
+    --piece-border-hover: rgba(0, 221, 255, 0.6);
+    --piece-shadow-hover: 0 0 10px rgba(0, 221, 255, 0.3);
+    --piece-shadow-drag: 0 10px 30px rgba(0, 221, 255, 0.5);
+    
+    /* Sizing */
+    --border-radius: 12px;
+    --border-radius-small: 4px;
+    --gap: 20px;
+    --gap-small: 2px;
+    
+    /* Animations */
+    --transition-speed: 0.2s;
+    --pulse-duration: 1s;
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--background-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--gap);
+}
+
+/* Layout */
+.container {
+    max-width: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap);
+}
+
+.canvases-wrapper {
+    display: flex;
+    gap: var(--gap);
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.canvas-section {
+    flex: 1;
+    min-width: 300px;
+    max-width: 1700px;
+}
+
+.canvas-section h2 {
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin-bottom: 10px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: var(--gap);
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    font-weight: 300;
+}
+
+/* Canvas Container */
+.canvas-container {
+    position: relative;
+    width: 100%;
+    max-width: 1700px;
+    background: var(--canvas-background);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 221, 255, 0.1);
+    border: 1px solid var(--piece-border);
+}
+
+canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-width: 100%;
+}
+
+/* Grid Overlay */
+.grid-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.grid-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.grid-line {
+    position: absolute;
+    background: rgba(0, 221, 255, 0.3);
+}
+
+.grid-line.vertical {
+    width: 1px;
+    height: 100%;
+}
+
+.grid-line.horizontal {
+    width: 100%;
+    height: 1px;
+}
+
+.grid-labels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.grid-label {
+    position: absolute;
+    color: var(--primary-color);
+    font-size: 12px;
+    font-weight: bold;
+    background: rgba(17, 17, 17, 0.8);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 221, 255, 0.3);
+}
+
+/* Pieces Container */
+.pieces-container {
+    position: relative;
+    background: var(--canvas-background);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 221, 255, 0.1);
+    border: 1px solid var(--piece-border);
+    width: var(--canvas-width, 100%);
+    height: var(--canvas-height, auto);
+    aspect-ratio: 850/478;
+}
+
+/* Piece Styles */
+.piece {
+    position: absolute;
+    background: var(--canvas-background);
+    border: 1px solid var(--piece-border);
+    overflow: hidden;
+    cursor: move;
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.piece:hover {
+    border-color: var(--piece-border-hover);
+    box-shadow: var(--piece-shadow-hover);
+}
+
+.piece.dragging {
+    z-index: 1000;
+    transform: scale(1.05);
+    box-shadow: var(--piece-shadow-drag);
+    border-color: var(--primary-color);
+}
+
+.piece canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+}
+
+.piece-label {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    color: var(--primary-color);
+    font-size: 10px;
+    font-weight: bold;
+    background: rgba(17, 17, 17, 0.8);
+    padding: 2px 4px;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 221, 255, 0.3);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.drag-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: move;
+    z-index: 5;
+}
+
+/* Snap Highlight */
+.slot-highlight {
+    position: absolute;
+    background: var(--snap-highlight-bg);
+    border: 2px solid var(--snap-highlight-border);
+    border-radius: var(--border-radius-small);
+    pointer-events: none;
+    z-index: 999;
+    animation: pulse var(--pulse-duration) infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+    100% { opacity: 0.3; }
+}
+
+/* Info Text */
+.info {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+}
