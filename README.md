@@ -6,8 +6,11 @@ A responsive canvas application that displays an SVG at double size using HTML5 
 
 - **Responsive Canvas**: Automatically adjusts to different screen sizes
 - **2x Scale Display**: SVG (850×478px) displayed at 1700×956px
+- **Template Canvas**: Reference image with grid overlay showing target pattern
+- **Workspace Canvas**: Interactive area where you arrange puzzle pieces
 - **Draggable Pieces**: 16 individual pieces that can be moved freely
 - **Smart Snapping**: 85% overlap threshold for grid alignment
+- **Completion Detection**: Neon green glow when all pieces are correctly positioned
 - **Z-Index Management**: Last clicked piece always on top
 - **High-DPI Support**: Crisp rendering on retina displays
 - **Modern UI**: Dark theme with cyan accents and green snap highlights
@@ -114,12 +117,13 @@ Edit `styles.css` to customize colors and styling:
 
 ## How It Works
 
-1. **Original Canvas**: Shows the full SVG with 4x4 grid overlay
-2. **Pieces Canvas**: 16 individual pieces that are "tethered" to the original
+1. **Template Canvas**: Shows the full SVG with 4x4 grid overlay as a reference
+2. **Workspace Canvas**: 16 individual pieces that can be arranged to match the template
 3. **Dragging**: Pieces can be moved freely with mouse or touch
 4. **Smart Snapping**: When 85%+ of a piece overlaps with a grid slot, it highlights
 5. **Snapping**: Drop in highlighted slot to snap to grid position
-6. **Z-Index**: Last clicked piece always appears on top
+6. **Completion Detection**: Workspace canvas glows neon green when all pieces are correctly positioned
+7. **Z-Index**: Last clicked piece always appears on top
 
 ## Browser Support
 

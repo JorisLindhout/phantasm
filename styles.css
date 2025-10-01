@@ -96,11 +96,13 @@ h1 {
     width: 100%;
     max-width: 1700px;
     background: var(--canvas-background);
-    border-radius: var(--border-radius);
+    border-radius: 0;
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0, 221, 255, 0.1);
     border: 1px solid var(--piece-border);
+    transition: border-color var(--transition-speed) ease;
 }
+
 
 canvas {
     width: 100%;
@@ -218,17 +220,47 @@ canvas {
             border: 1px solid rgba(0, 221, 255, 0.5);
         }
 
-/* Pieces Container */
+/* Workspace Canvas Container */
 .pieces-container {
     position: relative;
     background: var(--canvas-background);
-    border-radius: var(--border-radius);
+    border-radius: 0;
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0, 221, 255, 0.1);
     border: 1px solid var(--piece-border);
     width: var(--canvas-width, 100%);
     height: var(--canvas-height, auto);
     aspect-ratio: 850/478;
+    transition: border-color var(--transition-speed) ease;
+}
+
+.pieces-container.completed {
+    border: 4px solid #00FF64;
+    box-shadow: 
+        0 0 20px rgba(0, 255, 100, 0.8),
+        0 0 40px rgba(0, 255, 100, 0.6),
+        0 0 80px rgba(0, 255, 100, 0.4),
+        inset 0 0 20px rgba(0, 255, 100, 0.1);
+    animation: neon-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes neon-pulse {
+    0% {
+        border-color: #00FF64;
+        box-shadow: 
+            0 0 20px rgba(0, 255, 100, 0.8),
+            0 0 40px rgba(0, 255, 100, 0.6),
+            0 0 80px rgba(0, 255, 100, 0.4),
+            inset 0 0 20px rgba(0, 255, 100, 0.1);
+    }
+    100% {
+        border-color: #66FF99;
+        box-shadow: 
+            0 0 30px rgba(0, 255, 100, 1),
+            0 0 60px rgba(0, 255, 100, 0.8),
+            0 0 120px rgba(0, 255, 100, 0.6),
+            inset 0 0 30px rgba(0, 255, 100, 0.2);
+    }
 }
 
 /* Piece Styles */

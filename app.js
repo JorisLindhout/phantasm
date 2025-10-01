@@ -97,8 +97,8 @@
     }
 
     setupTemplateCanvas() {
-        // Template canvas is now the main canvas, so we just need to ensure it's set up
-        // The template canvas will contain the SVG image and grid overlay
+        // Template canvas displays the reference SVG image with grid overlay
+        // This serves as the visual guide for arranging pieces in the workspace
         console.log('Template canvas setup complete');
     }
 
@@ -229,10 +229,13 @@
             }
         }
         
-        // Store template canvas reference for piece updates
+        // Store template canvas reference for workspace piece updates
         this.templateCanvasRect = this.templateCanvas.getBoundingClientRect();
         
         this.updatePieces();
+        
+        // Initial completion check
+        this.checkCompletion();
     }
 
     createPiece(id, row, col) {
@@ -401,6 +404,43 @@
             piece.row = newRow;
             piece.col = newCol;
         }
+        // Check if all pieces are in correct positions after each update
+        this.checkCompletion();
+    }
+
+    checkCompletion() {
+        const gridSize = CONFIG.GRID.SIZE;
+        let allCorrect = true;
+        
+        // Check if all pieces are in their correct grid positions
+        for (let row = 0; row < gridSize; row++) {
+            for (let col = 0; col < gridSize; col++) {
+                const expectedId = `${String.fromCharCode(65 + row)}${col + 1}`;
+                const piece = this.pieces.find(p => p.id === expectedId);
+                
+                // Check if piece is in correct position or if no piece found
+                if (!piece || piece.row !== row || piece.col !== col) {
+                    allCorrect = false;
+                    break;
+                }
+            }
+            if (!allCorrect) break;
+        }
+        
+        // Update canvas outline based on completion status
+        this.updateCanvasOutline(allCorrect);
+        
+        return allCorrect;
+    }
+
+    updateCanvasOutline(isComplete) {
+        const workspaceContainer = document.getElementById('piecesContainer');
+        
+        if (isComplete) {
+            workspaceContainer.classList.add('completed');
+        } else {
+            workspaceContainer.classList.remove('completed');
+        }
     }
 
     bringToFront(pieceElement) {
@@ -560,8 +600,8 @@
         // For now, just update the template canvas reference
         this.templateCanvasRect = this.templateCanvas.getBoundingClientRect();
         
-        // In future phases, this will update piece shapes based on template changes
-        console.log('Template canvas updated - pieces will inherit new shapes');
+        // In future phases, this will update workspace piece shapes based on template changes
+        console.log('Template canvas updated - workspace pieces will inherit new shapes');
     }
 }
 
