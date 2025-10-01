@@ -1,19 +1,21 @@
 // FluidLock Application
 // Main JavaScript functionality for the SVG canvas with draggable pieces
 
-class SVGCanvas {
-    constructor() {
-        this.canvas = document.getElementById('svgCanvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.loading = document.getElementById('loading');
-        this.originalWidth = CONFIG.CANVAS.ORIGINAL_WIDTH;
-        this.originalHeight = CONFIG.CANVAS.ORIGINAL_HEIGHT;
-        this.scale = CONFIG.CANVAS.SCALE;
-        this.pieces = [];
-        this.zIndexCounter = CONFIG.Z_INDEX.BASE;
-        
-        this.init();
-    }
+        class SVGCanvas {
+            constructor() {
+                this.templateCanvas = document.getElementById('templateCanvas');
+                this.templateCtx = this.templateCanvas.getContext('2d');
+                this.canvas = this.templateCanvas; // Use template canvas as main canvas
+                this.ctx = this.templateCtx; // Use template context as main context
+                this.loading = document.getElementById('loading');
+                this.originalWidth = CONFIG.CANVAS.ORIGINAL_WIDTH;
+                this.originalHeight = CONFIG.CANVAS.ORIGINAL_HEIGHT;
+                this.scale = CONFIG.CANVAS.SCALE;
+                this.pieces = [];
+                this.zIndexCounter = CONFIG.Z_INDEX.BASE;
+                
+                this.init();
+            }
 
     async init() {
         try {
@@ -55,6 +57,7 @@ class SVGCanvas {
     setupResponsiveCanvas() {
         this.updateCanvasSize();
         this.drawImage();
+        this.setupTemplateCanvas();
         this.createGrid();
         this.createPieces();
         
@@ -62,6 +65,7 @@ class SVGCanvas {
         window.addEventListener('resize', () => {
             this.updateCanvasSize();
             this.drawImage();
+            this.setupTemplateCanvas();
             this.createGrid();
             this.updatePieces();
         });
@@ -90,6 +94,12 @@ class SVGCanvas {
         
         // Update pieces container to match exact canvas size
         this.updatePiecesContainerSize(displayWidth, displayHeight);
+    }
+
+    setupTemplateCanvas() {
+        // Template canvas is now the main canvas, so we just need to ensure it's set up
+        // The template canvas will contain the SVG image and grid overlay
+        console.log('Template canvas setup complete');
     }
 
     updatePiecesContainerSize(width, height) {
@@ -138,8 +148,8 @@ class SVGCanvas {
     }
 
     createGrid() {
-        const gridLines = document.getElementById('gridLines');
-        const gridLabels = document.getElementById('gridLabels');
+        const gridLines = document.getElementById('templateGridLines');
+        const gridLabels = document.getElementById('templateGridLabels');
         
         // Clear existing grid
         gridLines.innerHTML = '';
@@ -158,7 +168,7 @@ class SVGCanvas {
         // Create vertical lines
         for (let i = 0; i <= gridSize; i++) {
             const line = document.createElement('div');
-            line.className = 'grid-line vertical';
+            line.className = 'template-grid-line vertical';
             line.style.left = `${(i / gridSize) * 100}%`;
             gridLines.appendChild(line);
         }
@@ -166,7 +176,7 @@ class SVGCanvas {
         // Create horizontal lines
         for (let i = 0; i <= gridSize; i++) {
             const line = document.createElement('div');
-            line.className = 'grid-line horizontal';
+            line.className = 'template-grid-line horizontal';
             line.style.top = `${(i / gridSize) * 100}%`;
             gridLines.appendChild(line);
         }
@@ -175,7 +185,7 @@ class SVGCanvas {
         for (let row = 0; row < gridSize; row++) {
             for (let col = 0; col < gridSize; col++) {
                 const label = document.createElement('div');
-                label.className = 'grid-label';
+                label.className = 'template-grid-label';
                 label.textContent = `${String.fromCharCode(65 + row)}${col + 1}`;
                 
                 // Position in the center of each grid cell
@@ -218,6 +228,9 @@ class SVGCanvas {
                 this.pieces.push(piece);
             }
         }
+        
+        // Store template canvas reference for piece updates
+        this.templateCanvasRect = this.templateCanvas.getBoundingClientRect();
         
         this.updatePieces();
     }
@@ -540,6 +553,15 @@ class SVGCanvas {
     showError() {
         this.loading.textContent = 'Error loading SVG';
         this.loading.style.color = '#ff4444';
+    }
+
+    updateTemplateCanvas() {
+        // This method will be called when the template canvas changes
+        // For now, just update the template canvas reference
+        this.templateCanvasRect = this.templateCanvas.getBoundingClientRect();
+        
+        // In future phases, this will update piece shapes based on template changes
+        console.log('Template canvas updated - pieces will inherit new shapes');
     }
 }
 
