@@ -94,6 +94,22 @@ h1 {
     margin-bottom: 10px;
 }
 
+/* Solved State Styles */
+.puzzle-solved {
+    border: 1px solid #00ff00 !important;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.6), 0 20px 40px rgba(0, 221, 255, 0.1) !important;
+    animation: solvedGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes solvedGlow {
+    0% {
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.4), 0 20px 40px rgba(0, 221, 255, 0.1);
+    }
+    100% {
+        box-shadow: 0 0 40px rgba(0, 255, 0, 0.8), 0 20px 40px rgba(0, 221, 255, 0.1);
+    }
+}
+
 /* Info Text */
 .info {
     text-align: center;

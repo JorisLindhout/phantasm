@@ -21,10 +21,9 @@ const COLORS = {
     
     // Tinted variations for effects
     fluidBlueLight: { hex: 0x88DDFF, css: '#88DDFF', rgba: 'rgba(136, 221, 255, 1)' },
-    fluidBlueLightTransparent: { hex: 0x2A7A9F, css: '#2A7A9F', rgba: 'rgb(42, 122, 159)' },
     fluidBlueDark: { hex: 0x0099BB, css: '#0099BB', rgba: 'rgba(0, 153, 187, 1)' },
     fluidGreenLight: { hex: 0x44FF88, css: '#44FF88', rgba: 'rgba(68, 255, 136, 1)' },
-    fluidOrangeLight: { hex: 0xFFCC80, css: '#FFCC80', rgba: 'rgba(255, 204, 128, 1)' },
+    slotOrange: { hex: 0xFFCC80, css: '#FFCC80', rgba: 'rgba(255, 204, 128, 1)' }
 };
 
 // Theme definitions
@@ -48,17 +47,16 @@ export const THEMES = {
             // Piece states
             pieceNormal: COLORS.fluidBlue,
             pieceHover: COLORS.fluidBlueLight,
-            pieceDragging: COLORS.fluidBlueLight, // Brighter blue for better glow visibility
+            pieceDragging: COLORS.fluidBlue,
             pieceSnapped: COLORS.fluidGreen,
             
             // Slot states
-            slotHover: COLORS.fluidBlueLightTransparent,
-            slotOutline: COLORS.fluidOrangeLight,
+            slotHover: COLORS.slotOrange,
             
             // Outline states
             outlineNormal: COLORS.fluidBlue,
             outlineHover: COLORS.fluidBlueLight, // Brighter blue for hover outline
-            outlineDragging: COLORS.fluidBlueLight, // Brighter blue for dragging outline
+            outlineDragging: COLORS.fluidBlue,
             outlineSnapped: COLORS.fluidGreen
         },
         effects: {

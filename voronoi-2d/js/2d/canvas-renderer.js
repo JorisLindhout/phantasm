@@ -25,19 +25,27 @@ class Canvas2DRenderer extends VoronoiPuzzleBase {
 
     async init() {
         try {
+            console.log('🚀 Starting Canvas 2D renderer initialization...');
             await this.loadBackgroundImage();
+            console.log('🎨 Setting up canvas...');
             this.setupCanvas();
             
             // Add Canvas 2D class to canvas for CSS targeting
             this.canvas.classList.add('canvas-2d');
             
+            console.log('🔢 Generating Voronoi diagram...');
             this.generateVoronoi();
+            console.log('🎛️ Setting up controls...');
             this.setupControls();
+            console.log('🖱️ Setting up drag and drop...');
             this.setupDragAndDrop();
+            console.log('🎬 Starting animation...');
             this.startAnimation();
             this.updateRendererStatus('Canvas 2D');
+            console.log('✅ Canvas 2D renderer initialization complete!');
         } catch (error) {
-            console.error('Error initializing Canvas 2D renderer:', error);
+            console.error('❌ Error initializing Canvas 2D renderer:', error);
+            this.updateRendererStatus('Error: ' + error.message);
         }
     }
 

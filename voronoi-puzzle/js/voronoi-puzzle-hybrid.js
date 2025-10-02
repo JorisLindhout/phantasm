@@ -7,7 +7,6 @@ class VoronoiPuzzleHybrid {
     constructor() {
         this.currentRenderer = null;
         this.useWebGL = true; // Toggle between WebGL and Canvas 2D
-        this.forceCanvas2D = false; // Force Canvas 2D mode for testing
         this.noise = new Noise(); // Shared noise instance
         
         this.init();
@@ -38,16 +37,15 @@ class VoronoiPuzzleHybrid {
             this.currentRenderer = null;
         }
 
-        // Determine which renderer to use
-        if (this.useWebGL && !this.forceCanvas2D && typeof WebGLVoronoiRenderer !== 'undefined' && typeof isWebGLSupported !== 'undefined') {
+        // Use WebGL renderer (2D Canvas renderer has been removed)
+        if (typeof WebGLVoronoiRenderer !== 'undefined' && typeof isWebGLSupported !== 'undefined') {
             if (isWebGLSupported()) {
                 try {
                     // Create WebGL hybrid renderer
                     this.currentRenderer = new WebGLHybridRenderer();
                     await this.currentRenderer.init();
                     
-                    // Expose the WebGL renderer for hover/interaction effects
-                    this.webglRenderer = this.currentRenderer.webglRenderer;
+                    // WebGL renderer is accessible via getter
                     
                     console.log('✅ Using WebGL renderer for proper z-index layering');
                     console.log('🔍 Current renderer type:', this.currentRenderer.constructor.name);
@@ -61,40 +59,17 @@ class VoronoiPuzzleHybrid {
                         container.classList.remove('canvas-2d-mode');
                     }
                 } catch (error) {
-                    console.warn('⚠️  WebGL initialization failed, falling back to Canvas 2D:', error.message);
-                    this.useWebGL = false;
-                    await this.initializeCanvas2D();
+                    console.error('❌ WebGL initialization failed:', error.message);
+                    throw new Error('WebGL is required for this puzzle. Please use a modern browser with WebGL support.');
                 }
             } else {
-                console.warn('⚠️  WebGL not supported by this browser, using Canvas 2D');
-                this.useWebGL = false;
-                await this.initializeCanvas2D();
+                throw new Error('WebGL is not supported by this browser. Please use a modern browser with WebGL support.');
             }
         } else {
-            console.log('⚠️  Using Canvas 2D renderer (WebGL disabled or unavailable)');
-            await this.initializeCanvas2D();
+            throw new Error('WebGL components are not available. Please ensure all WebGL files are loaded.');
         }
     }
 
-    async initializeCanvas2D() {
-        this.currentRenderer = new Canvas2DRenderer();
-        this.currentRenderer.noise = this.noise; // Share noise instance
-        await this.currentRenderer.init();
-        this.updateRendererStatus('Canvas 2D');
-        
-        // Add Canvas 2D mode class to container
-        const container = document.querySelector('.puzzle-container');
-        if (container) {
-            container.classList.add('canvas-2d-mode');
-            container.classList.remove('webgl-mode');
-        }
-        
-        // Ensure the main canvas is visible
-        const mainCanvas = document.getElementById('voronoiCanvas');
-        if (mainCanvas) {
-            mainCanvas.style.display = 'block';
-        }
-    }
 
     // Control functions
     async toggleRenderer() {
@@ -109,13 +84,6 @@ class VoronoiPuzzleHybrid {
         console.log(`✅ Switched to ${this.useWebGL ? 'WebGL' : 'Canvas 2D'} renderer`);
     }
 
-    async forceCanvas2DMode() {
-        console.log('🎨 Forcing Canvas 2D mode...');
-        this.forceCanvas2D = true;
-        this.useWebGL = false;
-        await this.initializeRenderer();
-        console.log('🎨 Forced Canvas 2D mode');
-    }
 
     // Delegate methods to current renderer
     regeneratePuzzle() {
@@ -133,6 +101,10 @@ class VoronoiPuzzleHybrid {
     // Getters for accessing renderer properties
     get config() {
         return this.currentRenderer ? this.currentRenderer.config : null;
+    }
+    
+    get webglRenderer() {
+        return this.currentRenderer && this.currentRenderer.webglRenderer ? this.currentRenderer.webglRenderer : null;
     }
 
     generateVoronoi() {
@@ -157,8 +129,8 @@ class WebGLHybridRenderer extends VoronoiPuzzleBase {
             await this.loadBackgroundImage();
             this.setupCanvas();
             
-            // Initialize WebGL renderer
-            this.webglRenderer = new WebGLVoronoiRenderer(this.canvas);
+            // Initialize WebGL renderer with config
+            this.webglRenderer = new WebGLVoronoiRenderer(this.canvas, this.config);
             await this.webglRenderer.loadBackgroundTexture('./base-image-cube.svg');
             
             this.generateVoronoi();
@@ -241,7 +213,18 @@ class WebGLHybridRenderer extends VoronoiPuzzleBase {
     }
     
     findCellAtPositionImproved(x, y) {
-        // First try the standard hit detection
+        // Use WebGL renderer's hit detection if available (for better slot detection)
+        if (this.webglRenderer) {
+            // Skip the dragged piece when looking for slots during drag
+            const skipDraggedPiece = this.isDragging;
+            const webglResult = this.webglRenderer.findPieceAtPosition(x, y, skipDraggedPiece);
+            if (webglResult !== -1) {
+                console.log(`🎯 WebGL hit detection result:`, webglResult);
+                return webglResult;
+            }
+        }
+        
+        // Fallback to standard hit detection
         let cellIndex = this.findCellAtPosition(x, y);
         
         if (cellIndex !== -1) {
@@ -272,8 +255,10 @@ class WebGLHybridRenderer extends VoronoiPuzzleBase {
     }
 
     handleMouseDown(e) {
-        // Prevent any ongoing interactions
-        this.resetInteractionState();
+        // Only reset interaction state if we're already dragging
+        if (this.isDragging) {
+            this.resetInteractionState();
+        }
         
         const coords = VoronoiUtils.getCanvasCoordinates(e, this.webglRenderer.canvas);
         const x = coords.x;
@@ -291,6 +276,11 @@ class WebGLHybridRenderer extends VoronoiPuzzleBase {
         
         if (cellIndex !== -1) {
             console.log(`✅ Activating piece ${cellIndex}`);
+            // Clear any existing slot hover when starting to drag a piece
+            if (this.hoveredSlot !== undefined && this.webglRenderer) {
+                this.webglRenderer.updateSlotHover(this.hoveredSlot, false, false);
+                this.hoveredSlot = undefined;
+            }
             // Activate the piece
             this.activatePiece(cellIndex, x, y);
         } else if (isSlot) {
@@ -368,7 +358,7 @@ class WebGLHybridRenderer extends VoronoiPuzzleBase {
         
         // Reset drag slot hover state
         if (this.dragHoveredSlot !== undefined && this.webglRenderer) {
-            this.webglRenderer.updateSlotHover(this.dragHoveredSlot, false);
+            this.webglRenderer.updateSlotHover(this.dragHoveredSlot, false, false);
             this.dragHoveredSlot = undefined;
         }
         
@@ -421,21 +411,22 @@ class WebGLHybridRenderer extends VoronoiPuzzleBase {
                 }
             }
             
-            // Handle slot hover changes
+            // Handle slot hover changes (only during normal hover, not dragging)
             if (hoveredSlot !== (this.hoveredSlot || -1)) {
                 console.log(`🎰 Slot hover change: ${this.hoveredSlot || -1} → ${hoveredSlot}`);
                 
                 // Reset previous hovered slot
                 if ((this.hoveredSlot || -1) !== -1 && this.webglRenderer) {
-                    this.webglRenderer.updateSlotHover(this.hoveredSlot, false);
+                    this.webglRenderer.updateSlotHover(this.hoveredSlot, false, false);
                 }
                 
                 this.hoveredSlot = hoveredSlot === -1 ? undefined : hoveredSlot;
                 
-                // Update new hovered slot
+                // Update new hovered slot (only show outline, not background during normal hover)
                 if (hoveredSlot !== -1 && this.webglRenderer) {
                     console.log(`✨ Setting hover effect for slot ${hoveredSlot}`);
-                    this.webglRenderer.updateSlotHover(hoveredSlot, true);
+                    // Only show outline hover during normal hover, not background fill
+                    this.webglRenderer.updateSlotHover(hoveredSlot, true, false); // false = not drag hover
                     this.webglRenderer.canvas.style.cursor = 'grab';
                 }
             }
@@ -532,6 +523,11 @@ class WebGLHybridRenderer extends VoronoiPuzzleBase {
         // Always reset interaction state after handling the drop
         this.resetInteractionState();
         
+        // Check if puzzle is solved after piece movement
+        if (this.webglRenderer && this.webglRenderer.checkSolvedState) {
+            this.webglRenderer.checkSolvedState();
+        }
+        
         console.log(`🏁 Mouse up completed for piece ${draggedIndex}`);
     }
     
@@ -539,28 +535,38 @@ class WebGLHybridRenderer extends VoronoiPuzzleBase {
         // During dragging, check for slot hover to show drop target feedback
         const hoveredResult = this.findCellAtPositionImproved(x, y);
         
-        // Only care about slots during dragging (not pieces)
-        const isSlot = hoveredResult && typeof hoveredResult === 'object' && hoveredResult.type === 'slot';
-        const hoveredSlot = isSlot ? hoveredResult.index : -1;
+        // During dragging, we want to show slot hover only for the specific slot being hovered
+        let dragSlot = -1;
         
-        // Allow hovering over all slots including the original slot
-        const dragSlot = hoveredSlot;
+        if (hoveredResult !== -1) {
+            if (typeof hoveredResult === 'object' && hoveredResult.type === 'slot') {
+                // Hit an empty slot - show hover for this slot
+                dragSlot = hoveredResult.index;
+            } else if (typeof hoveredResult === 'number') {
+                // Hit a piece - only show hover if it's NOT the piece being dragged
+                // (we don't want to show hover for the dragged piece's original slot)
+                if (hoveredResult !== this.draggedCellIndex) {
+                    dragSlot = hoveredResult;
+                }
+            }
+        }
         
         // Handle slot hover changes during drag
         if (dragSlot !== (this.dragHoveredSlot || -1)) {
-            console.log(`🎯 Drag slot hover change: ${this.dragHoveredSlot || -1} → ${dragSlot}`);
             
             // Reset previous drag hovered slot
             if ((this.dragHoveredSlot || -1) !== -1 && this.webglRenderer) {
-                this.webglRenderer.updateSlotHover(this.dragHoveredSlot, false);
+                this.webglRenderer.updateSlotHover(this.dragHoveredSlot, false, false);
             }
             
             this.dragHoveredSlot = dragSlot === -1 ? undefined : dragSlot;
             
-            // Update new drag hovered slot
+            // Update new drag hovered slot (only for empty slots)
             if (dragSlot !== -1 && this.webglRenderer) {
-                console.log(`✨ Setting drag slot hover effect for slot ${dragSlot}`);
-                this.webglRenderer.updateSlotHover(dragSlot, true);
+                // Check if the slot is empty before showing hover effect
+                if (this.webglRenderer.slotStates && this.webglRenderer.slotStates[dragSlot] === 'empty') {
+                    this.webglRenderer.updateSlotHover(dragSlot, true, true); // true = isDragHover
+                }
             }
         }
     }
@@ -577,7 +583,7 @@ class WebGLHybridRenderer extends VoronoiPuzzleBase {
         
         // Reset drag slot hover state
         if (this.dragHoveredSlot !== undefined && this.webglRenderer) {
-            this.webglRenderer.updateSlotHover(this.dragHoveredSlot, false);
+            this.webglRenderer.updateSlotHover(this.dragHoveredSlot, false, false);
             this.dragHoveredSlot = undefined;
         }
         

@@ -44,10 +44,6 @@ class VoronoiPuzzleBase {
         this.snappedPieces = new Set(); // Track which pieces are snapped
         this.snapAnimationTime = 0; // Animation time for snap feedback
         this.hoveredPiece = -1; // Track which piece is being hovered
-        
-        // Solved state tracking
-        this.isSolved = false;
-        this.solveThreshold = 10; // pixels - how close pieces need to be to be considered "solved"
     }
 
     async loadBackgroundImage() {
@@ -55,12 +51,17 @@ class VoronoiPuzzleBase {
         return new Promise((resolve, reject) => {
             const img = new Image();
             img.onload = () => {
+                console.log('✅ Background image loaded successfully:', img.src);
                 this.backgroundImage = img;
                 resolve();
             };
-            img.onerror = reject;
+            img.onerror = (error) => {
+                console.error('❌ Failed to load background image:', img.src, error);
+                reject(error);
+            };
             // Use the same SVG from the main project
             img.src = './base-image-cube.svg';
+            console.log('🖼️ Loading background image:', img.src);
         });
     }
 
@@ -174,11 +175,6 @@ class VoronoiPuzzleBase {
             noiseAmplitudeSlider.addEventListener('input', (e) => {
                 this.config.noiseAmplitude = parseInt(e.target.value);
                 noiseAmplitudeValue.textContent = e.target.value;
-                
-                // Update WebGL renderer if available
-                if (this.webglRenderer && this.webglRenderer.updateConfig) {
-                    this.webglRenderer.updateConfig({ noiseAmplitude: this.config.noiseAmplitude });
-                }
             });
         }
     }
@@ -195,10 +191,6 @@ class VoronoiPuzzleBase {
                 this.pieceZIndex = new Array(this.points.length).fill(0);
             }
         }
-        
-        // Initialize solved state (puzzle starts solved since all pieces are in place)
-        this.isSolved = true;
-        this.onSolvedStateChanged(true);
     }
 
     startAnimation() {
@@ -297,73 +289,12 @@ class VoronoiPuzzleBase {
             }
             this.snappedPieces.clear();
         }
-        
-        // Reset solved state and check
-        this.isSolved = true;
-        this.onSolvedStateChanged(true);
     }
 
     toggleAnimation() {
         this.config.isAnimating = !this.config.isAnimating;
         const button = event.target;
         button.textContent = this.config.isAnimating ? 'Pause Animation' : 'Start Animation';
-    }
-    
-    // Check if the puzzle is solved (all pieces are in correct positions)
-    checkSolvedState() {
-        if (!this.pieceOffsets || this.pieceOffsets.length === 0) {
-            return false;
-        }
-        
-        let solvedPieces = 0;
-        
-        for (let i = 0; i < this.pieceOffsets.length; i++) {
-            const offset = this.pieceOffsets[i] || { x: 0, y: 0 };
-            const distance = Math.sqrt(offset.x * offset.x + offset.y * offset.y);
-            
-            if (distance < this.solveThreshold) {
-                solvedPieces++;
-            }
-        }
-        
-        // Consider solved if all pieces are within the threshold
-        const isSolved = solvedPieces === this.pieceOffsets.length;
-        
-        if (isSolved !== this.isSolved) {
-            this.isSolved = isSolved;
-            this.onSolvedStateChanged(isSolved);
-        }
-        
-        return isSolved;
-    }
-    
-    // Called when solved state changes
-    onSolvedStateChanged(isSolved) {
-        console.log(`🎉 Puzzle ${isSolved ? 'SOLVED' : 'UNSOLVED'}!`);
-        
-        // Add/remove solved class to canvas container
-        const container = this.canvas.parentElement;
-        if (container) {
-            if (isSolved) {
-                container.classList.add('puzzle-solved');
-            } else {
-                container.classList.remove('puzzle-solved');
-            }
-        }
-        
-        // Update canvas outline
-        this.updateCanvasOutline(isSolved);
-    }
-    
-    // Update canvas outline based on solved state
-    updateCanvasOutline(isSolved) {
-        if (isSolved) {
-            this.canvas.style.border = '1px solid #00ff00'; // Green outline - same width as default
-            this.canvas.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.5)'; // Green glow
-        } else {
-            this.canvas.style.border = 'none';
-            this.canvas.style.boxShadow = 'none';
-        }
     }
 
     // Abstract methods to be implemented by subclasses

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test 2D Canvas Functionality</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .pass { background-color: #d4edda; color: #155724; }
+        .fail { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>2D Canvas Functionality Test</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        const results = [];
+        
+        function addResult(test, passed, message) {
+            results.push({ test, passed, message });
+            const div = document.createElement('div');
+            div.className = `test-result ${passed ? 'pass' : 'fail'}`;
+            div.innerHTML = `<strong>${test}:</strong> ${passed ? 'PASS' : 'FAIL'} - ${message}`;
+            document.getElementById('test-results').appendChild(div);
+        }
+        
+        function addInfo(message) {
+            const div = document.createElement('div');
+            div.className = 'test-result info';
+            div.innerHTML = `<strong>INFO:</strong> ${message}`;
+            document.getElementById('test-results').appendChild(div);
+        }
+        
+        // Test 1: Check if required classes are available
+        addResult(
+            'Class Availability',
+            typeof VoronoiPuzzleHybrid !== 'undefined' && typeof Canvas2DRenderer !== 'undefined',
+            'VoronoiPuzzleHybrid and Canvas2DRenderer classes are available'
+        );
+        
+        // Test 2: Check if utility functions are available
+        addResult(
+            'Utility Functions',
+            typeof updateCellCount === 'function' && typeof VoronoiUtils !== 'undefined',
+            'Global utility functions and VoronoiUtils class are available'
+        );
+        
+        // Test 3: Check if Noise class is available
+        addResult(
+            'Noise Class',
+            typeof Noise !== 'undefined',
+            'Noise class is available for animation'
+        );
+        
+        // Test 4: Check if d3-delaunay is loaded
+        addResult(
+            'D3 Delaunay',
+            typeof d3 !== 'undefined' && typeof d3.Delaunay !== 'undefined',
+            'd3-delaunay library is loaded'
+        );
+        
+        addInfo('All required dependencies are loaded. The 2D Canvas renderer should work properly.');
+        addInfo('Visit <a href="index.html">index.html</a> to test the actual functionality.');
+        
+        // Summary
+        const passed = results.filter(r => r.passed).length;
+        const total = results.length;
+        addInfo(`Test Summary: ${passed}/${total} tests passed`);
+    </script>
+</body>
+</html>

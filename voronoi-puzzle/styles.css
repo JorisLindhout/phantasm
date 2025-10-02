@@ -7,7 +7,6 @@
 @import url('./css/shared/responsive.css');
 
 /* Import renderer-specific styles */
-@import url('./css/2d/canvas.css');
 @import url('./css/3d/webgl.css');
 
 /* Legacy canvas styles for backward compatibility */

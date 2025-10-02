@@ -23,7 +23,7 @@ function isWebGLSupported() {
 }
 
 class WebGLVoronoiRenderer {
-    constructor(canvas) {
+    constructor(canvas, config = null) {
         this.originalCanvas = canvas;
         this.canvas = null; // Will create a new canvas for WebGL
         this.scene = null;
@@ -31,6 +31,9 @@ class WebGLVoronoiRenderer {
         this.renderer = null;
         this.backgroundTexture = null;
         this.animationTime = 0;
+        
+        // Store configuration for noise amplitude control
+        this.config = config || { noiseAmplitude: 20 };
         
         // Store Voronoi data for connected rendering
         this.voronoiPolygons = [];
@@ -58,11 +61,11 @@ class WebGLVoronoiRenderer {
         
         // Debug logging control
         this.debugLogging = {
-            glow: true,         // Neon glow creation/updates - ENABLED for debugging
+            glow: false,        // Neon glow creation/updates - DISABLED
             animation: false,   // Animation updates
             hitDetection: false, // Hit detection
-            visual: true,       // Visual state changes - ENABLED for debugging
-            creation: true      // Basic creation/removal logs
+            visual: false,      // Visual state changes - DISABLED
+            creation: false     // Basic creation/removal logs - DISABLED
         };
         
         // Track dragging state for glow timing
@@ -72,7 +75,16 @@ class WebGLVoronoiRenderer {
         // Theme system
         this.currentTheme = null; // Will be set by theme manager
         
+        // Solved state tracking
+        this.isSolved = false;
+        this.solveThreshold = 10; // pixels - how close pieces need to be to be considered "solved"
+        
         this.init();
+    }
+    
+    // Update configuration (for slider changes)
+    updateConfig(newConfig) {
+        this.config = { ...this.config, ...newConfig };
     }
     
     init() {
@@ -194,6 +206,10 @@ class WebGLVoronoiRenderer {
         
         // Create the connected mesh that represents all pieces
         this.createConnectedMesh();
+        
+        // Initialize solved state (puzzle starts solved since all pieces are in place)
+        this.isSolved = true;
+        this.onSolvedStateChanged(true);
         
         console.log(`✅ Initialized connected Voronoi with ${polygons.length} pieces`);
     }
@@ -361,6 +377,94 @@ class WebGLVoronoiRenderer {
         return geometry;
     }
     
+    // Create boundary geometry for a single polygon (for hover effects)
+    createBoundaryGeometryForPolygon(polygon, scale = 1.0) {
+        const vertices = [];
+        
+        if (!polygon || polygon.length < 3) {
+            return new THREE.BufferGeometry();
+        }
+        
+        // Calculate the center of the polygon for scaling
+        const centerX = polygon.reduce((sum, p) => sum + p[0], 0) / polygon.length;
+        const centerY = polygon.reduce((sum, p) => sum + p[1], 0) / polygon.length;
+        
+        // Create lines for each edge of the polygon with scaling
+        for (let i = 0; i < polygon.length; i++) {
+            const current = polygon[i];
+            const next = polygon[(i + 1) % polygon.length];
+            
+            // Scale vertices from center
+            const scaledCurrentX = centerX + (current[0] - centerX) * scale;
+            const scaledCurrentY = centerY + (current[1] - centerY) * scale;
+            const scaledNextX = centerX + (next[0] - centerX) * scale;
+            const scaledNextY = centerY + (next[1] - centerY) * scale;
+            
+            // Add scaled line segment
+            vertices.push(scaledCurrentX, scaledCurrentY, 0);
+            vertices.push(scaledNextX, scaledNextY, 0);
+        }
+        
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        
+        return geometry;
+    }
+    
+    // Create boundary geometry for a Three.js geometry with scaling
+    // This method extracts only the outer boundary edges, not internal triangulation
+    createBoundaryGeometryForGeometry(geometry, scale = 1.0) {
+        const vertices = [];
+        
+        if (!geometry || !geometry.attributes.position) {
+            return new THREE.BufferGeometry();
+        }
+        
+        const positions = geometry.attributes.position.array;
+        const indices = geometry.index ? geometry.index.array : null;
+        
+        // Use EdgesGeometry to get only the boundary edges, then scale them
+        const edgesGeometry = new THREE.EdgesGeometry(geometry, 1); // Low threshold for all edges
+        const edgePositions = edgesGeometry.attributes.position.array;
+        
+        // Calculate the center of the geometry for scaling
+        let centerX = 0, centerY = 0, vertexCount = 0;
+        for (let i = 0; i < edgePositions.length; i += 3) {
+            centerX += edgePositions[i];
+            centerY += edgePositions[i + 1];
+            vertexCount++;
+        }
+        centerX /= vertexCount;
+        centerY /= vertexCount;
+        
+        // Create scaled boundary edges
+        for (let i = 0; i < edgePositions.length; i += 6) { // 2 vertices per edge
+            if (i + 5 >= edgePositions.length) break;
+            
+            const x1 = edgePositions[i];
+            const y1 = edgePositions[i + 1];
+            const z1 = edgePositions[i + 2];
+            const x2 = edgePositions[i + 3];
+            const y2 = edgePositions[i + 4];
+            const z2 = edgePositions[i + 5];
+            
+            // Scale vertices from center
+            const scaledX1 = centerX + (x1 - centerX) * scale;
+            const scaledY1 = centerY + (y1 - centerY) * scale;
+            const scaledX2 = centerX + (x2 - centerX) * scale;
+            const scaledY2 = centerY + (y2 - centerY) * scale;
+            
+            // Add scaled edge
+            vertices.push(scaledX1, scaledY1, z1);
+            vertices.push(scaledX2, scaledY2, z2);
+        }
+        
+        const boundaryGeometry = new THREE.BufferGeometry();
+        boundaryGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        
+        return boundaryGeometry;
+    }
+    
     updatePiecePosition(index, offset) {
         // Store the offset for this piece
         this.pieceOffsets[index] = offset;
@@ -382,6 +486,9 @@ class WebGLVoronoiRenderer {
             this.removeSeparatePiece(index);
             this.updateConnectedMeshVisibility(); // Update slot visibility
         }
+        
+        // Check if puzzle is solved after position update
+        this.checkSolvedState();
     }
     
     updatePieceZIndex(index, zIndex) {
@@ -423,6 +530,13 @@ class WebGLVoronoiRenderer {
             this.updateOutlineState(separateOutline.material, state);
             this.updatePieceScale(separatePiece, state);
             
+            // Control outline visibility based on state
+            if (state === 'hover' || state === 'dragging') {
+                separateOutline.visible = true;
+            } else {
+                separateOutline.visible = false; // Hide outline for normal state
+            }
+            
             // Control neon glow visibility based on state
             const neonGlow = this.separateGlowOutlines[index];
             console.log(`🔍 Checking neon glow for piece ${index}, state: ${state}, neonGlow exists: ${!!neonGlow}`);
@@ -455,6 +569,9 @@ class WebGLVoronoiRenderer {
             console.log(`🔗 Removing hover overlay for connected piece ${index}`);
             this.updateConnectedPieceHover(index, false);
         }
+        
+        // For separate pieces, the hover effect is handled by the outline and material changes above
+        // The separate piece outline should be visible and properly styled for hover effects
     }
     
     // Update material properties for piece fill
@@ -469,10 +586,10 @@ class WebGLVoronoiRenderer {
         
         switch (state) {
             case 'hover':
-                // Subtle tint for hover
-                material.color.setHex(this.getThemeColor('pieceHover'));
-                material.opacity = Math.max(this.getThemeEffect('opacityHover', 0.8), material.originalOpacity);
-                console.log(`✨ Applied hover tint from theme`);
+                // Keep original material color for hover - only outline changes
+                material.color.copy(material.originalColor);
+                material.opacity = material.originalOpacity || 1.0;
+                console.log(`✨ Kept original material color for hover (outline-only effect)`);
                 break;
             case 'dragging':
                 // Very bright tint for dragging - temporarily remove texture for pure glow
@@ -507,6 +624,65 @@ class WebGLVoronoiRenderer {
         }
     }
     
+    // Create neon glow outline for a polygon with multiple layers for realistic glow effect
+    createNeonGlowOutlineForPolygon(polygon, position, visible = true) {
+        const glowLayers = [];
+        
+        if (this.debugLogging.glow) {
+            console.log(`🌟 Creating neon glow outline for polygon at position:`, position);
+        }
+        
+        // Create multi-layered glow effect similar to CSS box-shadow
+        // Multiple layers with different opacities and scales for realistic glow
+        const glowColor = this.getThemeColor('pieceDragging');
+        const glowConfigs = [
+            // Inner glow layers (closest to piece) - bright and tight
+            { scale: 1.0, opacity: 1.0, color: glowColor, zOffset: 0.01 },
+            { scale: 1.01, opacity: 0.8, color: glowColor, zOffset: 0.02 },
+            { scale: 1.02, opacity: 0.6, color: glowColor, zOffset: 0.03 },
+            { scale: 1.04, opacity: 0.4, color: glowColor, zOffset: 0.04 },
+            // Middle glow layers - medium spread
+            { scale: 1.06, opacity: 0.3, color: glowColor, zOffset: 0.05 },
+            { scale: 1.08, opacity: 0.25, color: glowColor, zOffset: 0.06 },
+            { scale: 1.10, opacity: 0.2, color: glowColor, zOffset: 0.07 },
+            // Outer glow layers (further from piece) - soft and wide
+            { scale: 1.12, opacity: 0.15, color: glowColor, zOffset: 0.08 },
+            { scale: 1.15, opacity: 0.1, color: glowColor, zOffset: 0.09 },
+            { scale: 1.18, opacity: 0.05, color: glowColor, zOffset: 0.10 },
+        ];
+        
+        glowConfigs.forEach((config, index) => {
+            // Create boundary geometry for this glow layer using only the polygon outline
+            const glowGeometry = this.createBoundaryGeometryForPolygon(polygon, config.scale);
+            
+            const glowMaterial = new THREE.LineBasicMaterial({
+                color: config.color,
+                transparent: true,
+                opacity: config.opacity,
+                linewidth: 1
+            });
+            
+            const glowOutline = new THREE.LineSegments(glowGeometry, glowMaterial);
+            
+            // Position the glow outline at the same position as the piece
+            glowOutline.position.copy(position);
+            glowOutline.position.z += config.zOffset; // Layer the glow effects
+            glowOutline.visible = visible;
+            
+            if (this.debugLogging.glow) {
+                console.log(`✨ Created glow layer ${index + 1} with scale ${config.scale}, opacity ${config.opacity}`);
+            }
+            
+            glowLayers.push(glowOutline);
+            this.scene.add(glowOutline);
+        });
+        
+        if (this.debugLogging.glow) {
+            console.log(`🎆 Created ${glowLayers.length} glow layers for realistic box-shadow effect`);
+        }
+        return glowLayers;
+    }
+    
     // Create neon glow outline with multiple layers for realistic glow effect
     createNeonGlowOutline(geometry, position, visible = true) {
         const glowLayers = [];
@@ -515,32 +691,45 @@ class WebGLVoronoiRenderer {
             console.log(`🌟 Creating neon glow outline at position:`, position);
         }
         
-        // Create outline-only glow using edge geometry
-        // Since linewidth doesn't work reliably in WebGL, we'll use multiple overlapping outlines
+        // Create multi-layered glow effect similar to CSS box-shadow
+        // Multiple layers with different opacities and scales for realistic glow
+        const glowColor = this.getThemeColor('pieceDragging');
         const glowConfigs = [
-            { thickness: 1, opacity: 1.0, color: this.getThemeColor('pieceDragging') }, // Base outline
+            // Inner glow layers (closest to piece) - bright and tight
+            { scale: 1.0, opacity: 1.0, color: glowColor, zOffset: 0.01 },
+            { scale: 1.01, opacity: 0.8, color: glowColor, zOffset: 0.02 },
+            { scale: 1.02, opacity: 0.6, color: glowColor, zOffset: 0.03 },
+            { scale: 1.04, opacity: 0.4, color: glowColor, zOffset: 0.04 },
+            // Middle glow layers - medium spread
+            { scale: 1.06, opacity: 0.3, color: glowColor, zOffset: 0.05 },
+            { scale: 1.08, opacity: 0.25, color: glowColor, zOffset: 0.06 },
+            { scale: 1.10, opacity: 0.2, color: glowColor, zOffset: 0.07 },
+            // Outer glow layers (further from piece) - soft and wide
+            { scale: 1.12, opacity: 0.15, color: glowColor, zOffset: 0.08 },
+            { scale: 1.15, opacity: 0.1, color: glowColor, zOffset: 0.09 },
+            { scale: 1.18, opacity: 0.05, color: glowColor, zOffset: 0.10 },
         ];
         
         glowConfigs.forEach((config, index) => {
-            // Create outline geometry using EdgesGeometry
-            const edgesGeometry = new THREE.EdgesGeometry(geometry, 1); // Low threshold for all edges
+            // Create boundary geometry for this glow layer using only the piece outline
+            const glowGeometry = this.createBoundaryGeometryForGeometry(geometry, config.scale);
             
             const glowMaterial = new THREE.LineBasicMaterial({
                 color: config.color,
                 transparent: true,
                 opacity: config.opacity,
-                linewidth: config.thickness // This might not work in all browsers, but let's try
+                linewidth: 1
             });
             
-            const glowOutline = new THREE.LineSegments(edgesGeometry, glowMaterial);
+            const glowOutline = new THREE.LineSegments(glowGeometry, glowMaterial);
             
             // Position the glow outline at the same position as the piece
             glowOutline.position.copy(position);
-            glowOutline.position.z += 0.01 + (index * 0.001); // Just slightly above piece
+            glowOutline.position.z += config.zOffset; // Layer the glow effects
             glowOutline.visible = visible;
             
             if (this.debugLogging.glow) {
-                console.log(`✨ Created glow outline ${index + 1} with thickness ${config.thickness}, opacity ${config.opacity}`);
+                console.log(`✨ Created glow layer ${index + 1} with scale ${config.scale}, opacity ${config.opacity}`);
             }
             
             glowLayers.push(glowOutline);
@@ -548,9 +737,49 @@ class WebGLVoronoiRenderer {
         });
         
         if (this.debugLogging.glow) {
-            console.log(`🎆 Created ${glowLayers.length} glow layers`);
+            console.log(`🎆 Created ${glowLayers.length} glow layers for realistic box-shadow effect`);
         }
         return glowLayers;
+    }
+    
+    // Update neon glow outline geometry to match animation for polygon-based glow
+    updateNeonGlowOutlineForPolygon(glowLayers, polygon, position) {
+        if (!glowLayers || glowLayers.length === 0) return;
+        
+        if (this.debugLogging.animation) {
+            console.log(`🔄 Updating ${glowLayers.length} glow layers to match animation`);
+        }
+        
+        // Define the same glow configs as in createNeonGlowOutlineForPolygon
+        const glowConfigs = [
+            { scale: 1.0, opacity: 1.0, zOffset: 0.01 },
+            { scale: 1.01, opacity: 0.8, zOffset: 0.02 },
+            { scale: 1.02, opacity: 0.6, zOffset: 0.03 },
+            { scale: 1.04, opacity: 0.4, zOffset: 0.04 },
+            { scale: 1.06, opacity: 0.3, zOffset: 0.05 },
+            { scale: 1.08, opacity: 0.25, zOffset: 0.06 },
+            { scale: 1.10, opacity: 0.2, zOffset: 0.07 },
+            { scale: 1.12, opacity: 0.15, zOffset: 0.08 },
+            { scale: 1.15, opacity: 0.1, zOffset: 0.09 },
+            { scale: 1.18, opacity: 0.05, zOffset: 0.10 },
+        ];
+        
+        glowLayers.forEach((glowOutline, index) => {
+            if (index < glowConfigs.length) {
+                const config = glowConfigs[index];
+                
+                // Create new boundary geometry with proper scaling
+                const newBoundaryGeometry = this.createBoundaryGeometryForPolygon(polygon, config.scale);
+                
+                // Update geometry
+                glowOutline.geometry.dispose();
+                glowOutline.geometry = newBoundaryGeometry;
+                
+                // Update position
+                glowOutline.position.copy(position);
+                glowOutline.position.z += config.zOffset;
+            }
+        });
     }
     
     // Update neon glow outline geometry to match animation
@@ -561,17 +790,35 @@ class WebGLVoronoiRenderer {
             console.log(`🔄 Updating ${glowLayers.length} glow layers to match animation`);
         }
         
+        // Define the same glow configs as in createNeonGlowOutline
+        const glowConfigs = [
+            { scale: 1.0, opacity: 1.0, zOffset: 0.01 },
+            { scale: 1.01, opacity: 0.8, zOffset: 0.02 },
+            { scale: 1.02, opacity: 0.6, zOffset: 0.03 },
+            { scale: 1.04, opacity: 0.4, zOffset: 0.04 },
+            { scale: 1.06, opacity: 0.3, zOffset: 0.05 },
+            { scale: 1.08, opacity: 0.25, zOffset: 0.06 },
+            { scale: 1.10, opacity: 0.2, zOffset: 0.07 },
+            { scale: 1.12, opacity: 0.15, zOffset: 0.08 },
+            { scale: 1.15, opacity: 0.1, zOffset: 0.09 },
+            { scale: 1.18, opacity: 0.05, zOffset: 0.10 },
+        ];
+        
         glowLayers.forEach((glowOutline, index) => {
-            // Create new edges geometry from updated piece geometry
-            const newEdgesGeometry = new THREE.EdgesGeometry(geometry, 1);
-            
-            // Update geometry
-            glowOutline.geometry.dispose();
-            glowOutline.geometry = newEdgesGeometry;
-            
-            // Update position
-            glowOutline.position.copy(position);
-            glowOutline.position.z += 0.01 + (index * 0.001);
+            if (index < glowConfigs.length) {
+                const config = glowConfigs[index];
+                
+                // Create new boundary geometry with proper scaling
+                const newBoundaryGeometry = this.createBoundaryGeometryForGeometry(geometry, config.scale);
+                
+                // Update geometry
+                glowOutline.geometry.dispose();
+                glowOutline.geometry = newBoundaryGeometry;
+                
+                // Update position
+                glowOutline.position.copy(position);
+                glowOutline.position.z += config.zOffset;
+            }
         });
     }
     
@@ -694,18 +941,19 @@ class WebGLVoronoiRenderer {
                 shape.lineTo(animatedPolygon[i][0], animatedPolygon[i][1]);
             }
             
-            const hoverGeometry = new THREE.ShapeGeometry(shape);
+            // Create proper boundary geometry for hover outline
+            const hoverGeometry = this.createBoundaryGeometryForPolygon(animatedPolygon);
             
-            // Create hover material with visible highlight
-            const hoverMaterial = new THREE.MeshBasicMaterial({
-                color: this.getThemeColor('pieceHover'),
+            // Create hover outline material
+            const hoverMaterial = new THREE.LineBasicMaterial({
+                color: this.getThemeColor('outlineHover'),
                 transparent: true,
-                opacity: 0.25, // More visible for testing
-                side: THREE.DoubleSide
+                opacity: 0.8,
+                linewidth: 3
             });
             
-            // Create hover overlay mesh
-            this.hoverOverlay = new THREE.Mesh(hoverGeometry, hoverMaterial);
+            // Create hover outline mesh
+            this.hoverOverlay = new THREE.LineSegments(hoverGeometry, hoverMaterial);
             this.hoverOverlay.position.z = 0.05; // Slightly above the connected mesh
             this.scene.add(this.hoverOverlay);
         } else {
@@ -715,8 +963,7 @@ class WebGLVoronoiRenderer {
     }
     
     // Update hover effect for empty slots
-    updateSlotHover(index, isHovered) {
-        console.log(`🎰 Slot ${index} hover: ${isHovered}`);
+    updateSlotHover(index, isHovered, isDragHover = false) {
         
         // Remove existing slot hover overlay
         if (this.slotHoverOverlay) {
@@ -726,11 +973,11 @@ class WebGLVoronoiRenderer {
             this.slotHoverOverlay = null;
         }
         
-        if (isHovered && this.voronoiPolygons[index] && this.slotStates[index] === 'empty') {
+        if (isHovered && this.voronoiPolygons[index]) {
             // Track which slot is hovered
             this.hoveredSlotIndex = index;
             
-            // Create slot hover overlay for the specific empty slot
+            // Create slot hover overlay for the specific slot
             const polygon = this.voronoiPolygons[index];
             
             // Create animated polygon for current time
@@ -743,18 +990,32 @@ class WebGLVoronoiRenderer {
                 shape.lineTo(animatedPolygon[i][0], animatedPolygon[i][1]);
             }
             
-            const slotHoverGeometry = new THREE.ShapeGeometry(shape);
+            if (isDragHover) {
+                // During drag hover - show filled background
+                const slotHoverGeometry = new THREE.ShapeGeometry(shape);
+                
+                const slotHoverMaterial = new THREE.MeshBasicMaterial({
+                    color: this.getThemeColor('slotHover'), // Theme slot hover color
+                    transparent: true,
+                    opacity: 0.3, // Subtle background fill
+                    side: THREE.DoubleSide
+                });
+                
+                this.slotHoverOverlay = new THREE.Mesh(slotHoverGeometry, slotHoverMaterial);
+            } else {
+                // During normal hover - show only clean outline using EdgesGeometry
+                const slotHoverGeometry = new THREE.EdgesGeometry(new THREE.ShapeGeometry(shape), 1);
+                
+                const slotHoverMaterial = new THREE.LineBasicMaterial({
+                    color: this.getThemeColor('slotOutline'), // Theme slot outline color
+                    transparent: true,
+                    opacity: 0.6, // More visible for outline
+                    linewidth: 2
+                });
+                
+                this.slotHoverOverlay = new THREE.LineSegments(slotHoverGeometry, slotHoverMaterial);
+            }
             
-            // Create slot hover material with theme color
-            const slotHoverMaterial = new THREE.MeshBasicMaterial({
-                color: this.getThemeColor('slotHover'), // Theme slot hover color
-                transparent: true,
-                opacity: 0.2, // Subtle but visible
-                side: THREE.DoubleSide
-            });
-            
-            // Create slot hover overlay mesh
-            this.slotHoverOverlay = new THREE.Mesh(slotHoverGeometry, slotHoverMaterial);
             this.slotHoverOverlay.position.z = 0.03; // Just above the connected mesh
             this.scene.add(this.slotHoverOverlay);
         } else {
@@ -770,14 +1031,8 @@ class WebGLVoronoiRenderer {
         const polygon = this.voronoiPolygons[index];
         const animatedPolygon = this.createAnimatedPath(polygon, time);
         
-        // Create new shape geometry
-        const shape = new THREE.Shape();
-        shape.moveTo(animatedPolygon[0][0], animatedPolygon[0][1]);
-        for (let i = 1; i < animatedPolygon.length; i++) {
-            shape.lineTo(animatedPolygon[i][0], animatedPolygon[i][1]);
-        }
-        
-        const newGeometry = new THREE.ShapeGeometry(shape);
+        // Create new boundary geometry
+        const newGeometry = this.createBoundaryGeometryForPolygon(animatedPolygon);
         
         // Replace geometry
         this.hoverOverlay.geometry.dispose();
@@ -798,7 +1053,17 @@ class WebGLVoronoiRenderer {
             shape.lineTo(animatedPolygon[i][0], animatedPolygon[i][1]);
         }
         
-        const newGeometry = new THREE.ShapeGeometry(shape);
+        // Determine if this is a drag hover (filled) or normal hover (outline)
+        const isDragHover = this.slotHoverOverlay.material instanceof THREE.MeshBasicMaterial;
+        
+        let newGeometry;
+        if (isDragHover) {
+            // For drag hover - use filled geometry
+            newGeometry = new THREE.ShapeGeometry(shape);
+        } else {
+            // For normal hover - use outline geometry
+            newGeometry = new THREE.EdgesGeometry(new THREE.ShapeGeometry(shape), 1);
+        }
         
         // Replace geometry
         this.slotHoverOverlay.geometry.dispose();
@@ -887,8 +1152,8 @@ class WebGLVoronoiRenderer {
         geometry.computeBoundingBox();
         mesh.updateMatrixWorld(true);
         
-        // Create outline for separate piece
-        const wireframeGeometry = new THREE.WireframeGeometry(geometry);
+        // Create outline for separate piece using clean boundary geometry
+        const boundaryGeometry = this.createBoundaryGeometryForPolygon(polygon);
         const outlineMaterial = new THREE.LineBasicMaterial({
             color: this.getThemeColor('outlineDragging'), // Theme outline for dragged pieces
             transparent: true,
@@ -896,15 +1161,15 @@ class WebGLVoronoiRenderer {
             linewidth: 2
         });
         
-        const outline = new THREE.LineSegments(wireframeGeometry, outlineMaterial);
+        const outline = new THREE.LineSegments(boundaryGeometry, outlineMaterial);
         outline.position.copy(mesh.position);
         outline.position.z += 0.1; // Slightly above the piece
-        outline.visible = this.showGridOutlines; // Control visibility
+        outline.visible = false; // Start hidden, only show on hover
         
         // Store and add to scene
         // Create neon glow outline - make it visible if this piece is currently being dragged
         const isDragging = this.isDragging && this.draggedPieceIndex === index;
-        const neonGlow = this.createNeonGlowOutline(geometry, mesh.position, isDragging);
+        const neonGlow = this.createNeonGlowOutlineForPolygon(polygon, mesh.position, isDragging);
         
         this.separatePieces[index] = mesh;
         this.separateOutlines[index] = outline;
@@ -999,8 +1264,11 @@ class WebGLVoronoiRenderer {
     }
     
     // Create animated path using noise (similar to 2D version)
-    createAnimatedPath(originalPolygon, time, amplitude = 20) {
+    createAnimatedPath(originalPolygon, time, amplitude = null) {
         const animatedPath = [];
+        
+        // Use config amplitude if not provided, fallback to default
+        const noiseAmplitude = amplitude !== null ? amplitude : this.config.noiseAmplitude;
         
         for (let i = 0; i < originalPolygon.length; i++) {
             const [x, y] = originalPolygon[i];
@@ -1008,8 +1276,8 @@ class WebGLVoronoiRenderer {
             // Calculate noise-based offset (enhanced for better visibility)
             const timeScale = 0.002; // Slower animation for better visibility
             const spatialScale = 0.015; // More variation across space
-            const noiseX = Math.sin(time * timeScale + x * spatialScale + y * spatialScale * 0.7) * amplitude * 0.8;
-            const noiseY = Math.cos(time * timeScale * 1.3 + x * spatialScale * 0.8 + y * spatialScale) * amplitude * 0.8;
+            const noiseX = Math.sin(time * timeScale + x * spatialScale + y * spatialScale * 0.7) * noiseAmplitude * 0.8;
+            const noiseY = Math.cos(time * timeScale * 1.3 + x * spatialScale * 0.8 + y * spatialScale) * noiseAmplitude * 0.8;
             
             const animatedX = x + noiseX;
             const animatedY = y + noiseY;
@@ -1110,7 +1378,11 @@ class WebGLVoronoiRenderer {
         // Update neon glow outline to follow animated boundaries
         const neonGlow = this.separateGlowOutlines[index];
         if (neonGlow) {
-            this.updateNeonGlowOutline(neonGlow, newGeometry, piece.position);
+            const originalPolygon = this.voronoiPolygons[index];
+            if (originalPolygon) {
+                const animatedPolygon = this.createAnimatedPath(originalPolygon, time);
+                this.updateNeonGlowOutlineForPolygon(neonGlow, animatedPolygon, piece.position);
+            }
         }
     }
     
@@ -1307,7 +1579,7 @@ class WebGLVoronoiRenderer {
     }
     
     // Helper method to find piece at screen coordinates
-    findPieceAtPosition(x, y) {
+    findPieceAtPosition(x, y, skipDraggedPiece = false) {
         // Convert canvas coordinates to normalized device coordinates
         // Canvas: Y=0 at top, Y=height at bottom
         // WebGL: Y=-1 at bottom, Y=+1 at top
@@ -1338,6 +1610,11 @@ class WebGLVoronoiRenderer {
             });
         
         for (const { piece, index } of separatePieces) {
+            // Skip the dragged piece if we're looking for slots during drag
+            if (skipDraggedPiece && index === this.draggedPieceIndex) {
+                continue;
+            }
+            
             const intersects = raycaster.intersectObject(piece);
             if (intersects.length > 0) {
                 console.log(`🎯 WebGL hit: separate piece ${index} (z-index: ${this.pieceZIndices[index]})`);
@@ -1376,6 +1653,63 @@ class WebGLVoronoiRenderer {
             }
         }
         return -1;
+    }
+    
+    // Check if the puzzle is solved (all pieces are in correct positions)
+    checkSolvedState() {
+        if (!this.pieceOffsets || this.pieceOffsets.length === 0) {
+            return false;
+        }
+        
+        let solvedPieces = 0;
+        
+        for (let i = 0; i < this.pieceOffsets.length; i++) {
+            const offset = this.pieceOffsets[i] || { x: 0, y: 0 };
+            const distance = Math.sqrt(offset.x * offset.x + offset.y * offset.y);
+            
+            if (distance < this.solveThreshold) {
+                solvedPieces++;
+            }
+        }
+        
+        // Consider solved if all pieces are within the threshold
+        const isSolved = solvedPieces === this.pieceOffsets.length;
+        
+        if (isSolved !== this.isSolved) {
+            this.isSolved = isSolved;
+            this.onSolvedStateChanged(isSolved);
+        }
+        
+        return isSolved;
+    }
+    
+    // Called when solved state changes
+    onSolvedStateChanged(isSolved) {
+        console.log(`🎉 Puzzle ${isSolved ? 'SOLVED' : 'UNSOLVED'}!`);
+        
+        // Add/remove solved class to canvas container
+        const container = this.canvas.parentElement;
+        if (container) {
+            if (isSolved) {
+                container.classList.add('puzzle-solved');
+            } else {
+                container.classList.remove('puzzle-solved');
+            }
+        }
+        
+        // Update canvas outline
+        this.updateCanvasOutline(isSolved);
+    }
+    
+    // Update canvas outline based on solved state
+    updateCanvasOutline(isSolved) {
+        if (isSolved) {
+            this.canvas.style.border = '1px solid #00ff00'; // Green outline - same width as default
+            this.canvas.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.5)'; // Green glow
+        } else {
+            this.canvas.style.border = 'none';
+            this.canvas.style.boxShadow = 'none';
+        }
     }
 }
 
