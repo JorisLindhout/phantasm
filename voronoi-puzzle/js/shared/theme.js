@@ -27,6 +27,17 @@ const COLORS = {
     fluidOrangeLight: { hex: 0xFFCC80, css: '#FFCC80', rgba: 'rgba(255, 204, 128, 1)' },
 };
 
+// Debug settings
+export const DEBUG_SETTINGS = {
+    showHitDetection: false, // Show hit detection debug logs (reduced noise)
+    showPieceStates: false,  // Show piece state debug logs (reduced noise)
+    showGlowEffects: false, // Show glow effect creation/updates
+    showAnimation: false,   // Show animation updates
+    showVisualStates: false, // Show visual state changes
+    showCreation: false,    // Show piece creation/removal logs
+    quietMode: true         // Reduce general logging noise
+};
+
 // Theme definitions
 export const THEMES = {
     // Default FluidLock theme
@@ -71,84 +82,6 @@ export const THEMES = {
             opacityHover: 0.8,
             opacityDragging: 0.9,
             opacitySnapped: 1.0
-        }
-    },
-    
-    // Neon cyberpunk theme
-    cyberpunk: {
-        name: 'Cyberpunk',
-        colors: {
-            primary: { hex: 0xFF0080, css: '#FF0080', rgba: 'rgba(255, 0, 128, 1)' },
-            secondary: { hex: 0x00FF80, css: '#00FF80', rgba: 'rgba(0, 255, 128, 1)' },
-            accent: { hex: 0x8000FF, css: '#8000FF', rgba: 'rgba(128, 0, 255, 1)' },
-            danger: { hex: 0xFF4000, css: '#FF4000', rgba: 'rgba(255, 64, 0, 1)' },
-            
-            background: COLORS.darkBg,
-            surface: COLORS.mediumBg,
-            text: COLORS.white,
-            textMuted: COLORS.gray,
-            
-            pieceNormal: { hex: 0xFF0080, css: '#FF0080', rgba: 'rgba(255, 0, 128, 1)' },
-            pieceHover: { hex: 0xFF4099, css: '#FF4099', rgba: 'rgba(255, 64, 153, 1)' },
-            pieceDragging: { hex: 0xFF0080, css: '#FF0080', rgba: 'rgba(255, 0, 128, 1)' },
-            pieceSnapped: { hex: 0x00FF80, css: '#00FF80', rgba: 'rgba(0, 255, 128, 1)' },
-            
-            slotHover: { hex: 0x8000FF, css: '#8000FF', rgba: 'rgba(128, 0, 255, 1)' },
-            
-            outlineNormal: { hex: 0xFF0080, css: '#FF0080', rgba: 'rgba(255, 0, 128, 1)' },
-            outlineHover: { hex: 0xFF4099, css: '#FF4099', rgba: 'rgba(255, 64, 153, 1)' }, // Brighter pink for hover
-            outlineDragging: { hex: 0xFF0080, css: '#FF0080', rgba: 'rgba(255, 0, 128, 1)' },
-            outlineSnapped: { hex: 0x00FF80, css: '#00FF80', rgba: 'rgba(0, 255, 128, 1)' }
-        },
-        effects: {
-            glowIntensity: 1.2,
-            animationSpeed: 0.15,
-            pulseSpeed: 0.8,
-            scaleHover: 1.05,
-            scaleDragging: 1.15,
-            opacityNormal: 1.0,
-            opacityHover: 0.9,
-            opacityDragging: 1.0,
-            opacitySnapped: 1.0
-        }
-    },
-    
-    // Soft pastel theme
-    pastel: {
-        name: 'Pastel',
-        colors: {
-            primary: { hex: 0x87CEEB, css: '#87CEEB', rgba: 'rgba(135, 206, 235, 1)' },
-            secondary: { hex: 0x98FB98, css: '#98FB98', rgba: 'rgba(152, 251, 152, 1)' },
-            accent: { hex: 0xFFB6C1, css: '#FFB6C1', rgba: 'rgba(255, 182, 193, 1)' },
-            danger: { hex: 0xFFA07A, css: '#FFA07A', rgba: 'rgba(255, 160, 122, 1)' },
-            
-            background: { hex: 0x2F2F2F, css: '#2F2F2F', rgba: 'rgba(47, 47, 47, 1)' },
-            surface: { hex: 0x3A3A3A, css: '#3A3A3A', rgba: 'rgba(58, 58, 58, 1)' },
-            text: COLORS.white,
-            textMuted: COLORS.gray,
-            
-            pieceNormal: { hex: 0x87CEEB, css: '#87CEEB', rgba: 'rgba(135, 206, 235, 1)' },
-            pieceHover: { hex: 0xB0E0E6, css: '#B0E0E6', rgba: 'rgba(176, 224, 230, 1)' },
-            pieceDragging: { hex: 0x87CEEB, css: '#87CEEB', rgba: 'rgba(135, 206, 235, 1)' },
-            pieceSnapped: { hex: 0x98FB98, css: '#98FB98', rgba: 'rgba(152, 251, 152, 1)' },
-            
-            slotHover: { hex: 0xFFB6C1, css: '#FFB6C1', rgba: 'rgba(255, 182, 193, 1)' },
-            
-            outlineNormal: { hex: 0x87CEEB, css: '#87CEEB', rgba: 'rgba(135, 206, 235, 1)' },
-            outlineHover: { hex: 0xB0E0E6, css: '#B0E0E6', rgba: 'rgba(176, 224, 230, 1)' }, // Brighter sky blue for hover
-            outlineDragging: { hex: 0x87CEEB, css: '#87CEEB', rgba: 'rgba(135, 206, 235, 1)' },
-            outlineSnapped: { hex: 0x98FB98, css: '#98FB98', rgba: 'rgba(152, 251, 152, 1)' }
-        },
-        effects: {
-            glowIntensity: 0.5,
-            animationSpeed: 0.3,
-            pulseSpeed: 1.5,
-            scaleHover: 1.01,
-            scaleDragging: 1.05,
-            opacityNormal: 0.9,
-            opacityHover: 0.7,
-            opacityDragging: 0.8,
-            opacitySnapped: 0.9
         }
     }
 };
@@ -196,5 +129,133 @@ export const ThemeUtils = {
      */
     getTheme(name) {
         return THEMES[name] || DEFAULT_THEME;
+    },
+    
+    /**
+     * Debug settings management
+     */
+    debug: {
+        /**
+         * Get current debug settings
+         */
+        getSettings() {
+            return { ...DEBUG_SETTINGS };
+        },
+        
+        /**
+         * Update debug settings
+         */
+        updateSettings(newSettings) {
+            Object.assign(DEBUG_SETTINGS, newSettings);
+            console.log('🔧 Debug settings updated:', DEBUG_SETTINGS);
+        },
+        
+        
+        /**
+         * Toggle hit detection logs
+         */
+        toggleHitDetection() {
+            DEBUG_SETTINGS.showHitDetection = !DEBUG_SETTINGS.showHitDetection;
+            console.log(`🎯 Hit detection logs ${DEBUG_SETTINGS.showHitDetection ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showHitDetection;
+        },
+        
+        /**
+         * Toggle piece state logs
+         */
+        togglePieceStates() {
+            DEBUG_SETTINGS.showPieceStates = !DEBUG_SETTINGS.showPieceStates;
+            console.log(`📊 Piece state logs ${DEBUG_SETTINGS.showPieceStates ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showPieceStates;
+        },
+        
+        /**
+         * Toggle glow effect logs
+         */
+        toggleGlowEffects() {
+            DEBUG_SETTINGS.showGlowEffects = !DEBUG_SETTINGS.showGlowEffects;
+            console.log(`✨ Glow effect logs ${DEBUG_SETTINGS.showGlowEffects ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showGlowEffects;
+        },
+        
+        /**
+         * Toggle animation logs
+         */
+        toggleAnimation() {
+            DEBUG_SETTINGS.showAnimation = !DEBUG_SETTINGS.showAnimation;
+            console.log(`🎬 Animation logs ${DEBUG_SETTINGS.showAnimation ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showAnimation;
+        },
+        
+        /**
+         * Toggle visual state logs
+         */
+        toggleVisualStates() {
+            DEBUG_SETTINGS.showVisualStates = !DEBUG_SETTINGS.showVisualStates;
+            console.log(`🎨 Visual state logs ${DEBUG_SETTINGS.showVisualStates ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showVisualStates;
+        },
+        
+        /**
+         * Toggle creation logs
+         */
+        toggleCreation() {
+            DEBUG_SETTINGS.showCreation = !DEBUG_SETTINGS.showCreation;
+            console.log(`🏗️ Creation logs ${DEBUG_SETTINGS.showCreation ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showCreation;
+        },
+        
+        /**
+         * Enable all debug logs
+         */
+        enableAllDebug() {
+            DEBUG_SETTINGS.showPieceLabels = true;
+            DEBUG_SETTINGS.showHitDetection = true;
+            DEBUG_SETTINGS.showPieceStates = true;
+            DEBUG_SETTINGS.showGlowEffects = true;
+            DEBUG_SETTINGS.showAnimation = true;
+            DEBUG_SETTINGS.showVisualStates = true;
+            DEBUG_SETTINGS.showCreation = true;
+            console.log('🔧 All debug logs ENABLED');
+        },
+        
+        /**
+         * Disable all debug logs
+         */
+        disableAllDebug() {
+            DEBUG_SETTINGS.showPieceLabels = false;
+            DEBUG_SETTINGS.showHitDetection = false;
+            DEBUG_SETTINGS.showPieceStates = false;
+            DEBUG_SETTINGS.showGlowEffects = false;
+            DEBUG_SETTINGS.showAnimation = false;
+            DEBUG_SETTINGS.showVisualStates = false;
+            DEBUG_SETTINGS.showCreation = false;
+            console.log('🔧 All debug logs DISABLED');
+        },
+        
+        /**
+         * Toggle quiet mode
+         */
+        toggleQuietMode() {
+            DEBUG_SETTINGS.quietMode = !DEBUG_SETTINGS.quietMode;
+            console.log(`🔇 Quiet mode ${DEBUG_SETTINGS.quietMode ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.quietMode;
+        },
+        
+        /**
+         * Enable quiet mode
+         */
+        enableQuietMode() {
+            DEBUG_SETTINGS.quietMode = true;
+            console.log('🔇 Quiet mode ENABLED - reduced logging');
+        },
+        
+        /**
+         * Disable quiet mode
+         */
+        disableQuietMode() {
+            DEBUG_SETTINGS.quietMode = false;
+            console.log('🔇 Quiet mode DISABLED - full logging');
+        }
     }
 };

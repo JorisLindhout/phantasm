@@ -59,18 +59,25 @@ class WebGLVoronoiRenderer {
         // Grid outline visibility toggle
         this.showGridOutlines = false; // Set to true to show the thin blue grid outlines
         
-        // Debug logging control
+        // Debug logging control - now uses theme system
         this.debugLogging = {
-            glow: false,        // Neon glow creation/updates - DISABLED
-            animation: false,   // Animation updates
-            hitDetection: false, // Hit detection
-            visual: false,      // Visual state changes - DISABLED
-            creation: false     // Basic creation/removal logs - DISABLED
+            glow: false,        // Neon glow creation/updates - controlled by theme
+            animation: false,   // Animation updates - controlled by theme
+            hitDetection: true, // Hit detection - controlled by theme
+            visual: false,      // Visual state changes - controlled by theme
+            creation: false,    // Basic creation/removal logs - controlled by theme
+            pieceStates: true   // Piece state tracking - controlled by theme
         };
         
         // Track dragging state for glow timing
         this.isDragging = false;
         this.draggedPieceIndex = -1;
+        
+        // Setup global debug functions
+        this.setupGlobalDebugFunctions();
+        
+        // Sync debug settings with theme system
+        this.syncDebugSettings();
         
         // Theme system
         this.currentTheme = null; // Will be set by theme manager
@@ -210,6 +217,7 @@ class WebGLVoronoiRenderer {
         // Initialize solved state (puzzle starts solved since all pieces are in place)
         this.isSolved = true;
         this.onSolvedStateChanged(true);
+        
         
         console.log(`✅ Initialized connected Voronoi with ${polygons.length} pieces`);
     }
@@ -475,7 +483,7 @@ class WebGLVoronoiRenderer {
             // Piece is being moved out - update states
             this.pieceStates[index] = 'unsolved';
             this.slotStates[index] = 'empty';
-            
+
             this.createSeparatePiece(index, offset);
             this.updateConnectedMeshVisibility(); // Update slot visibility
         } else {
@@ -486,6 +494,7 @@ class WebGLVoronoiRenderer {
             this.removeSeparatePiece(index);
             this.updateConnectedMeshVisibility(); // Update slot visibility
         }
+        
         
         // Check if puzzle is solved after position update
         this.checkSolvedState();
@@ -1183,12 +1192,14 @@ class WebGLVoronoiRenderer {
         }
         
         console.log(`✅ Created separate piece ${index} at offset (${offset.x}, ${offset.y})`);
+        
     }
     
     removeSeparatePiece(index) {
         const piece = this.separatePieces[index];
         const outline = this.separateOutlines[index];
         const neonGlow = this.separateGlowOutlines[index];
+        const label = this.pieceLabels ? this.pieceLabels[index] : null;
         
         if (piece) {
             this.scene.remove(piece);
@@ -1209,8 +1220,20 @@ class WebGLVoronoiRenderer {
             this.separateGlowOutlines[index] = null;
         }
         
-        if (piece || outline || neonGlow) {
-            console.log(`🗑️ Removed separate piece ${index} (including neon glow)`);
+        if (label) {
+            // Don't remove the label, just update its position to the connected piece center
+            const polygon = this.voronoiPolygons[index];
+            if (polygon && polygon.length > 0) {
+                const x = polygon.reduce((sum, p) => sum + p[0], 0) / polygon.length;
+                const y = polygon.reduce((sum, p) => sum + p[1], 0) / polygon.length;
+                label.position.set(x, y, 5);
+                label.visible = true;
+                console.log(`🏷️ Updated label for connected piece ${index} at (${x.toFixed(1)}, ${y.toFixed(1)})`);
+            }
+        }
+        
+        if (piece || outline || neonGlow || label) {
+            console.log(`🗑️ Removed separate piece ${index} (including neon glow and label)`);
         }
     }
     
@@ -1389,6 +1412,7 @@ class WebGLVoronoiRenderer {
     render() {
         // Update animation
         this.animatePieceBoundaries(Date.now());
+        
         
         // Render the scene
         this.renderer.render(this.scene, this.camera);
@@ -1598,6 +1622,10 @@ class WebGLVoronoiRenderer {
         raycaster.params.Points.threshold = 10;
         raycaster.params.Line.threshold = 5;
         
+        // Ensure raycaster has reasonable near/far planes for hit detection
+        raycaster.near = 0.1;
+        raycaster.far = 1000;
+        
         // First check separate pieces (they have higher priority)
         // Sort by z-index (highest first) for proper hit detection
         const separatePieces = this.separatePieces
@@ -1609,15 +1637,91 @@ class WebGLVoronoiRenderer {
                 return bZ - aZ; // Highest z-index first
             });
         
+        // Try raycaster first for all separate pieces
         for (const { piece, index } of separatePieces) {
             // Skip the dragged piece if we're looking for slots during drag
             if (skipDraggedPiece && index === this.draggedPieceIndex) {
                 continue;
             }
             
-            const intersects = raycaster.intersectObject(piece);
-            if (intersects.length > 0) {
-                console.log(`🎯 WebGL hit: separate piece ${index} (z-index: ${this.pieceZIndices[index]})`);
+            // Ensure piece is valid and has proper geometry
+            if (!piece || !piece.geometry) {
+                continue;
+            }
+            
+            // Ensure piece visibility and fix any issues
+            this.ensurePieceVisibility(index);
+            
+            try {
+                const intersects = raycaster.intersectObject(piece);
+                if (intersects.length > 0) {
+                    console.log(`🎯 WebGL hit: separate piece ${index} (z-index: ${this.pieceZIndices[index]})`);
+                    return index;
+                }
+            } catch (error) {
+                console.warn(`⚠️ Raycaster error for piece ${index}:`, error);
+            }
+        }
+        
+        // If raycaster failed for all pieces, try expanded hit detection
+        console.log(`🔍 Raycaster failed, trying expanded hit detection...`);
+        for (const { piece, index } of separatePieces) {
+            // Skip the dragged piece if we're looking for slots during drag
+            if (skipDraggedPiece && index === this.draggedPieceIndex) {
+                continue;
+            }
+            
+            // Ensure piece is valid and has proper geometry
+            if (!piece || !piece.geometry) {
+                continue;
+            }
+            
+            // Ensure piece visibility and fix any issues
+            this.ensurePieceVisibility(index);
+            
+            // Try expanded hit detection with multiple offset positions
+            const offsets = [
+                { x: 0, y: 0 },      // Original position
+                { x: -20, y: 0 },    // Left
+                { x: 20, y: 0 },     // Right
+                { x: 0, y: -20 },    // Up
+                { x: 0, y: 20 },     // Down
+                { x: -10, y: -10 },  // Top-left
+                { x: 10, y: -10 },   // Top-right
+                { x: -10, y: 10 },   // Bottom-left
+                { x: 10, y: 10 }     // Bottom-right
+            ];
+            
+            for (const offset of offsets) {
+                const testX = x + offset.x;
+                const testY = y + offset.y;
+                
+                // Convert test coordinates to NDC
+                const testMouse = new THREE.Vector2(
+                    (testX / this.canvas.width) * 2 - 1,
+                    -((testY / this.canvas.height) * 2 - 1)
+                );
+                
+                // Create new raycaster for this test position
+                const testRaycaster = new THREE.Raycaster();
+                testRaycaster.setFromCamera(testMouse, this.camera);
+                testRaycaster.near = 0.1;
+                testRaycaster.far = 1000;
+                
+                try {
+                    const intersects = testRaycaster.intersectObject(piece);
+                    if (intersects.length > 0) {
+                        console.log(`🎯 Expanded hit detection found piece ${index} at offset (${offset.x}, ${offset.y})`);
+                        return index;
+                    }
+                } catch (error) {
+                    // Continue to next offset
+                }
+            }
+            
+            // Final fallback: try both bounds and polygon checks
+            if (this.isPointInPieceBounds(x, y, index) || this.isPointInPiecePolygon(x, y, index)) {
+                console.log(`🎯 Fallback hit: piece ${index} (bounds/polygon check)`);
                 return index;
             }
         }
@@ -1642,6 +1746,20 @@ class WebGLVoronoiRenderer {
             }
         }
         
+        // If no hit detected, check for lost pieces and try again
+        if (this.debugLogging.hitDetection) {
+            console.log(`❌ No piece hit at (${x}, ${y})`);
+            this.logPieceStates();
+        }
+        
+        // Check for and fix any lost pieces
+        const fixedCount = this.checkAndFixLostPieces();
+        if (fixedCount > 0) {
+            console.log(`🔄 Retrying hit detection after fixing ${fixedCount} lost pieces...`);
+            // Try one more time with the fixed pieces
+            return this.findPieceAtPosition(x, y, skipDraggedPiece);
+        }
+        
         return -1;
     }
     
@@ -1653,6 +1771,326 @@ class WebGLVoronoiRenderer {
             }
         }
         return -1;
+    }
+    
+    // Fallback method to check if a point is within piece bounds
+    isPointInPieceBounds(x, y, pieceIndex) {
+        const piece = this.separatePieces[pieceIndex];
+        if (!piece || !piece.geometry) {
+            return false;
+        }
+        
+        // Get piece position and bounds
+        const pieceX = piece.position.x;
+        const pieceY = piece.position.y;
+        
+        // Get geometry bounds
+        if (!piece.geometry.boundingBox) {
+            piece.geometry.computeBoundingBox();
+        }
+        
+        const bounds = piece.geometry.boundingBox;
+        const width = bounds.max.x - bounds.min.x;
+        const height = bounds.max.y - bounds.min.y;
+        
+        // Check if point is within piece bounds (with some tolerance)
+        const tolerance = 30; // Increased tolerance for better hit detection
+        const isWithinBounds = (
+            x >= pieceX - width/2 - tolerance &&
+            x <= pieceX + width/2 + tolerance &&
+            y >= pieceY - height/2 - tolerance &&
+            y <= pieceY + height/2 + tolerance
+        );
+        
+        if (isWithinBounds) {
+            console.log(`🔍 Bounds check for piece ${pieceIndex}: point (${x}, ${y}) within bounds of piece at (${pieceX.toFixed(1)}, ${pieceY.toFixed(1)})`);
+        }
+        
+        return isWithinBounds;
+    }
+    
+    // Enhanced method to check if a point is within a piece using Voronoi polygon
+    isPointInPiecePolygon(x, y, pieceIndex) {
+        const piece = this.separatePieces[pieceIndex];
+        if (!piece || !this.voronoiPolygons[pieceIndex]) {
+            return false;
+        }
+        
+        // Get piece position
+        const pieceX = piece.position.x;
+        const pieceY = piece.position.y;
+        
+        // Transform point to piece's local coordinate system
+        const localX = x - pieceX;
+        const localY = y - pieceY;
+        
+        // Check if point is within the Voronoi polygon
+        const polygon = this.voronoiPolygons[pieceIndex];
+        const isInside = VoronoiUtils.pointInPolygon(localX, localY, polygon);
+        
+        if (isInside) {
+            console.log(`🔍 Polygon check for piece ${pieceIndex}: point (${x}, ${y}) within polygon of piece at (${pieceX.toFixed(1)}, ${pieceY.toFixed(1)})`);
+        }
+        
+        return isInside;
+    }
+    
+    // Method to ensure a piece is properly positioned and visible
+    ensurePieceVisibility(pieceIndex) {
+        const piece = this.separatePieces[pieceIndex];
+        if (!piece) {
+            console.warn(`⚠️ Piece ${pieceIndex} not found in separatePieces`);
+            return false;
+        }
+        
+        // Ensure piece is visible
+        if (!piece.visible) {
+            piece.visible = true;
+            console.log(`👁️ Made piece ${pieceIndex} visible`);
+        }
+        
+        // Ensure piece has proper z-index
+        if (this.pieceZIndices[pieceIndex] === undefined || this.pieceZIndices[pieceIndex] < 0) {
+            this.pieceZIndices[pieceIndex] = 0;
+            console.log(`📐 Reset z-index for piece ${pieceIndex} to 0`);
+        }
+        
+        // Ensure piece is in the scene
+        if (!this.scene.children.includes(piece)) {
+            this.scene.add(piece);
+            console.log(`➕ Added piece ${pieceIndex} back to scene`);
+        }
+        
+        // Ensure piece has proper geometry
+        if (!piece.geometry || !piece.geometry.attributes.position) {
+            console.warn(`⚠️ Piece ${pieceIndex} has invalid geometry, recreating...`);
+            this.recreatePieceGeometry(pieceIndex);
+        }
+        
+        return true;
+    }
+    
+    // Method to recreate piece geometry if it's corrupted
+    recreatePieceGeometry(pieceIndex) {
+        const piece = this.separatePieces[pieceIndex];
+        if (!piece || !this.voronoiPolygons[pieceIndex]) {
+            return false;
+        }
+        
+        try {
+            // Create new geometry for this piece
+            const polygon = this.voronoiPolygons[pieceIndex];
+            const geometry = new THREE.BufferGeometry();
+            
+            // Triangulate the polygon
+            const vertices = [];
+            const uvs = [];
+            const indices = [];
+            
+            // Simple fan triangulation from center
+            const centerX = polygon.reduce((sum, p) => sum + p[0], 0) / polygon.length;
+            const centerY = polygon.reduce((sum, p) => sum + p[1], 0) / polygon.length;
+            
+            // Add center vertex
+            vertices.push(centerX, centerY, 0);
+            uvs.push(centerX / this.canvas.width, centerY / this.canvas.height);
+            
+            // Add polygon vertices
+            for (let i = 0; i < polygon.length; i++) {
+                vertices.push(polygon[i][0], polygon[i][1], 0);
+                uvs.push(polygon[i][0] / this.canvas.width, polygon[i][1] / this.canvas.height);
+            }
+            
+            // Create triangles
+            for (let i = 0; i < polygon.length; i++) {
+                const next = (i + 1) % polygon.length;
+                indices.push(0, i + 1, next + 1);
+            }
+            
+            // Set geometry attributes
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+            geometry.setIndex(indices);
+            
+            // Create material
+            const material = new THREE.MeshBasicMaterial({
+                map: this.backgroundTexture,
+                transparent: true,
+                opacity: 1.0,
+                side: THREE.DoubleSide
+            });
+            
+            // Update piece geometry and material
+            piece.geometry = geometry;
+            piece.material = material;
+            
+            console.log(`🔧 Recreated geometry for piece ${pieceIndex}`);
+            return true;
+        } catch (error) {
+            console.error(`❌ Failed to recreate geometry for piece ${pieceIndex}:`, error);
+            return false;
+        }
+    }
+    
+    // Debug method to log current piece states
+    logPieceStates() {
+        if (!this.debugLogging.pieceStates) return;
+
+        console.log(`🔍 Piece States Debug:`);
+        console.log(`   Total pieces: ${this.voronoiPolygons.length}`);
+        console.log(`   Separate pieces: ${this.separatePieces.filter(p => p !== null).length}`);
+        console.log(`   Z-indices: [${this.pieceZIndices.join(', ')}]`);
+        console.log(`   Piece states: [${this.pieceStates.join(', ')}]`);
+        console.log(`   Slot states: [${this.slotStates.join(', ')}]`);
+
+        // Log details for each separate piece
+        this.separatePieces.forEach((piece, index) => {
+            if (piece) {
+                console.log(`   Piece ${index}: pos(${piece.position.x.toFixed(1)}, ${piece.position.y.toFixed(1)}, ${piece.position.z.toFixed(1)}) z-index:${this.pieceZIndices[index]} visible:${piece.visible}`);
+            }
+        });
+    }
+    
+    // Method to check and fix any lost pieces
+    checkAndFixLostPieces() {
+        let fixedCount = 0;
+        
+        for (let i = 0; i < this.separatePieces.length; i++) {
+            const piece = this.separatePieces[i];
+            if (!piece) continue;
+            
+            // Check if piece is lost (not visible, not in scene, or has invalid geometry)
+            const isLost = !piece.visible || 
+                          !this.scene.children.includes(piece) || 
+                          !piece.geometry || 
+                          !piece.geometry.attributes.position;
+            
+            if (isLost) {
+                console.log(`🔧 Found lost piece ${i}, attempting to fix...`);
+                if (this.ensurePieceVisibility(i)) {
+                    fixedCount++;
+                    console.log(`✅ Fixed lost piece ${i}`);
+                } else {
+                    console.warn(`❌ Failed to fix lost piece ${i}`);
+                }
+            }
+        }
+        
+        if (fixedCount > 0) {
+            console.log(`🔧 Fixed ${fixedCount} lost pieces`);
+        }
+        
+        return fixedCount;
+    }
+    
+    
+    
+    
+    // Method to sync debug settings with theme system
+    syncDebugSettings() {
+        if (typeof window !== 'undefined' && window.ThemeManager) {
+            const settings = window.ThemeManager.debug.getSettings();
+            this.debugLogging.glow = settings.showGlowEffects;
+            this.debugLogging.animation = settings.showAnimation;
+            this.debugLogging.hitDetection = settings.showHitDetection;
+            this.debugLogging.visual = settings.showVisualStates;
+            this.debugLogging.creation = settings.showCreation;
+            this.debugLogging.pieceStates = settings.showPieceStates;
+        }
+    }
+    
+    // Global functions for easy access
+    setupGlobalDebugFunctions() {
+        if (typeof window !== 'undefined') {
+            // Store reference to this renderer instance
+            window.webglRenderer = this;
+            
+            // Global functions for easy debugging
+            window.getWebGLRenderer = () => {
+                return this;
+            };
+            window.toggleQuietMode = () => {
+                if (window.ThemeManager) {
+                    window.ThemeManager.debug.toggleQuietMode();
+                    this.syncDebugSettings();
+                }
+            };
+            window.enableQuietMode = () => {
+                if (window.ThemeManager) {
+                    window.ThemeManager.debug.enableQuietMode();
+                    this.syncDebugSettings();
+                }
+            };
+            window.disableQuietMode = () => {
+                if (window.ThemeManager) {
+                    window.ThemeManager.debug.disableQuietMode();
+                    this.syncDebugSettings();
+                }
+            };
+            
+            // Additional debug toggles
+            window.toggleHitDetection = () => {
+                if (window.ThemeManager) {
+                    window.ThemeManager.debug.toggleHitDetection();
+                    this.syncDebugSettings();
+                }
+            };
+            window.togglePieceStates = () => {
+                if (window.ThemeManager) {
+                    window.ThemeManager.debug.togglePieceStates();
+                    this.syncDebugSettings();
+                }
+            };
+            window.toggleGlowEffects = () => {
+                if (window.ThemeManager) {
+                    window.ThemeManager.debug.toggleGlowEffects();
+                    this.syncDebugSettings();
+                }
+            };
+            window.toggleAnimation = () => {
+                if (window.ThemeManager) {
+                    window.ThemeManager.debug.toggleAnimation();
+                    this.syncDebugSettings();
+                }
+            };
+            window.toggleVisualStates = () => {
+                if (window.ThemeManager) {
+                    window.ThemeManager.debug.toggleVisualStates();
+                    this.syncDebugSettings();
+                }
+            };
+            window.toggleCreation = () => {
+                if (window.ThemeManager) {
+                    window.ThemeManager.debug.toggleCreation();
+                    this.syncDebugSettings();
+                }
+            };
+            window.enableAllDebug = () => {
+                if (window.ThemeManager) {
+                    window.ThemeManager.debug.enableAllDebug();
+                    this.syncDebugSettings();
+                }
+            };
+            window.disableAllDebug = () => {
+                if (window.ThemeManager) {
+                    window.ThemeManager.debug.disableAllDebug();
+                    this.syncDebugSettings();
+                }
+            };
+            
+            console.log('🔧 Global debug functions available:');
+            console.log('  - toggleQuietMode() - Toggle quiet mode (reduce logging noise)');
+            console.log('  - enableQuietMode() - Enable quiet mode');
+            console.log('  - disableQuietMode() - Disable quiet mode');
+            console.log('  - toggleHitDetection() - Toggle hit detection logs');
+            console.log('  - togglePieceStates() - Toggle piece state logs');
+            console.log('  - toggleGlowEffects() - Toggle glow effect logs');
+            console.log('  - toggleAnimation() - Toggle animation logs');
+            console.log('  - toggleVisualStates() - Toggle visual state logs');
+            console.log('  - toggleCreation() - Toggle creation logs');
+            console.log('  - enableAllDebug() - Enable all debug logs');
+            console.log('  - disableAllDebug() - Disable all debug logs');
+        }
     }
     
     // Check if the puzzle is solved (all pieces are in correct positions)

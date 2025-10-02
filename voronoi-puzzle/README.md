@@ -25,7 +25,7 @@ A high-performance web-based puzzle prototype featuring animated Voronoi cells w
 - **Slot Hover System**: Visual feedback when hovering over placement areas
 
 ### 🎨 **Unified Theme System**
-- **Multiple Themes**: FluidLock (default), Cyberpunk, and Pastel color schemes
+- **FluidLock Theme**: Default cyan/green color scheme optimized for the puzzle
 - **Dev Tools Integration**: Console-based theme switching for development
 - **Dynamic Color Updates**: Real-time theme changes across both renderers
 - **Persistent Preferences**: Theme choices saved between sessions
@@ -104,10 +104,8 @@ voronoi-puzzle/
 
 ### 🎨 **Theme Development (Console Commands)**
 ```javascript
-// Switch between available themes
+// Switch to available theme
 themeManager.setTheme('fluidlock')   // Default cyan/green theme
-themeManager.setTheme('cyberpunk')   // Neon pink/green theme
-themeManager.setTheme('pastel')      // Soft blue/pink theme
 
 // Theme information
 themeManager.getAvailableThemes()    // List all available themes

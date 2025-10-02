@@ -281,8 +281,41 @@ class VoronoiPuzzleBase {
         // Set this piece to the front
         this.pieceZIndex[cellIndex] = maxZIndex + 1;
         
+        // Normalize z-indices if they become too large (prevent WebGL precision issues)
+        if (maxZIndex > 100) {
+            console.log(`🔄 Normalizing z-indices (max was ${maxZIndex})`);
+            this.normalizeZIndices();
+        }
+        
         // Log only the clicked piece's z-index (once per click)
         console.log(`🖱️  Piece ${cellIndex} → z:${this.pieceZIndex[cellIndex]}`);
+    }
+    
+    normalizeZIndices() {
+        // Find the current maximum z-index
+        const maxZ = Math.max(...this.pieceZIndex, 0);
+        
+        // If z-indices are getting too large, normalize them
+        if (maxZ > 100) {
+            // Create a mapping of current z-indices to new normalized values
+            const sortedIndices = this.pieceZIndex
+                .map((z, index) => ({ z, index }))
+                .sort((a, b) => b.z - a.z); // Sort by z-index descending
+            
+            // Assign new normalized z-indices (0, 1, 2, 3, ...)
+            sortedIndices.forEach((item, newZ) => {
+                this.pieceZIndex[item.index] = newZ;
+            });
+            
+            console.log(`🔄 Z-indices normalized: max was ${maxZ}, now max is ${Math.max(...this.pieceZIndex)}`);
+            
+            // Update WebGL renderer if available
+            if (this.webglRenderer && this.webglRenderer.updatePieceZIndex) {
+                for (let i = 0; i < this.pieceZIndex.length; i++) {
+                    this.webglRenderer.updatePieceZIndex(i, this.pieceZIndex[i]);
+                }
+            }
+        }
     }
 
     regeneratePuzzle() {
