@@ -1,0 +1,39 @@
+/* WebGL 3D Specific Styles for Voronoi Puzzle */
+/* Contains styles specific to WebGL/3D rendering */
+
+/* WebGL canvas overlay positioning */
+canvas.webgl-canvas {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: auto !important;
+    z-index: 10;
+    cursor: grab;
+}
+
+canvas.webgl-canvas:active {
+    cursor: grabbing;
+}
+
+/* WebGL container specific styles */
+.puzzle-container.webgl-mode {
+    /* Any specific styling for WebGL mode */
+}
+
+/* Hide Canvas 2D when WebGL is active */
+.puzzle-container.webgl-mode canvas.canvas-2d {
+    display: none !important;
+}
+
+/* Ensure Canvas 2D is visible when in Canvas 2D mode */
+.puzzle-container.canvas-2d-mode canvas.canvas-2d {
+    display: block !important;
+}
+
+/* WebGL loading state */
+.puzzle-container.webgl-mode .loading {
+    /* WebGL specific loading styles if needed */
+    z-index: 15; /* Above WebGL canvas */
+}

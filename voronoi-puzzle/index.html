@@ -14,38 +14,57 @@
             <div class="controls">
                 <div class="control-group">
                     <label for="cellCount">Cell Count:</label>
-                    <input type="range" id="cellCount" min="5" max="50" value="20" onchange="updateCellCount()">
-                    <span id="cellCountValue">20</span>
+                    <input type="range" id="cellCount" min="5" max="50" value="40">
+                    <span id="cellCountValue">40</span>
                 </div>
                 <div class="control-group">
                     <label for="animationSpeed">Animation Speed:</label>
-                    <input type="range" id="animationSpeed" min="0.1" max="2.0" step="0.1" value="1.0" onchange="updateAnimationSpeed()">
+                    <input type="range" id="animationSpeed" min="0.1" max="2.0" step="0.1" value="1.0">
                     <span id="animationSpeedValue">1.0</span>
                 </div>
                 <div class="control-group">
                     <label for="noiseAmplitude">Noise Amplitude:</label>
-                    <input type="range" id="noiseAmplitude" min="0" max="50" value="10" onchange="updateNoiseAmplitude()">
+                    <input type="range" id="noiseAmplitude" min="0" max="50" value="10">
                     <span id="noiseAmplitudeValue">10</span>
                 </div>
-                <div class="control-group">
-                    <button onclick="regeneratePuzzle()">Regenerate Puzzle</button>
-                    <button onclick="toggleAnimation()">Toggle Animation</button>
-                </div>
+        <div class="control-group">
+            <button onclick="regeneratePuzzle()">Regenerate Puzzle</button>
+            <button onclick="toggleAnimation()">Toggle Animation</button>
+            <button onclick="toggleRenderer()">Toggle WebGL/Canvas2D</button>
+            <button onclick="forceCanvas2D()">Force Canvas 2D</button>
+            <button onclick="toggleGridOutlines()">Toggle Grid Outlines</button>
+        </div>
             </div>
         </div>
         <div class="info">
             <p>Animated Voronoi cells with Perlin noise boundaries</p>
+            <p id="rendererStatus">Renderer: Loading...</p>
         </div>
     </div>
 
-    <!-- Use npm d3-delaunay package -->
+    <!-- External libraries -->
     <script src="node_modules/d3-delaunay/dist/d3-delaunay.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Shared modules -->
     <script src="noise.js"></script>
+    <script src="js/shared/voronoi-utils.js"></script>
+    <script src="js/shared/voronoi-base.js"></script>
+    
+    <!-- Theme System (ES Modules) -->
+    <script type="module" src="js/shared/theme.js"></script>
+    <script type="module" src="js/shared/theme-manager.js"></script>
+    
+    <!-- Renderer-specific modules -->
+    <script src="js/2d/canvas-renderer.js"></script>
+    <script src="js/3d/webgl-renderer.js?v=25"></script>
+    
+    <!-- Hybrid renderer and main class -->
+    <script src="js/voronoi-puzzle-hybrid.js"></script>
     <script src="voronoi-puzzle.js"></script>
     <script>
         // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             console.log('Initializing Voronoi Puzzle...');
             console.log('Delaunay available:', typeof Delaunay !== 'undefined');
             console.log('d3 available:', typeof d3 !== 'undefined');
@@ -53,8 +72,62 @@
                 console.log('d3.Delaunay available:', typeof d3.Delaunay !== 'undefined');
             }
             
-            window.voronoiPuzzle = new VoronoiPuzzle();
+            // Small delay to ensure layout is complete
+            setTimeout(async () => {
+                window.voronoiPuzzle = new VoronoiPuzzle();
+                
+                // Initialize theme system
+                setTimeout(async () => {
+                    try {
+                        // Import theme manager
+                        const { themeManager } = await import('./js/shared/theme-manager.js');
+                        
+                        // Initialize with WebGL renderer reference
+                        themeManager.init(window.voronoiPuzzle?.webglRenderer);
+                        
+                        // Load saved theme preference (no UI selector)
+                        themeManager.loadThemePreference();
+                        
+                        // Make theme manager globally available for dev tools
+                        window.themeManager = themeManager;
+                        
+                        console.log('🎨 Theme system initialized (dev mode)');
+                        console.log('💡 Dev tools available:');
+                        console.log('   themeManager.setTheme("fluidlock" | "cyberpunk" | "pastel")');
+                        console.log('   themeManager.getAvailableThemes()');
+                        console.log('   themeManager.getCurrentTheme()');
+                    } catch (error) {
+                        console.warn('Theme system initialization failed:', error);
+                    }
+                }, 200);
+            }, 100);
         });
+        
+        // Global functions for controls
+        function regeneratePuzzle() {
+            window.voronoiPuzzle?.regeneratePuzzle();
+        }
+        
+        function toggleAnimation() {
+            window.voronoiPuzzle?.toggleAnimation();
+        }
+        
+        function toggleRenderer() {
+            window.voronoiPuzzle?.toggleRenderer();
+        }
+        
+        function forceCanvas2D() {
+            window.voronoiPuzzle?.forceCanvas2DMode();
+        }
+        
+        function toggleGridOutlines() {
+            if (window.voronoiPuzzle && window.voronoiPuzzle.webglRenderer) {
+                const isOn = window.voronoiPuzzle.webglRenderer.toggleGridOutlines();
+                console.log(`🔗 Grid outlines toggled: ${isOn ? 'ON' : 'OFF'}`);
+            } else {
+                console.log('❌ Grid outline toggle only available in WebGL mode');
+            }
+        }
     </script>
 </body>
 </html>

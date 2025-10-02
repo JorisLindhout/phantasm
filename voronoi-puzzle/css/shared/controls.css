@@ -1,0 +1,94 @@
+/* Shared Control Styles for Voronoi Puzzle */
+/* Contains control styling used by both 2D and 3D renderers */
+
+/* Controls */
+.controls {
+    background: rgba(17, 17, 17, 0.8);
+    border: 1px solid var(--cell-border);
+    border-radius: var(--border-radius);
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 20;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-group label {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    min-width: 120px;
+}
+
+.control-group input[type="range"] {
+    width: 120px;
+    background: var(--canvas-background);
+    border: 1px solid var(--cell-border);
+    border-radius: var(--border-radius-small);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--background-color);
+}
+
+.control-group input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--background-color);
+}
+
+.control-group span {
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    min-width: 30px;
+    text-align: center;
+}
+
+.control-group button {
+    background: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all var(--transition-speed) ease;
+}
+
+.control-group button:hover {
+    background: #00B8E6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 221, 255, 0.3);
+}
+
+.control-group button:active {
+    transform: translateY(0);
+}
+
+/* Theme Selector removed - dev tools only via console */
