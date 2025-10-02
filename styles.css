@@ -219,6 +219,75 @@ canvas {
             border: 1px solid rgba(0, 221, 255, 0.5);
         }
 
+        /* Workspace Canvas Grid Styles */
+        .workspace-grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .workspace-grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .workspace-grid-line {
+            position: absolute;
+            background: rgba(0, 221, 255, 0.3);
+        }
+
+        .workspace-grid-line.vertical {
+            width: 1px;
+            height: 100%;
+        }
+
+        .workspace-grid-line.horizontal {
+            width: 100%;
+            height: 1px;
+        }
+
+        .workspace-grid-labels {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .workspace-grid-label {
+            position: absolute;
+            color: var(--primary-color);
+            font-size: 12px;
+            font-weight: bold;
+            background: rgba(17, 17, 17, 0.8);
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid rgba(0, 221, 255, 0.3);
+        }
+
+        /* Curved line styles */
+        .template-curved-line,
+        .workspace-curved-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .curved-horizontal-line {
+            transition: stroke-opacity 0.3s ease;
+        }
+
 /* Workspace Canvas Container */
 .pieces-container {
     position: relative;

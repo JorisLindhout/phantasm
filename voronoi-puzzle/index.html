@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voronoi Puzzle Prototype</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Voronoi Puzzle Prototype</h1>
+        <div class="puzzle-container">
+            <canvas id="voronoiCanvas"></canvas>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="cellCount">Cell Count:</label>
+                    <input type="range" id="cellCount" min="5" max="50" value="20" onchange="updateCellCount()">
+                    <span id="cellCountValue">20</span>
+                </div>
+                <div class="control-group">
+                    <label for="animationSpeed">Animation Speed:</label>
+                    <input type="range" id="animationSpeed" min="0.1" max="2.0" step="0.1" value="1.0" onchange="updateAnimationSpeed()">
+                    <span id="animationSpeedValue">1.0</span>
+                </div>
+                <div class="control-group">
+                    <label for="noiseAmplitude">Noise Amplitude:</label>
+                    <input type="range" id="noiseAmplitude" min="0" max="50" value="10" onchange="updateNoiseAmplitude()">
+                    <span id="noiseAmplitudeValue">10</span>
+                </div>
+                <div class="control-group">
+                    <button onclick="regeneratePuzzle()">Regenerate Puzzle</button>
+                    <button onclick="toggleAnimation()">Toggle Animation</button>
+                </div>
+            </div>
+        </div>
+        <div class="info">
+            <p>Animated Voronoi cells with Perlin noise boundaries</p>
+        </div>
+    </div>
+
+    <!-- Use npm d3-delaunay package -->
+    <script src="node_modules/d3-delaunay/dist/d3-delaunay.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="noise.js"></script>
+    <script src="voronoi-puzzle.js"></script>
+    <script>
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Initializing Voronoi Puzzle...');
+            console.log('Delaunay available:', typeof Delaunay !== 'undefined');
+            console.log('d3 available:', typeof d3 !== 'undefined');
+            if (typeof d3 !== 'undefined') {
+                console.log('d3.Delaunay available:', typeof d3.Delaunay !== 'undefined');
+            }
+            
+            window.voronoiPuzzle = new VoronoiPuzzle();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "voronoi-puzzle",
+  "version": "1.0.0",
+  "description": "A web-based puzzle prototype featuring animated Voronoi cells with Perlin noise boundaries.",
+  "main": "voronoi-puzzle.js",
+  "scripts": {
+    "dev": "python3 -m http.server 8080",
+    "start": "python3 -m http.server 8080"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "d3-delaunay": "^5.3.0"
+  }
+}

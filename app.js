@@ -59,6 +59,7 @@
         this.drawImage();
         this.setupTemplateCanvas();
         this.createGrid();
+        this.createWorkspaceGrid();
         this.createPieces();
         
         // Update canvas on window resize
@@ -67,6 +68,7 @@
             this.drawImage();
             this.setupTemplateCanvas();
             this.createGrid();
+            this.createWorkspaceGrid();
             this.updatePieces();
         });
     }
@@ -175,10 +177,17 @@
         
         // Create horizontal lines (internal only, no border lines)
         for (let i = 1; i < gridSize; i++) {
-            const line = document.createElement('div');
-            line.className = 'template-grid-line horizontal';
-            line.style.top = `${(i / gridSize) * 100}%`;
-            gridLines.appendChild(line);
+            if (i === 1) {
+                // Create curved first horizontal line using SVG
+                const svgLine = this.createCurvedHorizontalLine(gridSize, displayWidth, displayHeight);
+                gridLines.appendChild(svgLine);
+            } else {
+                // Regular horizontal lines for the rest
+                const line = document.createElement('div');
+                line.className = 'template-grid-line horizontal';
+                line.style.top = `${(i / gridSize) * 100}%`;
+                gridLines.appendChild(line);
+            }
         }
         
         // Create grid labels (A1, A2, B1, B2, etc.)
@@ -201,6 +210,148 @@
                 gridLabels.appendChild(label);
             }
         }
+    }
+
+    createCurvedHorizontalLine(gridSize, displayWidth, displayHeight) {
+        // Create SVG element for curved line
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'template-curved-line');
+        svg.style.position = 'absolute';
+        svg.style.top = '0';
+        svg.style.left = '0';
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+        svg.style.pointerEvents = 'none';
+        
+        // Calculate the Y position for the first horizontal line (25% for 4x4 grid)
+        const yPosition = (1 / gridSize) * 100;
+        
+        // Create curved path
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('class', 'curved-horizontal-line');
+        
+        // Define the curve parameters
+        const startX = 0;
+        const endX = 100;
+        const controlPoint1X = 25; // First control point at 25% of width
+        const controlPoint2X = 75; // Second control point at 75% of width
+        const curveAmplitude = 3; // How much the curve deviates (in percentage)
+        
+        // Create a smooth curve that starts and ends at the same Y position
+        // but has a gentle wave in the middle
+        const pathData = `M ${startX} ${yPosition} C ${controlPoint1X} ${yPosition - curveAmplitude} ${controlPoint2X} ${yPosition + curveAmplitude} ${endX} ${yPosition}`;
+        
+        path.setAttribute('d', pathData);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', 'rgba(0, 221, 255, 0.4)');
+        path.setAttribute('stroke-width', '2');
+        path.setAttribute('stroke-linecap', 'round');
+        
+        svg.appendChild(path);
+        return svg;
+    }
+
+    createWorkspaceGrid() {
+        const gridLines = document.getElementById('workspaceGridLines');
+        const gridLabels = document.getElementById('workspaceGridLabels');
+        
+        // Clear existing grid
+        if (gridLines) gridLines.innerHTML = '';
+        if (gridLabels) gridLabels.innerHTML = '';
+        
+        // Get workspace container dimensions
+        const piecesContainer = document.getElementById('piecesContainer');
+        if (!piecesContainer) return;
+        
+        const containerRect = piecesContainer.getBoundingClientRect();
+        const displayWidth = containerRect.width;
+        const displayHeight = containerRect.height;
+        
+        // Create grid with same size as template
+        const gridSize = CONFIG.GRID.SIZE;
+        
+        // Create vertical lines (internal only, no border lines)
+        for (let i = 1; i < gridSize; i++) {
+            const line = document.createElement('div');
+            line.className = 'workspace-grid-line vertical';
+            line.style.left = `${(i / gridSize) * 100}%`;
+            if (gridLines) gridLines.appendChild(line);
+        }
+        
+        // Create horizontal lines (internal only, no border lines)
+        for (let i = 1; i < gridSize; i++) {
+            if (i === 1) {
+                // Create curved first horizontal line using SVG
+                const svgLine = this.createCurvedWorkspaceHorizontalLine(gridSize, displayWidth, displayHeight);
+                if (gridLines) gridLines.appendChild(svgLine);
+            } else {
+                // Regular horizontal lines for the rest
+                const line = document.createElement('div');
+                line.className = 'workspace-grid-line horizontal';
+                line.style.top = `${(i / gridSize) * 100}%`;
+                if (gridLines) gridLines.appendChild(line);
+            }
+        }
+        
+        // Create grid labels (A1, A2, B1, B2, etc.)
+        for (let row = 0; row < gridSize; row++) {
+            for (let col = 0; col < gridSize; col++) {
+                const label = document.createElement('div');
+                label.className = 'workspace-grid-label';
+                label.textContent = `${String.fromCharCode(65 + row)}${col + 1}`;
+                
+                // Position in the center of each grid cell
+                const cellWidth = 100 / gridSize;
+                const cellHeight = 100 / gridSize;
+                const left = (col * cellWidth) + (cellWidth / 2);
+                const top = (row * cellHeight) + (cellHeight / 2);
+                
+                label.style.left = `${left}%`;
+                label.style.top = `${top}%`;
+                label.style.transform = 'translate(-50%, -50%)';
+                
+                if (gridLabels) gridLabels.appendChild(label);
+            }
+        }
+    }
+
+    createCurvedWorkspaceHorizontalLine(gridSize, displayWidth, displayHeight) {
+        // Create SVG element for curved line
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'workspace-curved-line');
+        svg.style.position = 'absolute';
+        svg.style.top = '0';
+        svg.style.left = '0';
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+        svg.style.pointerEvents = 'none';
+        
+        // Calculate the Y position for the first horizontal line (25% for 4x4 grid)
+        const yPosition = (1 / gridSize) * 100;
+        
+        // Create curved path
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('class', 'curved-horizontal-line');
+        
+        // Define the curve parameters
+        const startX = 0;
+        const endX = 100;
+        const controlPoint1X = 25; // First control point at 25% of width
+        const controlPoint2X = 75; // Second control point at 75% of width
+        const curveAmplitude = 3; // How much the curve deviates (in percentage)
+        
+        // Create a smooth curve that starts and ends at the same Y position
+        // but has a gentle wave in the middle
+        const pathData = `M ${startX} ${yPosition} C ${controlPoint1X} ${yPosition - curveAmplitude} ${controlPoint2X} ${yPosition + curveAmplitude} ${endX} ${yPosition}`;
+        
+        path.setAttribute('d', pathData);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', 'rgba(0, 221, 255, 0.3)');
+        path.setAttribute('stroke-width', '1');
+        path.setAttribute('stroke-linecap', 'round');
+        
+        svg.appendChild(path);
+        return svg;
     }
 
     createPieces() {
@@ -621,6 +772,7 @@ function changeGridSize() {
     // Recreate the grid and pieces
     if (canvasInstance) {
         canvasInstance.createGrid();
+        canvasInstance.createWorkspaceGrid();
         canvasInstance.createPieces();
         console.log(`Grid updated to ${newSize}x${newSize} - ${newSize * newSize} pieces`);
     }
