@@ -30,7 +30,6 @@
         <div class="control-group">
             <button onclick="regeneratePuzzle()">Regenerate Puzzle</button>
             <button onclick="toggleAnimation()">Toggle Animation</button>
-            <button onclick="toggleRenderer()">Toggle WebGL Mode</button>
             <button onclick="toggleGridOutlines()">Toggle Grid Outlines</button>
         </div>
             </div>
@@ -114,9 +113,6 @@
             window.voronoiPuzzle?.toggleAnimation();
         }
         
-        function toggleRenderer() {
-            window.voronoiPuzzle?.toggleRenderer();
-        }
         
         
         function toggleGridOutlines() {

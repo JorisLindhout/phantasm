@@ -73,15 +73,6 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
 
 
     // Control functions
-    async toggleRenderer() {
-        if (this.webglRenderer && this.webglRenderer.debugLogging && this.webglRenderer.debugLogging.rendererSwitching) {
-            console.log('🔄 Toggling renderer...');
-        }
-        
-        // Note: Only WebGL renderer is supported now
-        console.log('ℹ️ Only WebGL renderer is supported');
-        this.updateRendererStatus('WebGL (only supported renderer)');
-    }
 
 
     // Getter for WebGL renderer access
@@ -592,6 +583,10 @@ class WebGLRenderer extends VoronoiPuzzleBase {
 
     handleMouseLeave(e) {
         // Reset hover state when mouse leaves canvas
+        // Reset piece hover visual state
+        if (this.hoveredPiece !== -1 && this.webglRenderer) {
+            this.webglRenderer.updatePieceVisualState(this.hoveredPiece, 'normal');
+        }
         this.hoveredPiece = -1;
         
         // Reset slot hover state
@@ -1093,6 +1088,10 @@ class WebGLRenderer extends VoronoiPuzzleBase {
 
     handleMouseLeave(e) {
         // Reset hover state when mouse leaves canvas
+        // Reset piece hover visual state
+        if (this.hoveredPiece !== -1 && this.webglRenderer) {
+            this.webglRenderer.updatePieceVisualState(this.hoveredPiece, 'normal');
+        }
         this.hoveredPiece = -1;
         
         // Reset slot hover state
