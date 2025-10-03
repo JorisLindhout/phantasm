@@ -47,19 +47,21 @@
     
     <!-- Shared modules -->
     <script src="noise.js"></script>
-    <script src="js/shared/voronoi-utils.js"></script>
-    <script src="js/shared/voronoi-base.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/base.js"></script>
     
     <!-- Theme System (ES Modules) -->
-    <script type="module" src="js/shared/theme.js"></script>
-    <script type="module" src="js/shared/theme-manager.js"></script>
+    <script type="module" src="js/theme.js"></script>
+    <script type="module" src="js/theme-manager.js"></script>
     
     <!-- WebGL 3D renderer -->
-    <script src="js/3d/webgl-renderer.js?v=25"></script>
+    <script src="js/webgl-renderer.js?v=25"></script>
     
-    <!-- Hybrid renderer and main class -->
-    <script src="js/voronoi-puzzle-hybrid.js"></script>
-    <script src="voronoi-puzzle.js"></script>
+    <!-- Main puzzle class -->
+    <script src="js/main.js"></script>
+    
+    <!-- Object System Test Suite -->
+    <script src="test-object-system.js"></script>
     <script>
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', async () => {
@@ -70,15 +72,19 @@
                 console.log('d3.Delaunay available:', typeof d3.Delaunay !== 'undefined');
             }
             
-            // Small delay to ensure layout is complete
+            // Small delay to ensure all scripts are loaded
             setTimeout(async () => {
+                if (typeof VoronoiPuzzle === 'undefined') {
+                    console.error('VoronoiPuzzle class not found. Check script loading order.');
+                    return;
+                }
                 window.voronoiPuzzle = new VoronoiPuzzle();
                 
                 // Initialize theme system
                 setTimeout(async () => {
                     try {
                         // Import theme manager
-                        const { themeManager } = await import('./js/shared/theme-manager.js');
+                        const { themeManager } = await import('./js/theme-manager.js');
                         
                         // Initialize with WebGL renderer reference
                         themeManager.init(window.voronoiPuzzle?.webglRenderer);

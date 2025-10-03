@@ -35,7 +35,16 @@ export const DEBUG_SETTINGS = {
     showAnimation: false,   // Show animation updates
     showVisualStates: false, // Show visual state changes
     showCreation: false,    // Show piece creation/removal logs
-    quietMode: true         // Reduce general logging noise
+    quietMode: true,        // Reduce general logging noise
+    showInteractionDebug: true,  // Show interaction system debugging
+    showMaterialUpdates: false,  // Show material color/opacity updates
+    showHoverEffects: false,     // Show hover effect logs
+    showNeonGlow: false,         // Show neon glow visibility logs
+    showStyling: false,          // Show all styling-related logs
+    showInitialization: false,   // Show WebGL initialization logs
+    showCoordinates: false,      // Show coordinate transformation logs
+    showRendererSwitching: false, // Show renderer switching logs
+    showCanvasSetup: false       // Show canvas setup logs
 };
 
 // Theme definitions
@@ -167,6 +176,87 @@ export const ThemeUtils = {
             DEBUG_SETTINGS.showPieceStates = !DEBUG_SETTINGS.showPieceStates;
             console.log(`📊 Piece state logs ${DEBUG_SETTINGS.showPieceStates ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showPieceStates;
+        },
+        
+        /**
+         * Toggle interaction debug logs
+         */
+        toggleInteractionDebug() {
+            DEBUG_SETTINGS.showInteractionDebug = !DEBUG_SETTINGS.showInteractionDebug;
+            console.log(`🖱️ Interaction debug logs ${DEBUG_SETTINGS.showInteractionDebug ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showInteractionDebug;
+        },
+        
+        /**
+         * Toggle material update logs
+         */
+        toggleMaterialUpdates() {
+            DEBUG_SETTINGS.showMaterialUpdates = !DEBUG_SETTINGS.showMaterialUpdates;
+            console.log(`🎨 Material update logs ${DEBUG_SETTINGS.showMaterialUpdates ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showMaterialUpdates;
+        },
+        
+        /**
+         * Toggle hover effect logs
+         */
+        toggleHoverEffects() {
+            DEBUG_SETTINGS.showHoverEffects = !DEBUG_SETTINGS.showHoverEffects;
+            console.log(`✨ Hover effect logs ${DEBUG_SETTINGS.showHoverEffects ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showHoverEffects;
+        },
+        
+        /**
+         * Toggle neon glow logs
+         */
+        toggleNeonGlow() {
+            DEBUG_SETTINGS.showNeonGlow = !DEBUG_SETTINGS.showNeonGlow;
+            console.log(`🌟 Neon glow logs ${DEBUG_SETTINGS.showNeonGlow ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showNeonGlow;
+        },
+        
+        /**
+         * Toggle all styling logs
+         */
+        toggleStyling() {
+            DEBUG_SETTINGS.showStyling = !DEBUG_SETTINGS.showStyling;
+            console.log(`🎨 Styling logs ${DEBUG_SETTINGS.showStyling ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showStyling;
+        },
+        
+        /**
+         * Toggle initialization logs
+         */
+        toggleInitialization() {
+            DEBUG_SETTINGS.showInitialization = !DEBUG_SETTINGS.showInitialization;
+            console.log(`🔍 Initialization logs ${DEBUG_SETTINGS.showInitialization ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showInitialization;
+        },
+        
+        /**
+         * Toggle coordinate transformation logs
+         */
+        toggleCoordinates() {
+            DEBUG_SETTINGS.showCoordinates = !DEBUG_SETTINGS.showCoordinates;
+            console.log(`🎯 Coordinate logs ${DEBUG_SETTINGS.showCoordinates ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showCoordinates;
+        },
+        
+        /**
+         * Toggle renderer switching logs
+         */
+        toggleRendererSwitching() {
+            DEBUG_SETTINGS.showRendererSwitching = !DEBUG_SETTINGS.showRendererSwitching;
+            console.log(`🔄 Renderer switching logs ${DEBUG_SETTINGS.showRendererSwitching ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showRendererSwitching;
+        },
+        
+        /**
+         * Toggle canvas setup logs
+         */
+        toggleCanvasSetup() {
+            DEBUG_SETTINGS.showCanvasSetup = !DEBUG_SETTINGS.showCanvasSetup;
+            console.log(`🎨 Canvas setup logs ${DEBUG_SETTINGS.showCanvasSetup ? 'ENABLED' : 'DISABLED'}`);
+            return DEBUG_SETTINGS.showCanvasSetup;
         },
         
         /**

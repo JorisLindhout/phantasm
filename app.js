@@ -107,8 +107,9 @@
     updatePiecesContainerSize(width, height) {
         const piecesContainer = document.getElementById('piecesContainer');
         if (piecesContainer) {
+            // Only set width, let CSS aspect-ratio handle the height
             piecesContainer.style.width = width + 'px';
-            piecesContainer.style.height = height + 'px';
+            piecesContainer.style.height = ''; // Clear any explicit height
             
             // Update all piece positions to match new container size
             this.updatePiecePositions(width, height);
@@ -116,9 +117,16 @@
     }
 
     updatePiecePositions(containerWidth, containerHeight) {
+        const piecesContainer = document.getElementById('piecesContainer');
+        if (!piecesContainer) return;
+        
+        // Get actual container dimensions after aspect ratio is applied
+        const actualWidth = piecesContainer.offsetWidth;
+        const actualHeight = piecesContainer.offsetHeight;
+        
         const gridSize = CONFIG.GRID.SIZE;
-        const cellWidth = containerWidth / gridSize;
-        const cellHeight = containerHeight / gridSize;
+        const cellWidth = actualWidth / gridSize;
+        const cellHeight = actualHeight / gridSize;
         
         this.pieces.forEach(piece => {
             const x = piece.col * cellWidth;

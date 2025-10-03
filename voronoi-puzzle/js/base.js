@@ -37,7 +37,9 @@ class VoronoiPuzzleBase {
         // Separate pieces mode
         this.separatePieces = true; // Set to true for jigsaw-style separate pieces
         this.piecePositions = []; // Track individual piece positions
+        
         this.pieceOffsets = []; // Track piece offsets from original positions
+        
         
         // Z-index and visual feedback
         this.pieceZIndex = []; // Track z-index for each piece
@@ -65,24 +67,31 @@ class VoronoiPuzzleBase {
     }
 
     setupCanvas() {
-        const container = this.canvas.parentElement;
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
+        // Set fixed canvas size based on 16:9 aspect ratio
+        const baseWidth = 1200; // Fixed width
+        const baseHeight = 675; // 16:9 aspect ratio (1200 / 1.777...)
         
-        // Set canvas size to fill the container
-        this.canvas.width = containerWidth;
-        this.canvas.height = containerHeight;
-        this.canvas.style.width = containerWidth + 'px';
-        this.canvas.style.height = containerHeight + 'px';
+        // Set canvas size - truly fixed
+        this.canvas.width = baseWidth;
+        this.canvas.height = baseHeight;
+        this.canvas.style.width = baseWidth + 'px';
+        this.canvas.style.height = baseHeight + 'px';
         
-        console.log('🎨 Canvas setup:', containerWidth, 'x', containerHeight);
+        // Make canvas truly fixed size
+        this.canvas.style.display = 'block';
+        this.canvas.style.margin = '0 auto';
+        this.canvas.style.maxWidth = 'none';
+        this.canvas.style.maxHeight = 'none';
+        this.canvas.style.minWidth = baseWidth + 'px';
+        this.canvas.style.minHeight = baseHeight + 'px';
+        this.canvas.style.flexShrink = '0';
+        
+        if (this.debugLogging && this.debugLogging.canvasSetup) {
+            console.log('🎨 Canvas setup: Fixed size', baseWidth, 'x', baseHeight);
+        }
         this.canvas.style.cursor = 'grab';
         
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            this.setupCanvas();
-            this.generateVoronoi();
-        });
+        // No resize handling - canvas stays fixed size
     }
 
     generateVoronoi() {
@@ -100,13 +109,19 @@ class VoronoiPuzzleBase {
         
         // Create Voronoi diagram using d3-delaunay
         if (typeof d3 !== 'undefined' && d3.Delaunay) {
-            console.log('Using npm d3-delaunay');
+            if (this.debugLogging && this.debugLogging.canvasSetup) {
+                console.log('Using npm d3-delaunay');
+            }
             this.voronoi = d3.Delaunay.from(this.points).voronoi([0, 0, width, height]);
         } else if (typeof Delaunay !== 'undefined') {
-            console.log('Using direct Delaunay');
+            if (this.debugLogging && this.debugLogging.canvasSetup) {
+                console.log('Using direct Delaunay');
+            }
             this.voronoi = Delaunay.from(this.points).voronoi([0, 0, width, height]);
         } else {
-            console.log('Delaunay not available, using fallback');
+            if (this.debugLogging && this.debugLogging.canvasSetup) {
+                console.log('Delaunay not available, using fallback');
+            }
             this.voronoi = this.createFallbackVoronoi();
         }
     }
@@ -281,9 +296,11 @@ class VoronoiPuzzleBase {
         // Set this piece to the front
         this.pieceZIndex[cellIndex] = maxZIndex + 1;
         
-        // Normalize z-indices if they become too large (prevent WebGL precision issues)
-        if (maxZIndex > 100) {
-            console.log(`🔄 Normalizing z-indices (max was ${maxZIndex})`);
+        // CRITICAL FIX: Normalize z-indices more aggressively to prevent precision issues
+        if (maxZIndex > 25) { // Reduced from 100 to 25 to prevent interaction issues
+            if (this.debugLogging && this.debugLogging.canvasSetup) {
+                console.log(`🔄 Normalizing z-indices (max was ${maxZIndex})`);
+            }
             this.normalizeZIndices();
         }
         
@@ -398,6 +415,7 @@ class VoronoiPuzzleBase {
             this.canvas.style.boxShadow = 'none';
         }
     }
+
 
     // Abstract methods to be implemented by subclasses
     render() {

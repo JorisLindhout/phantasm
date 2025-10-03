@@ -2,17 +2,22 @@
 /* Based on FluidLock styling but adapted for Voronoi puzzle */
 
 /* Import shared styles */
-@import url('./css/shared/base.css');
-@import url('./css/shared/controls.css');
-@import url('./css/shared/responsive.css');
+@import url('./css/base.css');
+@import url('./css/controls.css');
+@import url('./css/responsive.css');
 
 /* Import renderer-specific styles */
-@import url('./css/3d/webgl.css');
+@import url('./css/webgl.css');
 
-/* Legacy canvas styles for backward compatibility */
+/* Fixed canvas styles - no responsive behavior */
 canvas {
-    width: 100%;
-    height: 100%;
+    width: 1200px !important;
+    height: 675px !important;
     display: block;
     background: var(--canvas-background);
+    max-width: none !important;
+    max-height: none !important;
+    min-width: 1200px !important;
+    min-height: 675px !important;
+    flex-shrink: 0 !important;
 }

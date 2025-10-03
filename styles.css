@@ -109,6 +109,7 @@ canvas {
     height: auto;
     display: block;
     max-width: 100%;
+    aspect-ratio: 850/478;
 }
 
 /* Grid Overlay */
@@ -297,7 +298,7 @@ canvas {
     box-shadow: 0 20px 40px rgba(0, 221, 255, 0.1);
     border: 1px solid var(--piece-border);
     width: var(--canvas-width, 100%);
-    height: var(--canvas-height, auto);
+    height: auto;
     aspect-ratio: 850/478;
     transition: border-color var(--transition-speed) ease;
 }
