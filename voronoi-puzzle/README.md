@@ -72,7 +72,8 @@ voronoi-puzzle/
 ├── index.html                    # Main HTML entry point
 ├── styles.css                    # Main CSS (imports modular styles)
 ├── noise.js                      # Perlin noise implementation
-├── base-image-cube.svg           # Default puzzle background image (16:9 aspect ratio)
+├── assets/                       # Game assets and images
+│   └── base-image-cube.svg       # Default puzzle background image (16:9 aspect ratio)
 ├── css/                          # Modular CSS architecture
 │   ├── base.css                  # Base colors and layout
 │   ├── controls.css              # UI controls styling
@@ -102,19 +103,63 @@ voronoi-puzzle/
 
 ## ⚠️ **Known Issues & Limitations**
 
-### 🔧 **Threshold System Weakness**
-The current threshold-based piece separation system (25px threshold) is a **weak link** that can cause pieces to become "lost" or unreachable:
+### 🔧 **"Lost Pieces" / "Unresponsive Pieces" Problem**
 
-- **Rapid State Changes**: Pieces can rapidly switch between connected/separate states
-- **Hit Detection Confusion**: Rapid cycling can confuse the hit detection system
-- **State Synchronization Issues**: Arrays and objects can get out of sync during rapid changes
-- **User Experience Impact**: Players may encounter unresponsive pieces
+The puzzle can experience pieces that become **visually present and animating** but **not responding to hover/click/drag**. This is a complex interaction desynchronization issue with multiple potential causes:
 
-**Mitigation Strategies:**
-- **Auto-Recovery System**: Automatically detects and restores unreachable pieces
-- **Enhanced Logging**: Detailed logging of piece state changes and recovery actions
-- **Object-Based Architecture**: Moving to object-based system to eliminate sync issues
-- **Manual Recovery**: `autoRecoverPieces()` console command for manual intervention
+#### **Root Causes Identified:**
+
+1. **Scene Graph Desynchronization**
+   - **Problem**: Pieces exist in the object system but are not properly positioned in the Three.js scene
+   - **Symptom**: Pieces are visible but hit detection fails
+   - **Fix**: Enhanced scene synchronization with `fixMispositionedPieces()` function
+
+2. **Interaction State Desynchronization** 
+   - **Problem**: Pieces lose their event handling capabilities due to state management issues
+   - **Symptom**: Pieces don't respond to mouse events despite being visible
+   - **Fix**: State consistency checks and interaction system validation
+
+3. **Z-Index Accumulation**
+   - **Problem**: `bringPieceToFront()` can cause z-indices to grow unbounded
+   - **Symptom**: Pieces become unreachable due to incorrect depth sorting
+   - **Fix**: Z-index normalization system with `normalizeZIndices()`
+
+4. **Waterfall Effect**
+   - **Problem**: One lost piece can trigger a cascade of other pieces becoming unresponsive
+   - **Symptom**: Multiple pieces become unresponsive after interacting with one
+   - **Fix**: Enhanced debugging and state isolation
+
+#### **Detection & Recovery Systems:**
+
+- **Auto-Recovery System**: `autoRecoverPieces()` - Automatically detects and restores unreachable pieces
+- **Scene Synchronization**: `fixMispositionedPieces()` - Ensures pieces are properly positioned in 3D scene
+- **Interaction Debugging**: `toggleInteractionDebug()` - Detailed logging of interaction state
+- **Manual Recovery**: Console commands for manual piece restoration
+
+#### **Prevention Strategies:**
+
+- **Object-Based Architecture**: Eliminates array synchronization issues
+- **Enhanced State Management**: Better tracking of piece states and relationships
+- **Robust Hit Detection**: Multiple fallback methods for piece selection
+- **Z-Index Management**: Automatic normalization to prevent accumulation
+- **Comprehensive Logging**: Controllable debug output for troubleshooting
+
+#### **Debug Commands:**
+```javascript
+// Show all available debug commands
+showDebugCommands()
+
+// Auto-recovery system
+autoRecoverPieces()                  // Manually recover unreachable pieces
+fixMispositionedPieces()             // Fix pieces not properly positioned in scene
+
+// Interaction debugging
+toggleInteractionDebug()           // Toggle detailed interaction logging
+testInteractionSystem()            // Test interaction system health
+
+// State validation
+validateObjectArraySync()          // Validate object system integrity
+```
 
 ### 🎨 **Theme Development (Console Commands)**
 ```javascript
@@ -136,6 +181,14 @@ showDebugCommands()
 
 // Auto-recovery system
 autoRecoverPieces()                  // Manually recover unreachable pieces
+fixMispositionedPieces()            // Fix pieces not properly positioned in scene
+
+// Interaction debugging
+toggleInteractionDebug()           // Toggle detailed interaction logging
+testInteractionSystem()            // Test interaction system health
+
+// State validation
+validateObjectArraySync()          // Validate object system integrity
 
 // Debug logging controls
 toggleHitDetection()                // Toggle hit detection logs

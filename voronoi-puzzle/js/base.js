@@ -62,7 +62,7 @@ class VoronoiPuzzleBase {
             };
             img.onerror = reject;
             // Use the same SVG from the main project
-            img.src = './base-image-cube.svg';
+            img.src = './assets/base-image-cube.svg';
         });
     }
 
