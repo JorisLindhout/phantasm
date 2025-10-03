@@ -3,40 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voronoi Puzzle 3D - WebGL Version</title>
+    <title>Jiggy</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Voronoi Puzzle 3D</h1>
         <div class="puzzle-container">
             <canvas id="voronoiCanvas"></canvas>
-            <div class="controls">
-                <div class="control-group">
-                    <label for="cellCount">Cell Count:</label>
-                    <input type="range" id="cellCount" min="5" max="50" value="40">
-                    <span id="cellCountValue">40</span>
-                </div>
-                <div class="control-group">
-                    <label for="animationSpeed">Animation Speed:</label>
-                    <input type="range" id="animationSpeed" min="0.1" max="2.0" step="0.1" value="1.0">
-                    <span id="animationSpeedValue">1.0</span>
-                </div>
-                <div class="control-group">
-                    <label for="noiseAmplitude">Noise Amplitude:</label>
-                    <input type="range" id="noiseAmplitude" min="0" max="50" value="10">
-                    <span id="noiseAmplitudeValue">10</span>
-                </div>
-        <div class="control-group">
-            <button onclick="regeneratePuzzle()">Regenerate Puzzle</button>
-            <button onclick="toggleAnimation()">Toggle Animation</button>
-            <button onclick="toggleGridOutlines()">Toggle Grid Outlines</button>
         </div>
+    </div>
+    
+    <!-- Controls Drawer -->
+    <div class="controls-drawer" id="controlsDrawer">
+        <button class="drawer-toggle" id="drawerToggle" onclick="toggleDrawer()">
+            <svg class="caret-icon" viewBox="0 0 24 24" width="16" height="16">
+                <path d="M7 14l5-5 5 5z" fill="currentColor"/>
+            </svg>
+        </button>
+        
+        <div class="controls-content" id="controlsContent">
+            <div class="control-group">
+                <label for="cellCount">Cell Count:</label>
+                <input type="range" id="cellCount" min="5" max="50" value="40">
+                <span id="cellCountValue">40</span>
             </div>
-        </div>
-        <div class="info">
-            <p>Animated Voronoi cells with WebGL 3D rendering and theme system</p>
-            <p id="rendererStatus">Renderer: Loading...</p>
+            <div class="control-group">
+                <label for="animationSpeed">Animation Speed:</label>
+                <input type="range" id="animationSpeed" min="0.1" max="2.0" step="0.1" value="1.0">
+                <span id="animationSpeedValue">1.0</span>
+            </div>
+            <div class="control-group">
+                <label for="noiseAmplitude">Noise Amplitude:</label>
+                <input type="range" id="noiseAmplitude" min="0" max="50" value="10">
+                <span id="noiseAmplitudeValue">10</span>
+            </div>
+            <div class="control-group">
+                <button onclick="regeneratePuzzle()">Regenerate Puzzle</button>
+                <button onclick="toggleAnimation()">Toggle Animation</button>
+                <button onclick="toggleGridOutlines()">Toggle Grid Outlines</button>
+            </div>
         </div>
     </div>
 
@@ -121,6 +126,21 @@
                 console.log(`🔗 Grid outlines toggled: ${isOn ? 'ON' : 'OFF'}`);
             } else {
                 console.log('❌ Grid outline toggle only available in WebGL mode');
+            }
+        }
+        
+        function toggleDrawer() {
+            const drawer = document.getElementById('controlsDrawer');
+            const toggle = document.getElementById('drawerToggle');
+            const caret = toggle.querySelector('.caret-icon');
+            
+            drawer.classList.toggle('open');
+            
+            // Rotate caret icon
+            if (drawer.classList.contains('open')) {
+                caret.style.transform = 'rotate(180deg)';
+            } else {
+                caret.style.transform = 'rotate(0deg)';
             }
         }
     </script>

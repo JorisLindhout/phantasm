@@ -86,7 +86,6 @@ h1 {
     position: relative;
     flex: 1;
     background: var(--canvas-background);
-    border-radius: var(--border-radius);
     overflow: auto; /* Allow scrollbars when canvas is larger than container */
     min-height: 400px; /* Ensure minimum height */
     box-shadow: 0 20px 40px rgba(0, 221, 255, 0.1);
