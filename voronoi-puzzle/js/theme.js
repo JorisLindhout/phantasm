@@ -13,7 +13,7 @@ const COLORS = {
     fluidRed: { hex: 0xFF4444, css: '#FF4444', rgba: 'rgba(255, 68, 68, 1)' },
     
     // Neutral colors
-    darkBg: { hex: 0x111111, css: '#111111', rgba: 'rgba(17, 17, 17, 1)' },
+    darkBg: { hex: 0x000000, css: '#000000', rgba: 'rgba(0, 0, 0, 1)' },
     mediumBg: { hex: 0x1a1a1a, css: '#1a1a1a', rgba: 'rgba(26, 26, 26, 1)' },
     lightBg: { hex: 0x2a2a2a, css: '#2a2a2a', rgba: 'rgba(42, 42, 42, 1)' },
     white: { hex: 0xffffff, css: '#ffffff', rgba: 'rgba(255, 255, 255, 1)' },
