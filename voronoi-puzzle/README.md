@@ -3,8 +3,6 @@
 A high-performance web-based puzzle prototype featuring animated Voronoi cells with WebGL 3D rendering, advanced visual effects, and a unified theming system.
 
 ## TODO
-
-### 🔧 Future Development Items
 - [ ] **Fix debug overlay dragging detection** - Debug overlay not recognizing dragging state and piece data
 - [ ] **Investigate piece jumping issue** - Pieces jump when mouse moves after release (coordinate system mismatch)
 - [ ] **Migrate to single object system** - Remove dual array/object state management to eliminate synchronization issues

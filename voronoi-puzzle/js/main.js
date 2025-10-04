@@ -342,7 +342,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         this.draggedCellIndex = cellIndex;
         
         // Calculate current piece position (original + any existing offset)
-        const currentOffset = this.pieceOffsets[cellIndex] || { x: 0, y: 0 };
+        const currentOffset = this.webglRenderer.pieces[cellIndex].offset || { x: 0, y: 0 };
         const currentPieceX = this.points[cellIndex][0] + currentOffset.x;
         const currentPieceY = this.points[cellIndex][1] + currentOffset.y;
         
@@ -480,21 +480,21 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         }
         
         // Update piece offset for separate pieces
-        this.pieceOffsets[this.draggedCellIndex] = {
+        this.webglRenderer.pieces[this.draggedCellIndex].offset = {
             x: x - this.dragOffset.x - this.originalPoints[this.draggedCellIndex][0],
             y: y - this.dragOffset.y - this.originalPoints[this.draggedCellIndex][1]
         };
         
         // Update WebGL piece position
         if (this.webglRenderer) {
-            this.webglRenderer.updatePiecePosition(this.draggedCellIndex, this.pieceOffsets[this.draggedCellIndex]);
+            this.webglRenderer.updatePiecePosition(this.draggedCellIndex, this.webglRenderer.pieces[this.draggedCellIndex].offset);
         }
         
         // Handle slot hover while dragging (show which slot the piece would drop into)
         this.handleDragSlotHover(x, y);
         
         // Remove from snapped pieces if moved away from original position
-        const currentOffset = this.pieceOffsets[this.draggedCellIndex];
+        const currentOffset = this.webglRenderer.pieces[this.draggedCellIndex].offset;
         const distance = Math.sqrt(currentOffset.x * currentOffset.x + currentOffset.y * currentOffset.y);
         if (distance > this.snapThreshold) {
             this.snappedPieces.delete(this.draggedCellIndex);
@@ -513,7 +513,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         const draggedIndex = this.draggedCellIndex;
         
         // For separate pieces, check if close to original position
-        const currentOffset = this.pieceOffsets[draggedIndex] || { x: 0, y: 0 };
+        const currentOffset = this.webglRenderer.pieces[draggedIndex].offset || { x: 0, y: 0 };
         const distance = Math.sqrt(currentOffset.x ** 2 + currentOffset.y ** 2);
         
         console.log(`📏 Piece ${draggedIndex} distance from origin: ${distance.toFixed(1)}px (threshold: ${this.snapThreshold}px)`);
@@ -522,7 +522,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             console.log(`📌 Piece ${draggedIndex} snapping back to original position`);
             
             // Snap back to original position
-            this.pieceOffsets[draggedIndex] = { x: 0, y: 0 };
+            this.webglRenderer.pieces[draggedIndex].offset = { x: 0, y: 0 };
             
             // Add visual feedback for snap
             this.snappedPieces.add(draggedIndex);
@@ -595,7 +595,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             // Update new drag hovered slot (only for empty slots)
             if (dragSlot !== -1 && this.webglRenderer) {
                 // Check if the slot is empty before showing hover effect
-                if (this.webglRenderer.slotStates && this.webglRenderer.slotStates[dragSlot] === 'empty') {
+                if (this.webglRenderer.slots[dragSlot] && this.webglRenderer.slots[dragSlot].state === 'empty') {
                     this.webglRenderer.updateSlotHover(dragSlot, true, true); // true = isDragHover
                 }
             }
@@ -843,7 +843,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         this.draggedCellIndex = cellIndex;
         
         // Calculate current piece position (original + any existing offset)
-        const currentOffset = this.pieceOffsets[cellIndex] || { x: 0, y: 0 };
+        const currentOffset = this.webglRenderer.pieces[cellIndex].offset || { x: 0, y: 0 };
         const currentPieceX = this.points[cellIndex][0] + currentOffset.x;
         const currentPieceY = this.points[cellIndex][1] + currentOffset.y;
         
@@ -985,21 +985,21 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         }
         
         // Update piece offset for separate pieces
-        this.pieceOffsets[this.draggedCellIndex] = {
+        this.webglRenderer.pieces[this.draggedCellIndex].offset = {
             x: x - this.dragOffset.x - this.originalPoints[this.draggedCellIndex][0],
             y: y - this.dragOffset.y - this.originalPoints[this.draggedCellIndex][1]
         };
         
         // Update WebGL piece position
         if (this.webglRenderer) {
-            this.webglRenderer.updatePiecePosition(this.draggedCellIndex, this.pieceOffsets[this.draggedCellIndex]);
+            this.webglRenderer.updatePiecePosition(this.draggedCellIndex, this.webglRenderer.pieces[this.draggedCellIndex].offset);
         }
         
         // Handle slot hover while dragging (show which slot the piece would drop into)
         this.handleDragSlotHover(x, y);
         
         // Remove from snapped pieces if moved away from original position
-        const currentOffset = this.pieceOffsets[this.draggedCellIndex];
+        const currentOffset = this.webglRenderer.pieces[this.draggedCellIndex].offset;
         const distance = Math.sqrt(currentOffset.x * currentOffset.x + currentOffset.y * currentOffset.y);
         if (distance > this.snapThreshold) {
             this.snappedPieces.delete(this.draggedCellIndex);
@@ -1018,7 +1018,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         const draggedIndex = this.draggedCellIndex;
         
         // For separate pieces, check if close to original position
-        const currentOffset = this.pieceOffsets[draggedIndex] || { x: 0, y: 0 };
+        const currentOffset = this.webglRenderer.pieces[draggedIndex].offset || { x: 0, y: 0 };
         const distance = Math.sqrt(currentOffset.x ** 2 + currentOffset.y ** 2);
         
         console.log(`📏 Piece ${draggedIndex} distance from origin: ${distance.toFixed(1)}px (threshold: ${this.snapThreshold}px)`);
@@ -1027,7 +1027,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             console.log(`📌 Piece ${draggedIndex} snapping back to original position`);
             
             // Snap back to original position
-            this.pieceOffsets[draggedIndex] = { x: 0, y: 0 };
+            this.webglRenderer.pieces[draggedIndex].offset = { x: 0, y: 0 };
             
             // Add visual feedback for snap
             this.snappedPieces.add(draggedIndex);
@@ -1100,7 +1100,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             // Update new drag hovered slot (only for empty slots)
             if (dragSlot !== -1 && this.webglRenderer) {
                 // Check if the slot is empty before showing hover effect
-                if (this.webglRenderer.slotStates && this.webglRenderer.slotStates[dragSlot] === 'empty') {
+                if (this.webglRenderer.slots[dragSlot] && this.webglRenderer.slots[dragSlot].state === 'empty') {
                     this.webglRenderer.updateSlotHover(dragSlot, true, true); // true = isDragHover
                 }
             }

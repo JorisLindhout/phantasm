@@ -38,7 +38,6 @@ class VoronoiPuzzleBase {
         this.separatePieces = true; // Set to true for jigsaw-style separate pieces
         this.piecePositions = []; // Track individual piece positions
         
-        this.pieceOffsets = []; // Track piece offsets from original positions
         
         
         // Z-index and visual feedback
@@ -207,7 +206,6 @@ class VoronoiPuzzleBase {
         
         // Initialize piece offsets for separate pieces mode
         if (this.separatePieces) {
-            this.pieceOffsets = new Array(this.points.length).fill(null).map(() => ({ x: 0, y: 0 }));
             // Only initialize z-index if not already set
             if (!this.pieceZIndex || this.pieceZIndex.length !== this.points.length) {
                 this.pieceZIndex = new Array(this.points.length).fill(0);
@@ -364,30 +362,9 @@ class VoronoiPuzzleBase {
     
     // Check if the puzzle is solved (all pieces are in correct positions)
     checkSolvedState() {
-        if (!this.pieceOffsets || this.pieceOffsets.length === 0) {
-            return false;
-        }
-        
-        let solvedPieces = 0;
-        
-        for (let i = 0; i < this.pieceOffsets.length; i++) {
-            const offset = this.pieceOffsets[i] || { x: 0, y: 0 };
-            const distance = Math.sqrt(offset.x * offset.x + offset.y * offset.y);
-            
-            if (distance < this.solveThreshold) {
-                solvedPieces++;
-            }
-        }
-        
-        // Consider solved if all pieces are within the threshold
-        const isSolved = solvedPieces === this.pieceOffsets.length;
-        
-        if (isSolved !== this.isSolved) {
-            this.isSolved = isSolved;
-            this.onSolvedStateChanged(isSolved);
-        }
-        
-        return isSolved;
+        // This method is overridden by webgl-renderer.js
+        // Base implementation for compatibility
+        return this.isSolved || false;
     }
     
     // Called when solved state changes
@@ -448,7 +425,6 @@ class VoronoiPuzzleBase {
         // Nullify object references
         this.pieces = null;
         this.slots = null;
-        this.pieceOffsets = null;
         this.pieceZIndex = null;
         this.snappedPieces = null;
         this.backgroundImage = null;

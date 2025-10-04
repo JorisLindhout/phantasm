@@ -43,13 +43,7 @@ class WebGLVoronoiRenderer {
         this.separateGlowOutlines = []; // Neon glow outlines for separate pieces
         this.pieceZIndices = []; // Z-index for each piece
         this.separatePiecesMode = false;
-        this.pieceOffsets = []; // Track which pieces are moved
-        
-        // Piece state management
-        this.pieceStates = []; // 'solved' or 'unsolved' for each piece
-        this.slotStates = []; // 'filled' or 'empty' for each slot
-        
-        // NEW: Object-based system (parallel to arrays)
+        // Object-based system
         this.pieces = []; // Object-based pieces
         this.slots = [];  // Object-based slots
         
@@ -226,12 +220,6 @@ class WebGLVoronoiRenderer {
     // Initialize Voronoi data for connected rendering
     initializeVoronoi(polygons) {
         this.voronoiPolygons = polygons.map(polygon => [...polygon]); // Deep copy
-        this.pieceZIndices = new Array(polygons.length).fill(0);
-        this.pieceOffsets = new Array(polygons.length).fill(null);
-        
-        // Initialize piece and slot states
-        this.pieceStates = new Array(polygons.length).fill('solved'); // All pieces start solved
-        this.slotStates = new Array(polygons.length).fill('filled'); // All slots start filled
         
         // NEW: Initialize object-based system
         this.pieces = [];
@@ -294,15 +282,6 @@ class WebGLVoronoiRenderer {
             const piece = this.pieces[i];
             const slot = this.slots[i];
             
-            // Check piece state sync
-            if (piece.state !== this.pieceStates[i]) {
-                console.warn(`⚠️ Piece ${i} state mismatch: object=${piece.state}, array=${this.pieceStates[i]}`);
-            }
-            
-            // Check slot state sync
-            if (slot.state !== this.slotStates[i]) {
-                console.warn(`⚠️ Slot ${i} state mismatch: object=${slot.state}, array=${this.slotStates[i]}`);
-            }
             
             // Check mesh sync (object system only)
             const objectHasMesh = piece.mesh !== null;
@@ -522,10 +501,6 @@ class WebGLVoronoiRenderer {
         slot.isCorrect = true;
         
         // Update array system to match
-        this.pieceStates[pieceIndex] = 'solved';
-        this.slotStates[pieceIndex] = 'filled';
-        this.pieceOffsets[pieceIndex] = { x: 0, y: 0 };
-        this.pieceZIndices[pieceIndex] = 0;
         
         // Update connected mesh visibility
         this.updateConnectedMeshVisibility();
@@ -590,7 +565,7 @@ class WebGLVoronoiRenderer {
             if (!polygon || polygon.length < 3) continue;
             
             // Determine if this slot should show the background image
-            const showBackground = this.slotStates[pieceIndex] === 'filled';
+            const showBackground = this.slots[pieceIndex].state === 'filled';
             const alpha = showBackground ? 1.0 : 0.0; // Fully transparent if empty slot
             
             // Add center vertex color
@@ -786,10 +761,7 @@ class WebGLVoronoiRenderer {
     }
     
     updatePiecePosition(index, offset) {
-        // Store the offset for this piece (ARRAY SYSTEM)
-        this.pieceOffsets[index] = offset;
-        
-        // NEW: Update object system
+        // Update object system
         this.pieces[index].offset = offset;
         
         // Calculate distance from origin
@@ -812,8 +784,6 @@ class WebGLVoronoiRenderer {
         // If piece has significant offset, create separate mesh
         if (distance > 25) { // Increased threshold to prevent rapid cycling
             // Piece is being moved out - update states (ARRAY SYSTEM)
-            this.pieceStates[index] = 'unsolved';
-            this.slotStates[index] = 'empty';
             
             // NEW: Update object system
             this.pieces[index].state = 'unsolved';
@@ -829,8 +799,6 @@ class WebGLVoronoiRenderer {
             this.updateConnectedMeshVisibility(); // Update slot visibility
         } else {
             // Piece snapped back - update states (ARRAY SYSTEM)
-            this.pieceStates[index] = 'solved';
-            this.slotStates[index] = 'filled';
             
             // NEW: Update object system
             this.pieces[index].state = 'solved';
@@ -876,10 +844,6 @@ class WebGLVoronoiRenderer {
         slot.isCorrect = true;
         
         // Update array system to match
-        this.pieceStates[pieceIndex] = 'solved';
-        this.slotStates[pieceIndex] = 'filled';
-        this.pieceOffsets[pieceIndex] = { x: 0, y: 0 };
-        this.pieceZIndices[pieceIndex] = 0;
         
         // Update connected mesh visibility
         this.updateConnectedMeshVisibility();
@@ -1513,7 +1477,7 @@ class WebGLVoronoiRenderer {
             if (!polygon || polygon.length < 3) continue;
             
             // Determine if this slot should show the background image
-            const showBackground = this.slotStates[pieceIndex] === 'filled';
+            const showBackground = this.slots[pieceIndex].state === 'filled';
             const alpha = showBackground ? 1.0 : 0.0;
             
             // Update center vertex alpha
@@ -1562,7 +1526,7 @@ class WebGLVoronoiRenderer {
         }
         
         // Create material - only show background image if piece is unsolved
-        const showBackground = this.pieceStates[index] === 'unsolved';
+        const showBackground = this.pieces[index].state === 'unsolved';
         const material = new THREE.MeshBasicMaterial({
             map: showBackground ? this.backgroundTexture : null,
             color: 0xffffff, // Always start with white for proper color tinting
@@ -2678,14 +2642,14 @@ class WebGLVoronoiRenderer {
     
     // Check if the puzzle is solved (all pieces are in correct positions)
     checkSolvedState() {
-        if (!this.pieceOffsets || this.pieceOffsets.length === 0) {
+        if (!this.pieces || this.pieces.length === 0) {
             return false;
         }
         
         let solvedPieces = 0;
         
-        for (let i = 0; i < this.pieceOffsets.length; i++) {
-            const offset = this.pieceOffsets[i] || { x: 0, y: 0 };
+        for (let i = 0; i < this.pieces.length; i++) {
+            const offset = this.pieces[i].offset || { x: 0, y: 0 };
             const distance = Math.sqrt(offset.x * offset.x + offset.y * offset.y);
             
             if (distance < this.solveThreshold) {
@@ -2694,7 +2658,7 @@ class WebGLVoronoiRenderer {
         }
         
         // Consider solved if all pieces are within the threshold
-        const isSolved = solvedPieces === this.pieceOffsets.length;
+        const isSolved = solvedPieces === this.pieces.length;
         
         if (isSolved !== this.isSolved) {
             this.isSolved = isSolved;
@@ -2996,17 +2960,15 @@ window.testInteractionSystem = function() {
             return false;
         }
         
-        // Test 3: Check piece states
-        const stateIssues = renderer.pieces.filter((piece, index) => {
-            const objState = piece.state;
-            const arrState = renderer.pieceStates[index];
-            return objState !== arrState;
-        });
+        // Test 3: Check piece states (object system only)
+        const invalidStates = renderer.pieces.filter(piece => 
+            !piece.state || (piece.state !== 'solved' && piece.state !== 'unsolved')
+        );
         
-        console.log(`🧪 Test 3 - State Sync: ${stateIssues.length} inconsistencies found`);
+        console.log(`🧪 Test 3 - State Validity: ${invalidStates.length} invalid states found`);
         
-        if (stateIssues.length > 0) {
-            console.warn(`🧪 Test 3 FAILED: ${stateIssues.length} state inconsistencies!`);
+        if (invalidStates.length > 0) {
+            console.warn(`🧪 Test 3 FAILED: ${invalidStates.length} pieces with invalid states!`);
             return false;
         }
         
@@ -3097,8 +3059,6 @@ WebGLVoronoiRenderer.prototype.dispose = function() {
     // Nullify other references
     this.voronoiPolygons = null;
     this.pieceZIndices = null;
-    this.pieceStates = null;
-    this.slotStates = null;
     
     console.log('✅ WebGL renderer disposed and cleaned up');
 };
