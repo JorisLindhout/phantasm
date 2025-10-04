@@ -1314,17 +1314,23 @@ class WebGLVoronoiRenderer {
                 break;
         }
         
-        // Smooth scale animation
+        // Smooth scale animation with jumpy curve (ease-out-bounce)
         const startScale = piece.scale.x;
         const duration = 200; // 200ms animation
         const steps = 10;
         const stepDuration = duration / steps;
-        const scaleStep = (targetScale - startScale) / steps;
         
         let currentStep = 0;
         piece.scaleAnimation = setInterval(() => {
             currentStep++;
-            const newScale = startScale + (scaleStep * currentStep);
+            
+            // Jumpy easing function (ease-out-bounce style)
+            const progress = currentStep / steps;
+            const easedProgress = progress < 0.5 
+                ? 4 * progress * progress * progress  // Cubic ease-out
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2; // Bounce effect
+            
+            const newScale = startScale + (targetScale - startScale) * easedProgress;
             piece.scale.set(newScale, newScale, 1);
             
             if (currentStep >= steps) {

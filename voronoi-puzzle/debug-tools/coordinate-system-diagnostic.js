@@ -1,0 +1,411 @@
+/**
+ * Coordinate System Diagnostic Tool
+ * Investigates potential coordinate system mismatches and CSS interference
+ * 
+ * Key issues to investigate:
+ * 1. Piece still connected to mouse after release
+ * 2. Coordinate system mismatch between game and browser
+ * 3. CSS interference with positioning
+ * 4. Inverse relationship: small mouse movement = large piece jump
+ */
+
+class CoordinateSystemDiagnostic {
+    constructor(webglRenderer, mainPuzzle) {
+        this.renderer = webglRenderer;
+        this.puzzle = mainPuzzle;
+        this.coordinateLogs = [];
+        this.isMonitoring = false;
+        this.lastReleaseData = null;
+    }
+
+    /**
+     * Enable coordinate system monitoring
+     */
+    enableCoordinateMonitoring() {
+        console.log('🔍 Enabling coordinate system monitoring...');
+        
+        if (this.isMonitoring) {
+            console.log('⚠️ Coordinate monitoring already enabled');
+            return;
+        }
+        
+        this.isMonitoring = true;
+        
+        // Store original methods
+        this.originalHandleMouseUp = this.puzzle.handleMouseUp;
+        this.originalHandleMouseMove = this.puzzle.handleMouseMove;
+        this.originalUpdatePiecePosition = this.renderer.updatePiecePosition;
+        
+        // Override methods with monitoring
+        this.puzzle.handleMouseUp = this.monitoredHandleMouseUp.bind(this);
+        this.puzzle.handleMouseMove = this.monitoredHandleMouseMove.bind(this);
+        this.renderer.updatePiecePosition = this.monitoredUpdatePiecePosition.bind(this);
+        
+        // Add global mouse move listener to track ALL mouse movement
+        this.canvas = this.renderer.canvas;
+        this.canvas.addEventListener('mousemove', this.trackAllMouseMovement.bind(this));
+        
+        console.log('✅ Coordinate system monitoring enabled');
+        console.log('📝 Drag pieces and move mouse after release to test coordinate issues');
+    }
+
+    /**
+     * Disable coordinate system monitoring
+     */
+    disableCoordinateMonitoring() {
+        console.log('🔍 Disabling coordinate system monitoring...');
+        
+        if (!this.isMonitoring) {
+            console.log('⚠️ Coordinate monitoring not enabled');
+            return;
+        }
+        
+        this.isMonitoring = false;
+        
+        // Restore original methods
+        if (this.originalHandleMouseUp) {
+            this.puzzle.handleMouseUp = this.originalHandleMouseUp;
+        }
+        if (this.originalHandleMouseMove) {
+            this.puzzle.handleMouseMove = this.originalHandleMouseMove;
+        }
+        if (this.originalUpdatePiecePosition) {
+            this.renderer.updatePiecePosition = this.originalUpdatePiecePosition;
+        }
+        
+        // Remove mouse move listener
+        if (this.canvas) {
+            this.canvas.removeEventListener('mousemove', this.trackAllMouseMovement.bind(this));
+        }
+        
+        console.log('✅ Coordinate system monitoring disabled');
+    }
+
+    /**
+     * Track ALL mouse movement (not just during dragging)
+     */
+    trackAllMouseMovement(e) {
+        if (!this.isMonitoring) return;
+        
+        const mouseCoords = this.getCanvasCoordinates(e);
+        const timestamp = Date.now();
+        
+        // Log every mouse movement
+        this.coordinateLogs.push({
+            type: 'mouse_move',
+            timestamp,
+            mouseCoords,
+            isDragging: this.puzzle.isDragging,
+            draggedPiece: this.puzzle.draggedCellIndex
+        });
+        
+        // If we have recent release data, check for piece movement correlation
+        if (this.lastReleaseData && (timestamp - this.lastReleaseData.timestamp) < 5000) {
+            this.checkForPieceMovementCorrelation(mouseCoords, timestamp);
+        }
+        
+        // Keep only last 1000 entries to prevent memory issues
+        if (this.coordinateLogs.length > 1000) {
+            this.coordinateLogs = this.coordinateLogs.slice(-500);
+        }
+    }
+
+    /**
+     * Check for correlation between mouse movement and piece movement
+     */
+    checkForPieceMovementCorrelation(currentMouseCoords, timestamp) {
+        if (!this.lastReleaseData) return;
+        
+        const pieceIndex = this.lastReleaseData.pieceIndex;
+        const currentPieceOffset = this.puzzle.pieceOffsets[pieceIndex] || { x: 0, y: 0 };
+        
+        // Calculate mouse movement since release
+        const mouseDelta = {
+            x: currentMouseCoords.x - this.lastReleaseData.mouseCoords.x,
+            y: currentMouseCoords.y - this.lastReleaseData.mouseCoords.y
+        };
+        
+        const mouseDistance = Math.sqrt(mouseDelta.x * mouseDelta.x + mouseDelta.y * mouseDelta.y);
+        
+        // Calculate piece movement since release
+        const pieceDelta = {
+            x: currentPieceOffset.x - this.lastReleaseData.pieceOffset.x,
+            y: currentPieceOffset.y - this.lastReleaseData.pieceOffset.y
+        };
+        
+        const pieceDistance = Math.sqrt(pieceDelta.x * pieceDelta.x + pieceDelta.y * pieceDelta.y);
+        
+        // If piece has moved significantly, log the correlation
+        if (pieceDistance > 1) {
+            const correlation = {
+                timestamp,
+                timeSinceRelease: timestamp - this.lastReleaseData.timestamp,
+                pieceIndex,
+                mouseDelta,
+                mouseDistance,
+                pieceDelta,
+                pieceDistance,
+                mouseCoords: currentMouseCoords,
+                pieceOffset: currentPieceOffset
+            };
+            
+            this.coordinateLogs.push({
+                type: 'correlation_detected',
+                ...correlation
+            });
+            
+            console.log(`🔄 COORDINATE CORRELATION - Piece ${pieceIndex}:`, {
+                timeSinceRelease: correlation.timeSinceRelease + 'ms',
+                mouseMovement: `(${mouseDelta.x.toFixed(1)}, ${mouseDelta.y.toFixed(1)}) = ${mouseDistance.toFixed(1)}px`,
+                pieceMovement: `(${pieceDelta.x.toFixed(1)}, ${pieceDelta.y.toFixed(1)}) = ${pieceDistance.toFixed(1)}px`,
+                ratio: mouseDistance > 0 ? (pieceDistance / mouseDistance).toFixed(2) : 'N/A'
+            });
+        }
+    }
+
+    /**
+     * Monitored mouse up handler
+     */
+    monitoredHandleMouseUp(e) {
+        const mouseCoords = this.getCanvasCoordinates(e);
+        const timestamp = Date.now();
+        
+        if (this.puzzle.isDragging && this.puzzle.draggedCellIndex !== -1) {
+            const pieceIndex = this.puzzle.draggedCellIndex;
+            
+            // Store release data for correlation tracking
+            this.lastReleaseData = {
+                timestamp,
+                pieceIndex,
+                mouseCoords: { ...mouseCoords },
+                pieceOffset: { ...(this.puzzle.pieceOffsets[pieceIndex] || { x: 0, y: 0 }) }
+            };
+            
+            console.log(`🎯 RELEASE CAPTURED - Piece ${pieceIndex}:`, {
+                mousePosition: `(${mouseCoords.x.toFixed(1)}, ${mouseCoords.y.toFixed(1)})`,
+                pieceOffset: `(${this.lastReleaseData.pieceOffset.x.toFixed(1)}, ${this.lastReleaseData.pieceOffset.y.toFixed(1)})`
+            });
+            
+            this.coordinateLogs.push({
+                type: 'release',
+                timestamp,
+                pieceIndex,
+                mouseCoords: { ...mouseCoords },
+                pieceOffset: { ...this.lastReleaseData.pieceOffset }
+            });
+        }
+        
+        return this.originalHandleMouseUp.call(this.puzzle, e);
+    }
+
+    /**
+     * Monitored mouse move handler (during dragging)
+     */
+    monitoredHandleMouseMove(e) {
+        const mouseCoords = this.getCanvasCoordinates(e);
+        const timestamp = Date.now();
+        
+        if (this.puzzle.isDragging && this.puzzle.draggedCellIndex !== -1) {
+            const pieceIndex = this.puzzle.draggedCellIndex;
+            
+            this.coordinateLogs.push({
+                type: 'drag_move',
+                timestamp,
+                pieceIndex,
+                mouseCoords: { ...mouseCoords },
+                pieceOffset: { ...(this.puzzle.pieceOffsets[pieceIndex] || { x: 0, y: 0 }) }
+            });
+        }
+        
+        return this.originalHandleMouseMove.call(this.puzzle, e);
+    }
+
+    /**
+     * Monitored piece position update
+     */
+    monitoredUpdatePiecePosition(index, offset) {
+        const timestamp = Date.now();
+        const result = this.originalUpdatePiecePosition.call(this.renderer, index, offset);
+        
+        this.coordinateLogs.push({
+            type: 'position_update',
+            timestamp,
+            pieceIndex: index,
+            newOffset: { ...offset }
+        });
+        
+        return result;
+    }
+
+    /**
+     * Get canvas coordinates from mouse event
+     */
+    getCanvasCoordinates(e) {
+        const rect = this.renderer.canvas.getBoundingClientRect();
+        return {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
+    }
+
+    /**
+     * Generate coordinate system analysis report
+     */
+    generateCoordinateReport() {
+        console.log('\n📋 COORDINATE SYSTEM DIAGNOSTIC REPORT');
+        console.log('======================================');
+        
+        const totalEvents = this.coordinateLogs.length;
+        const correlations = this.coordinateLogs.filter(log => log.type === 'correlation_detected');
+        const releases = this.coordinateLogs.filter(log => log.type === 'release');
+        
+        console.log(`\n📊 Statistics:`);
+        console.log(`   Total events logged: ${totalEvents}`);
+        console.log(`   Releases tracked: ${releases.length}`);
+        console.log(`   Correlations detected: ${correlations.length}`);
+        
+        if (correlations.length > 0) {
+            console.log('\n🔄 COORDINATE CORRELATIONS DETECTED:');
+            
+            // Analyze correlation patterns
+            let smallMouseLargePiece = 0;
+            let largeMouseSmallPiece = 0;
+            let directionalMatches = 0;
+            
+            correlations.forEach((correlation, index) => {
+                const mouseDist = correlation.mouseDistance;
+                const pieceDist = correlation.pieceDistance;
+                const ratio = mouseDist > 0 ? pieceDist / mouseDist : 0;
+                
+                console.log(`\n   Correlation ${index + 1} - Piece ${correlation.pieceIndex}:`);
+                console.log(`     Time since release: ${correlation.timeSinceRelease}ms`);
+                console.log(`     Mouse movement: ${mouseDist.toFixed(2)}px`);
+                console.log(`     Piece movement: ${pieceDist.toFixed(2)}px`);
+                console.log(`     Movement ratio: ${ratio.toFixed(2)}`);
+                
+                // Check for inverse relationship
+                if (mouseDist < 10 && pieceDist > 20) {
+                    smallMouseLargePiece++;
+                }
+                if (mouseDist > 50 && pieceDist < 10) {
+                    largeMouseSmallPiece++;
+                }
+                
+                // Check directional match
+                const mouseDir = Math.atan2(correlation.mouseDelta.y, correlation.mouseDelta.x);
+                const pieceDir = Math.atan2(correlation.pieceDelta.y, correlation.pieceDelta.x);
+                const dirDiff = Math.abs(mouseDir - pieceDir);
+                if (dirDiff < Math.PI / 4 || dirDiff > 7 * Math.PI / 4) {
+                    directionalMatches++;
+                }
+            });
+            
+            console.log('\n📈 Pattern Analysis:');
+            console.log(`   Small mouse → Large piece movements: ${smallMouseLargePiece}`);
+            console.log(`   Large mouse → Small piece movements: ${largeMouseSmallPiece}`);
+            console.log(`   Directional matches: ${directionalMatches}/${correlations.length}`);
+            
+            console.log('\n🎯 DIAGNOSIS:');
+            if (smallMouseLargePiece > 0 || largeMouseSmallPiece > 0) {
+                console.log('   ✅ INVERSE RELATIONSHIP CONFIRMED');
+                console.log('   🎯 Likely cause: Coordinate system scaling issue or CSS interference');
+            }
+            
+            if (directionalMatches > correlations.length * 0.7) {
+                console.log('   ✅ DIRECTIONAL CORRELATION CONFIRMED');
+                console.log('   🎯 Likely cause: Piece still connected to mouse after release');
+            }
+            
+            console.log('\n🔧 RECOMMENDED INVESTIGATIONS:');
+            console.log('   1. Check CSS transform/scale properties on canvas or parent elements');
+            console.log('   2. Verify coordinate system consistency between mouse and piece positioning');
+            console.log('   3. Check for lingering event listeners or drag state not being reset');
+            console.log('   4. Investigate browser zoom level or device pixel ratio effects');
+            
+        } else {
+            console.log('\n✅ NO COORDINATE CORRELATIONS DETECTED');
+            console.log('   Mouse movement does not appear to affect piece positions');
+        }
+        
+        // Show recent events
+        if (this.coordinateLogs.length > 0) {
+            console.log('\n📝 Recent Events:');
+            const recentEvents = this.coordinateLogs.slice(-10);
+            recentEvents.forEach(event => {
+                const time = new Date(event.timestamp).toLocaleTimeString();
+                console.log(`   ${time}: ${event.type} - Piece ${event.pieceIndex || 'N/A'}`);
+            });
+        }
+        
+        return {
+            totalEvents,
+            correlations: correlations.length,
+            releases: releases.length,
+            coordinateLogs: this.coordinateLogs
+        };
+    }
+
+    /**
+     * Clear all diagnostic data
+     */
+    clearCoordinateData() {
+        this.coordinateLogs = [];
+        this.lastReleaseData = null;
+        console.log('🗑️ Coordinate system diagnostic data cleared');
+    }
+}
+
+// Global functions for easy access
+window.enableCoordinateMonitoring = function() {
+    if (window.webglRenderer && window.voronoiPuzzle) {
+        if (!window.coordinateSystemDiagnostic) {
+            window.coordinateSystemDiagnostic = new CoordinateSystemDiagnostic(window.webglRenderer, window.voronoiPuzzle);
+        }
+        window.coordinateSystemDiagnostic.enableCoordinateMonitoring();
+        return true;
+    } else {
+        console.warn('⚠️ WebGL renderer or puzzle not available');
+        return false;
+    }
+};
+
+window.disableCoordinateMonitoring = function() {
+    if (window.coordinateSystemDiagnostic) {
+        window.coordinateSystemDiagnostic.disableCoordinateMonitoring();
+        return true;
+    } else {
+        console.warn('⚠️ Coordinate monitoring not active');
+        return false;
+    }
+};
+
+window.analyzeCoordinateSystem = function() {
+    if (window.coordinateSystemDiagnostic) {
+        return window.coordinateSystemDiagnostic.generateCoordinateReport();
+    } else {
+        console.warn('⚠️ Coordinate monitoring not active - run enableCoordinateMonitoring() first');
+        return null;
+    }
+};
+
+window.clearCoordinateData = function() {
+    if (window.coordinateSystemDiagnostic) {
+        window.coordinateSystemDiagnostic.clearCoordinateData();
+        return true;
+    } else {
+        console.warn('⚠️ Coordinate monitoring not active');
+        return false;
+    }
+};
+
+// Add to debug commands
+if (typeof window !== 'undefined') {
+    const originalShowDebug = window.showDebugCommands;
+    window.showDebugCommands = function() {
+        if (originalShowDebug) originalShowDebug();
+        console.log('  enableCoordinateMonitoring() - Monitor coordinate system issues');
+        console.log('  disableCoordinateMonitoring() - Disable coordinate monitoring');
+        console.log('  analyzeCoordinateSystem() - Analyze coordinate system correlations');
+        console.log('  clearCoordinateData() - Clear coordinate diagnostic data');
+    };
+}

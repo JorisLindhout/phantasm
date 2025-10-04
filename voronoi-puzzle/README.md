@@ -25,7 +25,7 @@ A high-performance web-based puzzle prototype featuring animated Voronoi cells w
 - **Z-Index Management**: Clicked pieces always appear on top
 - **Hit Detection**: Accurate piece selection with expanded interaction areas
 - **Auto-Recovery System**: Automatically detects and restores unreachable pieces
-- **Fixed Canvas Size**: 1200x675 pixel canvas maintains consistent 16:9 aspect ratio
+- **Fixed Canvas Size**: Always 1200x675 pixels (16:9 aspect ratio) regardless of screen size - may cause horizontal scrolling on narrow screens
 
 ### 🎨 WebGL 3D Rendering
 - **Hardware Acceleration**: GPU-accelerated rendering with Three.js
@@ -234,6 +234,11 @@ The puzzle can experience pieces that become **visually present and animating** 
 - **Interaction Debugging**: `toggleInteractionDebug()` - Detailed logging of interaction state
 - **Manual Recovery**: Console commands for manual piece restoration
 
+#### Advanced Diagnostic Tools:
+- **Raycaster Precision Testing**: `runPrecisionTests()` - Tests if raycaster precision degrades with large coordinates
+- **Scene State Diagnostics**: `diagnoseSceneState()` - Comprehensive analysis of scene management issues
+- **Auto-Fix Tools**: `autoFixSceneIssues()` - Automatically repairs detected scene problems
+
 #### Prevention Strategies:
 - **Object-Based Architecture**: Eliminates array synchronization issues
 - **Enhanced State Management**: Better tracking of piece states and relationships
@@ -278,7 +283,68 @@ The puzzle can experience pieces that become **visually present and animating** 
 - **Local Storage**: Theme preference persistence
 - **Modern JavaScript**: ES6+ features for optimal performance
 
+## 🔍 Diagnostic Tools
+
+Comprehensive diagnostic and testing tools are available in the `debug-tools/` folder. See [`debug-tools/README.md`](debug-tools/README.md) for complete documentation.
+
+### Quick Start
+```javascript
+// Quick health check
+quickDiagnostic()
+
+// Run comprehensive test suite
+runAllTests()
+
+// Show all available commands
+showDebugCommands()
+```
+
+### Raycaster Precision Testing
+Tests whether raycaster precision degrades with large coordinates (hypothesis testing):
+
+```javascript
+// Run complete precision test suite
+runPrecisionTests()
+
+// Test synthetic meshes at various distances
+testRaycasterPrecision()
+
+// Test actual puzzle pieces
+testUnresponsivePieces()
+```
+
+**Results**: Confirmed that raycaster precision is NOT the issue - all test meshes are detectable even at extreme distances (100,000+ units).
+
+### Scene State Diagnostics
+Comprehensive analysis of scene management and object state issues:
+
+```javascript
+// Run full scene state diagnostics
+diagnoseSceneState()
+
+// Auto-fix detected issues
+autoFixSceneIssues()
+```
+
+**Tests performed**:
+1. **Scene Membership**: Checks if pieces are properly in the Three.js scene
+2. **Geometry Validity**: Validates piece geometry and materials
+3. **Raycaster Targets**: Analyzes pieces that raycaster checks for hit detection
+4. **State Synchronization**: Verifies consistency between piece and slot states
+5. **Z-Index Layering**: Identifies layering conflicts and negative z-indices
+
+**Auto-fix capabilities**:
+- Re-adds missing pieces to scene
+- Recreates corrupted geometries
+- Fixes visibility issues
+- Resolves state synchronization problems
+
 ## Future Development
+
+### **Phase 1: Responsive Design (Planned)**
+- **Responsive Canvas on Load**: Implement canvas sizing that adapts to screen width while maintaining 16:9 aspect ratio on initial load
+- **Mobile Optimization**: Ensure game is playable on tablets and mobile devices without horizontal scrolling
+- **Viewport Adaptation**: Canvas should scale appropriately for different screen sizes while preserving gameplay experience
 
 ### **Phase 2: Medium-Risk Resource Management (Planned)**
 - **Texture Memory Management**: Dispose of unused textures and geometries
