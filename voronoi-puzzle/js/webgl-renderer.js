@@ -3011,3 +3011,88 @@ window.testInteractionSystem = function() {
         return false;
     }
 };
+
+// Enhanced dispose method for proper cleanup
+WebGLVoronoiRenderer.prototype.dispose = function() {
+    // Clean up connected mesh
+    if (this.connectedMesh) {
+        this.scene.remove(this.connectedMesh);
+        this.connectedMesh.geometry.dispose();
+        this.connectedMesh.material.dispose();
+        this.connectedMesh = null;
+    }
+    
+    // Clean up connected outline
+    if (this.connectedOutline) {
+        this.scene.remove(this.connectedOutline);
+        this.connectedOutline.geometry.dispose();
+        this.connectedOutline.material.dispose();
+        this.connectedOutline = null;
+    }
+    
+    // Clean up separate pieces
+    if (this.pieces) {
+        this.pieces.forEach(piece => {
+            if (piece.mesh) {
+                this.scene.remove(piece.mesh);
+                piece.mesh.geometry.dispose();
+                piece.mesh.material.dispose();
+                piece.mesh = null;
+            }
+            if (piece.outline) {
+                this.scene.remove(piece.outline);
+                piece.outline.geometry.dispose();
+                piece.outline.material.dispose();
+                piece.outline = null;
+            }
+        });
+        this.pieces = null;
+    }
+    
+    // Clean up glow outlines
+    if (this.separateGlowOutlines) {
+        this.separateGlowOutlines.forEach(glow => {
+            if (glow) {
+                this.scene.remove(glow);
+                glow.geometry.dispose();
+                glow.material.dispose();
+            }
+        });
+        this.separateGlowOutlines = null;
+    }
+    
+    // Clean up background texture
+    if (this.backgroundTexture) {
+        this.backgroundTexture.dispose();
+        this.backgroundTexture = null;
+    }
+    
+    // Clean up Three.js objects
+    if (this.scene) {
+        this.scene.clear();
+        this.scene = null;
+    }
+    
+    if (this.camera) {
+        this.camera = null;
+    }
+    
+    if (this.renderer) {
+        this.renderer.dispose();
+        this.renderer = null;
+    }
+    
+    // Remove the WebGL canvas from DOM
+    if (this.canvas && this.canvas.parentNode) {
+        this.canvas.parentNode.removeChild(this.canvas);
+        this.canvas = null;
+    }
+    
+    // Nullify other references
+    this.voronoiPolygons = null;
+    this.pieceZIndices = null;
+    this.pieceStates = null;
+    this.slotStates = null;
+    
+    console.log('✅ WebGL renderer disposed and cleaned up');
+};

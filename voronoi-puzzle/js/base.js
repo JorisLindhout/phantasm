@@ -50,6 +50,9 @@ class VoronoiPuzzleBase {
         // Solved state tracking
         this.isSolved = false;
         this.solveThreshold = 10; // pixels - how close pieces need to be to be considered "solved"
+        
+        // Event listener tracking for cleanup
+        this.eventListeners = [];
     }
 
     async loadBackgroundImage() {
@@ -416,6 +419,45 @@ class VoronoiPuzzleBase {
         }
     }
 
+
+    // Helper method to track event listeners for cleanup
+    addEventListener(element, event, handler, options = {}) {
+        element.addEventListener(event, handler, options);
+        this.eventListeners.push({ element, event, handler, options });
+    }
+    
+    // Clean up all tracked event listeners
+    removeAllEventListeners() {
+        this.eventListeners.forEach(({ element, event, handler, options }) => {
+            element.removeEventListener(event, handler, options);
+        });
+        this.eventListeners = [];
+    }
+    
+    // Enhanced dispose method for proper cleanup
+    dispose() {
+        // Cancel animation loop
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+        
+        // Remove all event listeners
+        this.removeAllEventListeners();
+        
+        // Nullify object references
+        this.pieces = null;
+        this.slots = null;
+        this.pieceOffsets = null;
+        this.pieceZIndex = null;
+        this.snappedPieces = null;
+        this.backgroundImage = null;
+        this.voronoi = null;
+        this.points = null;
+        this.originalPoints = null;
+        
+        console.log('✅ Base class disposed and cleaned up');
+    }
 
     // Abstract methods to be implemented by subclasses
     render() {

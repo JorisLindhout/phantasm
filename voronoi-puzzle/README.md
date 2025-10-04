@@ -2,41 +2,71 @@
 
 A high-performance web-based puzzle prototype featuring animated Voronoi cells with WebGL 3D rendering, advanced visual effects, and a unified theming system.
 
+## Table of Contents
+
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Architecture](#architecture)
+- [File Structure](#file-structure)
+- [Usage & Controls](#usage--controls)
+- [Development](#development)
+- [Known Issues](#known-issues)
+- [Browser Compatibility](#browser-compatibility)
+- [Performance](#performance)
+- [Dependencies](#dependencies)
+- [Future Development](#future-development)
+
 ## Features
 
-### 🧩 **Interactive Puzzle Gameplay**
+### 🧩 Interactive Puzzle Gameplay
 - **Drag & Drop**: Move individual puzzle pieces around the canvas
-- **Smart Snapping**: Pieces automatically snap to their correct positions
+- **Smart Snapping**: Pieces automatically snap to their correct positions when within 25px threshold
 - **Visual Feedback**: Hover effects, drag glows, and snap confirmations
 - **Z-Index Management**: Clicked pieces always appear on top
 - **Hit Detection**: Accurate piece selection with expanded interaction areas
 - **Auto-Recovery System**: Automatically detects and restores unreachable pieces
-- **Threshold-Based Separation**: Pieces become separate when moved beyond 25px threshold
 - **Fixed Canvas Size**: 1200x675 pixel canvas maintains consistent 16:9 aspect ratio
-- **Window Resize Handling**: Canvas size is fixed - window resizing shows scrollbars or extra space
 
-### 🎨 **WebGL 3D Rendering**
+### 🎨 WebGL 3D Rendering
 - **Hardware Acceleration**: GPU-accelerated rendering with Three.js
 - **True Z-Layering**: Proper depth testing for accurate piece stacking
 - **Advanced Materials**: Dynamic textures and lighting effects
 - **High Performance**: Optimized for 30+ pieces with smooth animation
 
-### ✨ **Advanced Visual Effects**
+### ✨ Advanced Visual Effects
 - **Animated Boundaries**: Smooth Perlin noise animation of cell edges
 - **State-Based Rendering**: Different visual states for pieces (normal, hover, dragging, snapped)
 - **Neon Glow Effects**: Dynamic glowing outlines while dragging pieces
 - **Piece Scaling**: Smooth scaling animations for interactive feedback
 - **Slot Hover System**: Visual feedback when hovering over placement areas
 
-### 🎨 **Unified Theme System**
+### 🎨 Unified Theme System
 - **FluidLock Theme**: Default cyan/green color scheme optimized for the puzzle
 - **Dev Tools Integration**: Console-based theme switching for development
 - **Dynamic Color Updates**: Real-time theme changes across both renderers
 - **Persistent Preferences**: Theme choices saved between sessions
 
+## Quick Start
+
+1. **Clone/Download** the project
+2. **Start a local server:**
+   ```bash
+   # Python 3
+   python3 -m http.server 8080
+   
+   # Python 2
+   python -m SimpleHTTPServer 8080
+   
+   # Node.js (if you have it)
+   npx http-server -p 8080
+   ```
+3. **Open browser** to `http://localhost:8080`
+4. **Interact** with puzzle pieces by clicking and dragging
+5. **Adjust settings** using the control panel (click the caret icon)
+
 ## Architecture
 
-### 🏗️ **Clean Modular Structure**
+### 🏗️ Clean Modular Structure
 ```
 js/
 ├── utils.js          # Voronoi diagram utilities
@@ -47,23 +77,19 @@ js/
 └── main.js           # Main application controller
 ```
 
-### 🔧 **Core Technologies**
-
+### 🔧 Core Technologies
 1. **Voronoi Generation**: d3-delaunay library for efficient diagram generation
 2. **3D Rendering**: Three.js for WebGL-accelerated graphics
-3. **WebGL Focus**: Optimized for WebGL 3D rendering
-4. **Animation**: Perlin noise for organic boundary movement
-5. **State Management**: Comprehensive piece and slot state tracking
+3. **Animation**: Perlin noise for organic boundary movement
+4. **State Management**: Comprehensive piece and slot state tracking
 
-### ⚡ **Technical Highlights**
-
+### ⚡ Technical Highlights
 - **WebGL Rendering**: Hardware-accelerated 3D graphics with Three.js
 - **True Z-Layering**: WebGL depth testing for proper piece stacking
 - **Dynamic Geometry**: Real-time mesh updates for animated boundaries
 - **Smart Caching**: Efficient piece image capture and reuse
 - **Edge Deduplication**: Optimized outline rendering to prevent overdraw
-- **Fixed Canvas Size**: 1200x675 pixel canvas with 16:9 aspect ratio
-- **Automatic Scrollbars**: Container shows scrollbars when window is smaller than canvas
+- **Object-Based Architecture**: Eliminates array synchronization issues
 
 ## File Structure
 
@@ -72,6 +98,7 @@ voronoi-puzzle/
 ├── index.html                    # Main HTML entry point
 ├── styles.css                    # Main CSS (imports modular styles)
 ├── noise.js                      # Perlin noise implementation
+├── package.json                  # Project dependencies
 ├── assets/                       # Game assets and images
 │   └── base-image-cube.svg       # Default puzzle background image (16:9 aspect ratio)
 ├── css/                          # Modular CSS architecture
@@ -89,62 +116,45 @@ voronoi-puzzle/
 └── README.md                     # This documentation
 ```
 
-## Usage
+## Usage & Controls
 
-### 🎮 **Basic Controls**
-1. **Open** `index.html` in a modern web browser
-2. **Interact** with puzzle pieces by clicking and dragging
-3. **Adjust settings** using the control panel:
-   - **Cell Count**: Number of Voronoi pieces (5-50)
-   - **Animation Speed**: Speed of boundary animation (0.1-2.0x)
-   - **Noise Amplitude**: Intensity of boundary deformation (0-50)
-4. **WebGL rendering** with hardware acceleration
-5. **Toggle features** like animation and grid outlines
+### 🎮 Basic Controls
+1. **Click and drag** any piece to move it around
+2. **Hover** over pieces or slots for visual feedback
+3. **Auto-snap** occurs when pieces are within 25px of their correct position
 
-## ⚠️ **Known Issues & Limitations**
+### 🎛️ Control Panel
+Access the control panel by clicking the caret icon (^) in the top-right corner:
 
-### 🔧 **"Lost Pieces" / "Unresponsive Pieces" Problem**
+- **Cell Count**: Number of Voronoi pieces (5-50)
+- **Animation Speed**: Speed of boundary animation (0.1-2.0x)
+- **Noise Amplitude**: Intensity of boundary deformation (0-50)
+- **Regenerate Puzzle**: Create a new puzzle layout
+- **Toggle Animation**: Enable/disable boundary animation
+- **Toggle Grid Outlines**: Show/hide piece outlines
 
-The puzzle can experience pieces that become **visually present and animating** but **not responding to hover/click/drag**. This is a complex interaction desynchronization issue with multiple potential causes:
+### 🎨 Theme Development (Console Commands)
+```javascript
+// Switch to available theme
+themeManager.setTheme('fluidlock')   // Default cyan/green theme
 
-#### **Root Causes Identified:**
+// Theme information
+themeManager.getAvailableThemes()    // List all available themes
+themeManager.getCurrentTheme()       // Get current theme details
 
-1. **Scene Graph Desynchronization**
-   - **Problem**: Pieces exist in the object system but are not properly positioned in the Three.js scene
-   - **Symptom**: Pieces are visible but hit detection fails
-   - **Fix**: Enhanced scene synchronization with `fixMispositionedPieces()` function
+// Direct theme access for customization
+themeManager.currentTheme.colors     // Access all color definitions
+```
 
-2. **Interaction State Desynchronization** 
-   - **Problem**: Pieces lose their event handling capabilities due to state management issues
-   - **Symptom**: Pieces don't respond to mouse events despite being visible
-   - **Fix**: State consistency checks and interaction system validation
+## Development
 
-3. **Z-Index Accumulation**
-   - **Problem**: `bringPieceToFront()` can cause z-indices to grow unbounded
-   - **Symptom**: Pieces become unreachable due to incorrect depth sorting
-   - **Fix**: Z-index normalization system with `normalizeZIndices()`
+### 🛠️ Development Tools
+- **Theme System**: Use browser console for theme switching
+- **Debug Logging**: Configurable console output for different components
+- **Hot Reload**: No build step - just refresh browser after changes
+- **Modular Architecture**: Easy to modify individual components
 
-4. **Waterfall Effect**
-   - **Problem**: One lost piece can trigger a cascade of other pieces becoming unresponsive
-   - **Symptom**: Multiple pieces become unresponsive after interacting with one
-   - **Fix**: Enhanced debugging and state isolation
-
-#### **Detection & Recovery Systems:**
-
-- **Auto-Recovery System**: `autoRecoverPieces()` - Automatically detects and restores unreachable pieces
-- **Scene Synchronization**: `fixMispositionedPieces()` - Ensures pieces are properly positioned in 3D scene
-- **Interaction Debugging**: `toggleInteractionDebug()` - Detailed logging of interaction state
-- **Manual Recovery**: Console commands for manual piece restoration
-
-#### **Prevention Strategies:**
-
-- **Object-Based Architecture**: Eliminates array synchronization issues
-- **Enhanced State Management**: Better tracking of piece states and relationships
-- **Robust Hit Detection**: Multiple fallback methods for piece selection
-- **Z-Index Management**: Automatic normalization to prevent accumulation
-- **Comprehensive Logging**: Controllable debug output for troubleshooting
-
-#### **Debug Commands:**
+### 🔧 Debug System (Console Commands)
 ```javascript
 // Show all available debug commands
 showDebugCommands()
@@ -159,36 +169,6 @@ testInteractionSystem()            // Test interaction system health
 
 // State validation
 validateObjectArraySync()          // Validate object system integrity
-```
-
-### 🎨 **Theme Development (Console Commands)**
-```javascript
-// Switch to available theme
-themeManager.setTheme('fluidlock')   // Default cyan/green theme
-
-// Theme information
-themeManager.getAvailableThemes()    // List all available themes
-themeManager.getCurrentTheme()       // Get current theme details
-
-// Direct theme access for customization
-themeManager.currentTheme.colors     // Access all color definitions
-```
-
-### 🔧 **Debug System (Console Commands)**
-```javascript
-// Show all available debug commands
-showDebugCommands()
-
-// Auto-recovery system
-autoRecoverPieces()                  // Manually recover unreachable pieces
-fixMispositionedPieces()            // Fix pieces not properly positioned in scene
-
-// Interaction debugging
-toggleInteractionDebug()           // Toggle detailed interaction logging
-testInteractionSystem()            // Test interaction system health
-
-// State validation
-validateObjectArraySync()          // Validate object system integrity
 
 // Debug logging controls
 toggleHitDetection()                // Toggle hit detection logs
@@ -196,7 +176,6 @@ togglePieceStates()                 // Toggle piece state logs
 toggleAnimation()                   // Toggle animation logs
 toggleVisualStates()                // Toggle visual state logs
 toggleCreation()                    // Toggle creation/removal logs
-toggleInteractionDebug()           // Toggle interaction debugging
 toggleMaterialUpdates()            // Toggle material update logs
 toggleHoverEffects()               // Toggle hover effect logs
 toggleNeonGlow()                   // Toggle neon glow logs
@@ -212,50 +191,10 @@ disableAllDebug()                   // Disable all debug logs
 toggleQuietMode()                   // Toggle quiet mode (reduce noise)
 ```
 
-### 🧩 **Gameplay Features**
-- **Drag & Drop**: Click and drag any piece to move it around
-- **Smart Snapping**: Pieces automatically snap when near their correct position
-- **Visual Feedback**: 
-  - Hover effects when mouse is over pieces/slots
-  - Glow effects while dragging pieces
-  - Green outlines when pieces are correctly placed
-- **Z-Index**: Clicked pieces automatically move to the front
-
-## Advanced Features
-
-### 🔧 **WebGL Rendering**
-- **Hardware Acceleration**: GPU-accelerated 3D rendering with true depth layering
-- **Three.js Integration**: Modern WebGL graphics with optimized performance
-- **Automatic Detection**: Graceful fallback if WebGL is unavailable
-- **Dynamic Geometry**: Real-time mesh updates for smooth animations
-
-### 🎯 **Performance Optimizations**
-- **Smart Rendering**: Only updates what's necessary each frame
-- **Piece Caching**: Efficiently stores piece images for moved pieces
-- **Edge Deduplication**: Prevents drawing shared borders multiple times
-- **State-Based Updates**: Only renders changes when pieces move or change state
-
-### 🔄 **Auto-Recovery System**
-- **Automatic Detection**: Monitors pieces for unreachable states
-- **Smart Recovery**: Resets pieces to connected state when stuck
-- **Conservative Approach**: Does not auto-recover pieces in wrong slots (prevents puzzle from "solving itself")
-- **Rate Limiting**: Prevents auto-recovery from running too frequently (max once every 2 seconds)
-- **Detailed Logging**: Tracks which pieces are restored and their previous state
-- **Manual Override**: `autoRecoverPieces()` console command for manual intervention
-- **State Synchronization**: Ensures both object and array systems stay in sync
-
-### 🎯 **Auto-Snap System**
-- **Automatic Snapping**: Pieces automatically snap to their slots when within 25px threshold
-- **Prevents Rapid Cycling**: Eliminates create/remove cycles that cause unresponsive pieces
-- **Smart Detection**: Only snaps pieces that are in 'unsolved' state and close to their slot
-- **Timeout Protection**: 100ms delay prevents rapid cycling during dragging
-- **Manual Override**: `autoSnapPiece(pieceIndex)` console command for manual testing
-- **Visual Feedback**: Logs snap events for debugging and user feedback
-
-### 🏗️ **Object-Based Architecture**
+### 🏗️ Object-Based Architecture
 The system uses a fully object-based architecture to eliminate synchronization issues:
 
-#### **Piece Objects**
+#### Piece Objects
 ```javascript
 pieces[index] = {
   id: index,                    // Unique identifier
@@ -270,179 +209,92 @@ pieces[index] = {
 }
 ```
 
-#### **Slot Objects**
-```javascript
-slots[index] = {
-  id: index,                   // Unique identifier
-  polygon: [...],              // Voronoi shape data
-  state: 'filled'|'empty',    // Slot state
-  pieceId: index,             // Which piece is in this slot
-  isCorrect: true,            // Whether correct piece is in slot
-  // ... additional properties
-}
-```
-
-#### **Benefits of Object System**
+#### Benefits of Object System
 - **No Sync Issues**: All piece data in one object
 - **Better Debugging**: Clear object structure for troubleshooting
 - **Atomic Updates**: All data changes together
 - **Future-Proof**: Easy to extend with new properties
 - **Performance**: Object property access is fast and reliable
 
-#### **Complete Object Structure**
+## Known Issues
 
-**Piece Object Properties:**
-```javascript
-{
-  // Core identification
-  id: number,                    // Unique identifier (0-39)
-  
-  // Geometric data
-  polygon: Array<[number, number]>, // Voronoi polygon vertices
-  position: {x: number, y: number},  // Current world position
-  offset: {x: number, y: number},    // Offset from original position
-  
-  // 3D rendering objects
-  mesh: THREE.Mesh|null,         // 3D mesh (null if connected)
-  outline: THREE.Line|null,      // Outline mesh (null if connected)
-  glowOutline: Array|null,       // Neon glow layers (null if connected)
-  
-  // State management
-  state: 'solved'|'unsolved',   // Current piece state
-  slotState: 'filled'|'empty',  // Slot occupancy state
-  zIndex: number,               // Rendering depth (0-100)
-  
-  // Visual state
-  visible: boolean,             // Is piece visible
-  hovered: boolean,             // Is piece being hovered
-  dragging: boolean,            // Is piece being dragged
-  
-  // Slot relationship
-  slotId: number,               // Which slot this piece belongs to
-  isInSlot: boolean,            // Is piece in its correct slot
-  
-  // Animation
-  animationTime: number,        // Current animation time
-  animationOffset: {x: number, y: number} // Animation position offset
-}
-```
+### 🔧 "Lost Pieces" / "Unresponsive Pieces" Problem
 
-**Slot Object Properties:**
-```javascript
-{
-  // Core identification
-  id: number,                   // Unique identifier (0-39)
-  
-  // Geometric data
-  polygon: Array<[number, number]>, // Voronoi polygon vertices
-  position: {x: number, y: number},  // Slot center position
-  
-  // State management
-  state: 'filled'|'empty',      // Slot occupancy state
-  pieceId: number|null,         // Which piece is in this slot
-  correctPieceId: number,       // Which piece should be in this slot
-  isCorrect: boolean,           // Is the correct piece in this slot
-  
-  // Visual state
-  hovered: boolean,             // Is slot being hovered
-  showBackground: boolean       // Should show background image
-}
-```
+The puzzle can experience pieces that become **visually present and animating** but **not responding to hover/click/drag**. This is a complex interaction desynchronization issue with multiple potential causes:
 
-## 🛠️ **Development Notes**
+#### Root Causes Identified:
+1. **Scene Graph Desynchronization**: Pieces exist in the object system but are not properly positioned in the Three.js scene
+2. **Interaction State Desynchronization**: Pieces lose their event handling capabilities due to state management issues
+3. **Z-Index Accumulation**: `bringPieceToFront()` can cause z-indices to grow unbounded
+4. **Waterfall Effect**: One lost piece can trigger a cascade of other pieces becoming unresponsive
 
-### **Object-Based Architecture Benefits**
+#### Detection & Recovery Systems:
+- **Auto-Recovery System**: `autoRecoverPieces()` - Automatically detects and restores unreachable pieces
+- **Scene Synchronization**: `fixMispositionedPieces()` - Ensures pieces are properly positioned in 3D scene
+- **Interaction Debugging**: `toggleInteractionDebug()` - Detailed logging of interaction state
+- **Manual Recovery**: Console commands for manual piece restoration
 
-The migration from array-based to object-based architecture provides significant improvements:
-
-#### **Problem Solved: Array Synchronization Issues**
-- **Before**: 6+ arrays that had to stay synchronized by index
-- **After**: Self-contained objects with all data in one place
-- **Result**: Eliminates "unreachable pieces" caused by sync issues
-
-#### **Enhanced Debugging Capabilities**
-- **Object Inspection**: `console.log(pieces[5])` shows all piece data
-- **State Tracking**: Clear visibility into piece and slot relationships
-- **Recovery Logging**: Detailed logs of which pieces are restored and why
-
-#### **Performance Improvements**
-- **Atomic Updates**: All piece data changes together
-- **Reduced Complexity**: No need to maintain multiple synchronized arrays
-- **Better Memory Management**: Objects can be garbage collected independently
-
-#### **Future-Proof Design**
-- **Easy Extension**: Add new properties without breaking existing code
-- **Type Safety**: Clear object structure for better IDE support
-- **Maintainability**: Self-documenting code with clear relationships
-
-### **Object-Only Architecture**
-The system now uses a **fully object-based approach**:
-- **Object System**: Primary and only data source for all operations
-- **No Array Backup**: Array system has been completely removed
-- **Simplified Architecture**: Single source of truth for all piece data
-- **Better Performance**: No synchronization overhead between systems
-
-### **Testing Strategy**
-- **Debug Commands**: `autoRecoverPieces()` and `showDebugCommands()`
-- **Enhanced Logging**: Object-based debug information with controllable log levels
-- **Recovery Testing**: Automatic detection and restoration of stuck pieces
-- **Performance Monitoring**: Object property access for optimal performance
-
-## Dependencies
-
-### 📦 **Core Libraries**
-- **d3-delaunay** `^6.0.0`: Efficient Voronoi diagram generation
-- **Three.js** `r128`: WebGL 3D graphics library
-- **Custom Perlin Noise**: Smooth boundary animation implementation
-
-### 🌐 **Browser APIs**
-- **WebGL**: Hardware-accelerated 3D graphics
-- **Local Storage**: Theme preference persistence
-- **Modern JavaScript**: ES6+ features for optimal performance
-
-## Development Setup
-
-### 🚀 **Quick Start**
-1. **Clone/Download** the project
-2. **Start a local server:**
-   ```bash
-   # Python 3
-   python3 -m http.server 8080
-   
-   # Python 2
-   python -m SimpleHTTPServer 8080
-   
-   # Node.js (if you have it)
-   npx http-server -p 8080
-   ```
-3. **Open browser** to `http://localhost:8080`
-
-### 🛠️ **Development Tools**
-- **Theme System**: Use browser console for theme switching
-- **Debug Logging**: Configurable console output for different components
-- **Hot Reload**: No build step - just refresh browser after changes
-- **Modular Architecture**: Easy to modify individual components
+#### Prevention Strategies:
+- **Object-Based Architecture**: Eliminates array synchronization issues
+- **Enhanced State Management**: Better tracking of piece states and relationships
+- **Robust Hit Detection**: Multiple fallback methods for piece selection
+- **Z-Index Management**: Automatic normalization to prevent accumulation
+- **Comprehensive Logging**: Controllable debug output for troubleshooting
 
 ## Browser Compatibility
 
-### ✅ **Fully Supported**
+### ✅ Fully Supported
 - **Chrome/Edge** 80+ (WebGL)
 - **Firefox** 75+ (WebGL)
 - **Safari** 13+ (WebGL)
 
-### ⚠️ **Limited Support**
+### ⚠️ Limited Support
 - **Older browsers**: WebGL required for functionality
 - **Mobile browsers**: Touch interactions supported, performance may vary
 - **IE11**: Not supported (requires ES6+ features)
 
-### 🎯 **Recommended**
+### 🎯 Recommended
 - **Desktop browsers** with WebGL support for best performance
 - **Hardware acceleration** enabled for smooth 3D rendering
 - **16GB+ RAM** for larger puzzle sizes (50+ pieces)
 
-## Performance Notes
+## Performance
 
 - **WebGL Rendering**: Optimized for 30+ pieces with excellent performance
 - **Hardware Acceleration**: GPU-accelerated rendering for smooth animations
 - **Animation**: Can be toggled off for better performance on slower devices
-- **Responsive**: Automatically adjusts to screen size and capabilities
+- **Fixed Canvas Size**: 1200x675 pixel canvas prevents memory bloat from resizing
+- **Resource Management**: Enhanced cleanup and disposal system for better memory management
+
+## Dependencies
+
+### 📦 Core Libraries
+- **d3-delaunay** `^5.3.0`: Efficient Voronoi diagram generation
+- **Three.js** `r128`: WebGL 3D graphics library
+- **Custom Perlin Noise**: Smooth boundary animation implementation
+
+### 🌐 Browser APIs
+- **WebGL**: Hardware-accelerated 3D graphics
+- **Local Storage**: Theme preference persistence
+- **Modern JavaScript**: ES6+ features for optimal performance
+
+## Future Development
+
+### **Phase 2: Medium-Risk Resource Management (Planned)**
+- **Texture Memory Management**: Dispose of unused textures and geometries
+- **Geometry Caching & Cleanup**: Cache and reuse geometries, dispose unused ones
+- **Performance Monitoring**: Add memory and performance tracking with automatic cleanup triggers
+- **Risk Level**: Medium - Requires testing to ensure no visual glitches
+
+### **Phase 3: High-Risk Resource Management (Future Consideration)**
+- **Aggressive Resource Limits**: Implement strict limits on resources with automatic piece cleanup
+- **Dynamic Quality Adjustment**: Reduce quality under memory pressure (texture resolution, geometry complexity)
+- **Memory Pressure Detection**: Automatic quality reduction when system is under stress
+- **Risk Level**: High - Could cause visual degradation or unexpected behavior
+
+### **Current Resource Management Features**
+- **Event Listener Cleanup**: Proper cleanup of all event listeners
+- **Object Reference Nullification**: Explicit nullification of object references
+- **Animation Loop Cleanup**: Proper cancellation of animation loops
+- **WebGL Resource Disposal**: Complete cleanup of Three.js objects and textures
+- **Memory Leak Prevention**: Comprehensive disposal system prevents memory leaks

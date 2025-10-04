@@ -122,6 +122,27 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
             this.currentRenderer.render();
         }
     }
+    
+    dispose() {
+        // Clean up WebGL renderer
+        if (this.webglRenderer) {
+            this.webglRenderer.dispose();
+            this.webglRenderer = null;
+        }
+        
+        // Clean up current renderer
+        if (this.currentRenderer) {
+            if (this.currentRenderer.dispose) {
+                this.currentRenderer.dispose();
+            }
+            this.currentRenderer = null;
+        }
+        
+        // Call base class dispose
+        super.dispose();
+        
+        console.log('✅ Main puzzle disposed and cleaned up');
+    }
 }
 
 /**
