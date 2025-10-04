@@ -35,6 +35,24 @@ showDebugCommands()
 ### Visual Debug Tools
 - **`visual-debug-overlay.js`** - Real-time visual overlay showing mouse coordinates, piece data, and dragging state
 
+## 🎯 Coordinate System Debugging
+
+The debug tools are designed to work with the **WebGL coordinate system** that is now the global standard:
+
+### Coordinate System Overview
+- **Internal System**: All calculations use WebGL coordinates (Y=0 at bottom, Y=height at top)
+- **Mouse Input**: Converted from screen coordinates to WebGL coordinates
+- **Display Output**: Converted from WebGL coordinates to screen coordinates
+- **Debug Tools**: Show coordinates in the system they're used (WebGL for internal, screen for display)
+
+### Key Debug Commands for Coordinate Issues
+```javascript
+// Monitor coordinate system consistency
+monitorCoordinateSystem()     // Track coordinate conversions
+testMouseCoordinateFlow()     // Verify mouse input conversion
+validatePositionManager()     // Check position manager calculations
+```
+
 ## 🔧 Available Commands
 
 ### Quick Diagnostics

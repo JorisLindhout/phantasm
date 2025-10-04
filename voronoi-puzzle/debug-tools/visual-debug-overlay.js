@@ -1,6 +1,7 @@
 /**
  * Visual Debug Overlay
  * Shows real-time piece position data, mouse coordinates, and dragging state
+ * Displays coordinates in WebGL coordinate system (internal calculations)
  * Simple overlay to see exactly what's happening when visual jumps occur
  */
 

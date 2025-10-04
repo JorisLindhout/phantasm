@@ -56,6 +56,9 @@ class WebGLVoronoiRenderer {
         // Grid outline visibility toggle
         this.showGridOutlines = false; // Set to true to show the thin blue grid outlines
         
+        // Initialize position manager (will be set up when originalPoints are available)
+        this.positionManager = null;
+        
         // Debug logging control - now uses theme system
         this.debugLogging = {
             glow: false,        // Neon glow creation/updates - controlled by theme
@@ -143,7 +146,7 @@ class WebGLVoronoiRenderer {
         const height = this.canvas.height;
         this.camera = new THREE.OrthographicCamera(
             0, width,     // left, right
-            height, 0,    // top, bottom (flipped to match screen coordinates)
+            0, height,    // bottom, top (WebGL coordinates: Y=0 at bottom, Y=height at top)
             -1000, 1000   // near, far (large range for z-layering)
         );
         this.camera.position.z = 100;
@@ -189,6 +192,20 @@ class WebGLVoronoiRenderer {
         
         if (this.debugLogging.initialization) {
             console.log('✅ WebGL renderer initialized');
+        }
+    }
+    
+    // Initialize position manager when originalPoints are available
+    initPositionManager(originalPoints) {
+        if (this.positionManager) {
+            this.positionManager.updateOriginalPoints(originalPoints);
+        } else {
+            this.positionManager = new PositionManager(originalPoints, this.canvas.height);
+            this.positionManager.setDebugLogging(this.debugLogging.coordinates);
+        }
+        
+        if (this.debugLogging.initialization) {
+            console.log('✅ Position manager initialized with', originalPoints.length, 'points');
         }
     }
     
@@ -271,6 +288,18 @@ class WebGLVoronoiRenderer {
         if (this.debugLogging.initialization) {
             console.log(`✅ Initialized connected Voronoi with ${polygons.length} pieces`);
             console.log(`✅ Initialized object-based system with ${this.pieces.length} pieces and ${this.slots.length} slots`);
+        }
+        
+        // Initialize position manager if originalPoints are available
+        console.log('🔍 Checking position manager initialization:');
+        console.log('  - this.originalPoints:', this.originalPoints);
+        console.log('  - originalPoints length:', this.originalPoints ? this.originalPoints.length : 'undefined');
+        
+        if (this.originalPoints && this.originalPoints.length > 0) {
+            console.log('✅ Initializing position manager with', this.originalPoints.length, 'points');
+            this.initPositionManager(this.originalPoints);
+        } else {
+            console.log('⚠️ Position manager not initialized - originalPoints not available');
         }
     }
     
@@ -413,15 +442,14 @@ class WebGLVoronoiRenderer {
         return null;
     }
     
-    // NEW: Convert world position to screen coordinates
+    // Convert world position to screen coordinates using coordinate utilities
     worldToScreen(worldPosition) {
-        const vector = new THREE.Vector3(worldPosition.x, worldPosition.y, worldPosition.z);
-        vector.project(this.camera);
-        
-        const x = (vector.x * 0.5 + 0.5) * this.canvas.width;
-        const y = (vector.y * -0.5 + 0.5) * this.canvas.height;
-        
-        return { x, y };
+        return CoordinateUtils.webGLWorldToScreen(
+            worldPosition, 
+            this.camera, 
+            this.canvas.width, 
+            this.canvas.height
+        );
     }
     
     // Check if a piece is in an unreachable state
@@ -530,12 +558,12 @@ class WebGLVoronoiRenderer {
             
             // Add center vertex
             vertices.push(centerX, centerY, 0);
-            uvs.push(centerX / this.canvas.width, centerY / this.canvas.height); // Keep original orientation
+            uvs.push(centerX / this.canvas.width, 1.0 - (centerY / this.canvas.height)); // Flip Y for WebGL coordinates
             
             // Add polygon vertices
             for (let i = 0; i < polygon.length; i++) {
                 vertices.push(polygon[i][0], polygon[i][1], 0);
-                uvs.push(polygon[i][0] / this.canvas.width, polygon[i][1] / this.canvas.height); // Keep original orientation
+                uvs.push(polygon[i][0] / this.canvas.width, 1.0 - (polygon[i][1] / this.canvas.height)); // Flip Y for WebGL coordinates
             }
             
             // Create triangles (fan from center)
@@ -830,24 +858,27 @@ class WebGLVoronoiRenderer {
         const piece = this.pieces[index];
         if (!piece.mesh) return;
         
-        // Get the original position for this piece
-        const originalPoint = this.originalPoints ? this.originalPoints[index] : null;
-        if (originalPoint) {
-            // Position mesh at absolute position (original + offset)
-            // Camera uses screen coordinates, so flip Y to match mouse movement
-            const newX = originalPoint[0] + offset.x;
-            const newY = -(originalPoint[1] + offset.y);
-            piece.mesh.position.x = newX;
-            piece.mesh.position.y = newY;
-            
-            // Debug logging for coordinate tracking
-            if (this.debugLogging.coordinates) {
-                console.log(`🔍 updateSeparatePiecePosition ${index}: original(${originalPoint[0].toFixed(1)}, ${originalPoint[1].toFixed(1)}) + offset(${offset.x.toFixed(1)}, ${offset.y.toFixed(1)}) = mesh(${newX.toFixed(1)}, ${newY.toFixed(1)})`);
-            }
+        // Get position using position manager (WebGL coordinates, no Y-flip needed)
+        if (this.positionManager) {
+            const position = this.positionManager.getMeshPosition(index, offset);
+            piece.mesh.position.x = position.x;
+            piece.mesh.position.y = position.y;
         } else {
-            // Fallback to offset-only positioning
-            piece.mesh.position.x = offset.x;
-            piece.mesh.position.y = -offset.y;
+            // Fallback to direct calculation if position manager not available
+            console.warn('⚠️ Position manager not available, using fallback calculation for piece', index);
+            const originalPoint = this.originalPoints ? this.originalPoints[index] : null;
+            if (originalPoint) {
+                piece.mesh.position.x = originalPoint[0] + offset.x;
+                piece.mesh.position.y = originalPoint[1] + offset.y;
+            } else {
+                piece.mesh.position.x = offset.x;
+                piece.mesh.position.y = offset.y;
+            }
+        }
+        
+        // Debug logging for coordinate tracking
+        if (this.debugLogging.coordinates) {
+            console.log(`🔍 updateSeparatePiecePosition ${index}: WebGL position(${piece.mesh.position.x.toFixed(1)}, ${piece.mesh.position.y.toFixed(1)})`);
         }
         
         // Update outline position if it exists
@@ -1533,7 +1564,7 @@ class WebGLVoronoiRenderer {
             for (let i = 0; i < positions.length; i += 3) {
                 const x = positions[i];
                 const y = positions[i + 1];
-                uvs.push(x / this.canvas.width, y / this.canvas.height);
+                uvs.push(x / this.canvas.width, 1.0 - (y / this.canvas.height)); // Flip Y for WebGL coordinates
             }
             
             geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
@@ -1552,17 +1583,22 @@ class WebGLVoronoiRenderer {
         // Create mesh
         const mesh = new THREE.Mesh(geometry, material);
         
-        // Get the original position for this piece
-        const originalPoint = this.originalPoints ? this.originalPoints[index] : null;
-        if (originalPoint) {
-            // Position mesh at absolute position (original + offset)
-            // Camera uses screen coordinates, so flip Y to match mouse movement
-            mesh.position.x = originalPoint[0] + offset.x;
-            mesh.position.y = -(originalPoint[1] + offset.y);
+        // Get position using position manager (WebGL coordinates, no Y-flip needed)
+        if (this.positionManager) {
+            const position = this.positionManager.getMeshPosition(index, offset);
+            mesh.position.x = position.x;
+            mesh.position.y = position.y;
         } else {
-            // Fallback to offset-only positioning
-            mesh.position.x = offset.x;
-            mesh.position.y = -offset.y;
+            // Fallback to direct calculation if position manager not available
+            console.warn('⚠️ Position manager not available, using fallback calculation for piece', index);
+            const originalPoint = this.originalPoints ? this.originalPoints[index] : null;
+            if (originalPoint) {
+                mesh.position.x = originalPoint[0] + offset.x;
+                mesh.position.y = originalPoint[1] + offset.y;
+            } else {
+                mesh.position.x = offset.x;
+                mesh.position.y = offset.y;
+            }
         }
         mesh.position.z = this.pieceZIndices[index] * 10;
         
@@ -1771,7 +1807,7 @@ class WebGLVoronoiRenderer {
             positions[vertexIndex * 3 + 1] = centerY;
             // Sync UV coordinates with animated positions for proper texture alignment
             uvs[vertexIndex * 2] = centerX / this.canvas.width;
-            uvs[vertexIndex * 2 + 1] = centerY / this.canvas.height; // Keep original orientation
+            uvs[vertexIndex * 2 + 1] = 1.0 - (centerY / this.canvas.height); // Flip Y for WebGL coordinates
             vertexIndex++;
             
             // Update polygon vertices
@@ -1780,7 +1816,7 @@ class WebGLVoronoiRenderer {
                 positions[vertexIndex * 3 + 1] = animatedPolygon[i][1];
                 // Sync UV coordinates with animated positions for proper texture alignment
                 uvs[vertexIndex * 2] = animatedPolygon[i][0] / this.canvas.width;
-                uvs[vertexIndex * 2 + 1] = animatedPolygon[i][1] / this.canvas.height; // Keep original orientation
+                uvs[vertexIndex * 2 + 1] = 1.0 - (animatedPolygon[i][1] / this.canvas.height); // Flip Y for WebGL coordinates
                 vertexIndex++;
             }
         }
@@ -1818,7 +1854,7 @@ class WebGLVoronoiRenderer {
                 const x = positions[i];
                 const y = positions[i + 1];
                 // Sync UV coordinates with animated positions
-                uvs.push(x / this.canvas.width, y / this.canvas.height);
+                uvs.push(x / this.canvas.width, 1.0 - (y / this.canvas.height)); // Flip Y for WebGL coordinates
             }
             
             newGeometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
@@ -2039,7 +2075,7 @@ class WebGLVoronoiRenderer {
         // WebGL: Y=-1 at bottom, Y=+1 at top
         const mouse = new THREE.Vector2(
             (x / this.canvas.width) * 2 - 1,
-            -((y / this.canvas.height) * 2 - 1)  // Flip Y-axis for WebGL
+            (y / this.canvas.height) * 2 - 1  // No Y-flip needed - already in WebGL coordinates
         );
         
         if (this.debugLogging.coordinates) {
@@ -2124,17 +2160,9 @@ class WebGLVoronoiRenderer {
                 piece.visible = true;
                 // The position should already be set by updatePiecePosition, but let's ensure it
                 if (pieceObj.offset) {
-                    // Use same coordinate system as mesh position (original + offset with Y-flip)
-                    const originalPoint = this.originalPoints ? this.originalPoints[index] : null;
-                    if (originalPoint) {
-                        piece.position.set(
-                            originalPoint[0] + pieceObj.offset.x,
-                            -(originalPoint[1] + pieceObj.offset.y),
-                            piece.position.z
-                        );
-                    } else {
-                        piece.position.set(pieceObj.offset.x, -pieceObj.offset.y, piece.position.z);
-                    }
+                    // Use position manager to get consistent WebGL coordinates
+                    const position = this.positionManager ? this.positionManager.getMeshPosition(index, pieceObj.offset) : { x: pieceObj.offset.x, y: pieceObj.offset.y };
+                    piece.position.set(position.x, position.y, piece.position.z);
                 }
             }
         }
@@ -2455,12 +2483,12 @@ class WebGLVoronoiRenderer {
             
             // Add center vertex
             vertices.push(centerX, centerY, 0);
-            uvs.push(centerX / this.canvas.width, centerY / this.canvas.height);
+            uvs.push(centerX / this.canvas.width, 1.0 - (centerY / this.canvas.height)); // Flip Y for WebGL coordinates
             
             // Add polygon vertices
             for (let i = 0; i < polygon.length; i++) {
                 vertices.push(polygon[i][0], polygon[i][1], 0);
-                uvs.push(polygon[i][0] / this.canvas.width, polygon[i][1] / this.canvas.height);
+                uvs.push(polygon[i][0] / this.canvas.width, 1.0 - (polygon[i][1] / this.canvas.height)); // Flip Y for WebGL coordinates
             }
             
             // Create triangles

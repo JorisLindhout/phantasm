@@ -1,12 +1,17 @@
 /**
  * Coordinate System Diagnostic Tool
- * Investigates potential coordinate system mismatches and CSS interference
+ * Monitors the WebGL coordinate system implementation and detects inconsistencies
  * 
- * Key issues to investigate:
- * 1. Piece still connected to mouse after release
- * 2. Coordinate system mismatch between game and browser
- * 3. CSS interference with positioning
- * 4. Inverse relationship: small mouse movement = large piece jump
+ * The system now uses WebGL coordinates as the global standard:
+ * - Internal calculations: WebGL coordinates (Y=0 at bottom, Y=height at top)
+ * - Mouse input: Converted from screen to WebGL coordinates
+ * - Display output: Converted from WebGL to screen coordinates
+ * 
+ * Key issues to monitor:
+ * 1. Coordinate conversion consistency between screen and WebGL
+ * 2. Position manager calculations in WebGL space
+ * 3. UV coordinate mapping for textures
+ * 4. Camera setup alignment with coordinate system
  */
 
 class CoordinateSystemDiagnostic {

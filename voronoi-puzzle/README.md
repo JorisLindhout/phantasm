@@ -4,7 +4,6 @@ A high-performance web-based puzzle prototype featuring animated Voronoi cells w
 
 ## TODO
 - [ ] **Fix unreachable pieces issue** - Some pieces become unresponsive to interaction
-- [ ] **Refactor codebase to use WebGL coordinate system**
 - [ ] **Clean up logging and testing/diagnostic system** - create a unified appraoch to debugging and have the entire codebase adhere to it. Prevent exessive continious logging
 
 ### 🔧 Future Development Items
@@ -99,6 +98,15 @@ js/
 - **Edge Deduplication**: Optimized outline rendering to prevent overdraw
 - **Object-Based Architecture**: Eliminates array synchronization issues
 
+### 🎯 Coordinate System
+The application uses **WebGL coordinates** as the global standard throughout the system:
+- **Internal Calculations**: All piece positions, offsets, and transformations use WebGL coordinates (Y=0 at bottom, Y=height at top)
+- **Mouse Input**: Converted from screen coordinates to WebGL coordinates at input boundary
+- **Display Output**: Converted from WebGL coordinates to screen coordinates for display
+- **UV Mapping**: Correctly flipped for WebGL texture coordinates
+- **Camera Setup**: Orthographic camera configured for WebGL coordinate space
+- **Position Manager**: Centralized coordinate conversion and position calculations
+
 ## File Structure
 
 ```
@@ -119,6 +127,8 @@ voronoi-puzzle/
 │   ├── base.js                   # Core puzzle logic
 │   ├── theme.js                  # Theme system definitions
 │   ├── theme-manager.js          # Dynamic theme management
+│   ├── coordinate-utils.js       # Coordinate system conversion utilities
+│   ├── position-manager.js       # Centralized position management
 │   ├── webgl-renderer.js         # WebGL 3D renderer (Three.js)
 │   └── main.js                   # Main application controller
 └── README.md                     # This documentation

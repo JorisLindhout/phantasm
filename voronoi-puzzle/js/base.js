@@ -203,6 +203,9 @@ class VoronoiPuzzleBase {
     setupDragAndDrop() {
         // Store original points for snap-back functionality
         this.originalPoints = [...this.points];
+        console.log('🔍 Base.js setupDragAndDrop:');
+        console.log('  - this.points length:', this.points ? this.points.length : 'undefined');
+        console.log('  - this.originalPoints length:', this.originalPoints ? this.originalPoints.length : 'undefined');
         
         // Initialize piece offsets for separate pieces mode
         if (this.separatePieces) {
