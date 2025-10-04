@@ -70,7 +70,7 @@ class PositionShiftDiagnostic {
         
         if (this.puzzle.isDragging && this.puzzle.draggedCellIndex !== -1) {
             const pieceIndex = this.puzzle.draggedCellIndex;
-            const currentOffset = this.puzzle.pieceOffsets[pieceIndex] || { x: 0, y: 0 };
+            const currentOffset = this.renderer.pieces[pieceIndex]?.offset || { x: 0, y: 0 };
             
             // Log the release moment
             const releaseLog = {
@@ -113,7 +113,7 @@ class PositionShiftDiagnostic {
                 return;
             }
             
-            const currentOffset = this.puzzle.pieceOffsets[pieceIndex] || { x: 0, y: 0 };
+            const currentOffset = this.renderer.pieces[pieceIndex]?.offset || { x: 0, y: 0 };
             const currentPosition = {
                 x: this.puzzle.points[pieceIndex][0] + currentOffset.x,
                 y: this.puzzle.points[pieceIndex][1] + currentOffset.y

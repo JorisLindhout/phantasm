@@ -334,6 +334,11 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             return;
         }
         
+        // Mark this piece as having been moved (for debug overlay tracking)
+        if (this.webglRenderer && this.webglRenderer.pieces && this.webglRenderer.pieces[cellIndex]) {
+            this.webglRenderer.pieces[cellIndex].hasBeenMoved = true;
+        }
+        
         // Bring clicked piece to front (highest z-index)
         this.bringPieceToFront(cellIndex);
         
@@ -833,6 +838,11 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             console.error(`❌ Cannot activate piece ${cellIndex}: points array not properly initialized`);
             console.error(`❌ this.points:`, this.points);
             return;
+        }
+        
+        // Mark this piece as having been moved (for debug overlay tracking)
+        if (this.webglRenderer && this.webglRenderer.pieces && this.webglRenderer.pieces[cellIndex]) {
+            this.webglRenderer.pieces[cellIndex].hasBeenMoved = true;
         }
         
         // Bring clicked piece to front (highest z-index)

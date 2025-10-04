@@ -1,1745 +1,403 @@
 index.js:6 🔧 Loading Debug Tools...
-index.js:222 ✅ Debug Tools loaded successfully!
-index.js:223 📋 Run showDebugCommands() to see all available tools
-index.js:224 🚀 Run quickDiagnostic() for a quick health check
-index.js:225 🧪 Run runAllTests() for comprehensive testing
-(index):79 Initializing Voronoi Puzzle...
-(index):80 Delaunay available: false
-(index):81 d3 available: true
-(index):83 d3.Delaunay available: true
+index.js:238 ✅ Debug Tools loaded successfully!
+index.js:239 📋 Run showDebugCommands() to see all available tools
+index.js:240 🚀 Run quickDiagnostic() for a quick health check
+index.js:241 🧪 Run runAllTests() for comprehensive testing
+(index):80 Initializing Voronoi Puzzle...
+(index):81 Delaunay available: false
+(index):82 d3 available: true
+(index):84 d3.Delaunay available: true
 webgl-renderer.js?v=25:12 🔍 WebGL support check: true
 webgl-renderer.js?v=25:14 🔍 WebGL version: WebGL 1.0 (OpenGL ES 2.0 Chromium)
 webgl-renderer.js?v=25:15 🔍 WebGL vendor: WebKit
 webgl-renderer.js?v=25:16 🔍 WebGL renderer: WebKit WebGL
-webgl-renderer.js?v=25:2661 🔧 Global debug functions available:
-webgl-renderer.js?v=25:2662   - toggleQuietMode() - Toggle quiet mode (reduce logging noise)
-webgl-renderer.js?v=25:2663   - enableQuietMode() - Enable quiet mode
-webgl-renderer.js?v=25:2664   - disableQuietMode() - Disable quiet mode
-webgl-renderer.js?v=25:2665   - toggleHitDetection() - Toggle hit detection logs
-webgl-renderer.js?v=25:2666   - togglePieceStates() - Toggle piece state logs
-webgl-renderer.js?v=25:2667   - toggleGlowEffects() - Toggle glow effect logs
-webgl-renderer.js?v=25:2668   - toggleAnimation() - Toggle animation logs
-webgl-renderer.js?v=25:2669   - toggleVisualStates() - Toggle visual state logs
-webgl-renderer.js?v=25:2670   - toggleCreation() - Toggle creation logs
-webgl-renderer.js?v=25:2671   - enableAllDebug() - Enable all debug logs
-webgl-renderer.js?v=25:2672   - disableAllDebug() - Disable all debug logs
-webgl-renderer.js?v=25:2673   - validateObjectArraySync() - Validate object-array synchronization
-webgl-renderer.js?v=25:2674   - autoRecoverPieces() - Manually recover unreachable pieces
-webgl-renderer.js?v=25:2675   - runObjectSystemTests() - Run comprehensive test suite
+webgl-renderer.js?v=25:2644 🔧 Global debug functions available:
+webgl-renderer.js?v=25:2645   - toggleQuietMode() - Toggle quiet mode (reduce logging noise)
+webgl-renderer.js?v=25:2646   - enableQuietMode() - Enable quiet mode
+webgl-renderer.js?v=25:2647   - disableQuietMode() - Disable quiet mode
+webgl-renderer.js?v=25:2648   - toggleHitDetection() - Toggle hit detection logs
+webgl-renderer.js?v=25:2649   - togglePieceStates() - Toggle piece state logs
+webgl-renderer.js?v=25:2650   - toggleGlowEffects() - Toggle glow effect logs
+webgl-renderer.js?v=25:2651   - toggleAnimation() - Toggle animation logs
+webgl-renderer.js?v=25:2652   - toggleVisualStates() - Toggle visual state logs
+webgl-renderer.js?v=25:2653   - toggleCreation() - Toggle creation logs
+webgl-renderer.js?v=25:2654   - enableAllDebug() - Enable all debug logs
+webgl-renderer.js?v=25:2655   - disableAllDebug() - Disable all debug logs
+webgl-renderer.js?v=25:2656   - validateObjectArraySync() - Validate object-array synchronization
+webgl-renderer.js?v=25:2657   - autoRecoverPieces() - Manually recover unreachable pieces
+webgl-renderer.js?v=25:2658   - runObjectSystemTests() - Run comprehensive test suite
 webgl-renderer.js?v=25:12 🔍 WebGL support check: true
 webgl-renderer.js?v=25:14 🔍 WebGL version: WebGL 1.0 (OpenGL ES 2.0 Chromium)
 webgl-renderer.js?v=25:15 🔍 WebGL vendor: WebKit
 webgl-renderer.js?v=25:16 🔍 WebGL renderer: WebKit WebGL
-main.js:216 Initializing WebGL Voronoi...
-webgl-renderer.js?v=25:641 ✅ Created connected mesh with 297 vertices
-webgl-renderer.js?v=25:2709 🎉 Puzzle SOLVED!
-main.js:225 ✅ Initialized WebGL Voronoi with 40 pieces
-base.js:395 🎉 Puzzle SOLVED!
 theme-manager.js:55 🎨 Applying theme: FluidLock
 theme-manager.js:99 ✅ Updated CSS variables for theme: FluidLock
-webgl-renderer.js?v=25:1951 🎨 WebGL renderer updating to theme: FluidLock
+webgl-renderer.js?v=25:1934 🎨 WebGL renderer updating to theme: FluidLock
 theme-manager.js:113 ✅ Updated WebGL colors for theme: FluidLock
 theme-manager.js:21 🎨 Theme Manager initialized with theme: FluidLock
-(index):109 🎨 Theme system initialized (dev mode)
-(index):110 💡 Dev tools available:
-(index):111    themeManager.setTheme("fluidlock")
-(index):112    themeManager.getAvailableThemes()
-(index):113    themeManager.getCurrentTheme()
-enableCoordinateMonitoring()
-coordinate-system-diagnostic.js:25 🔍 Enabling coordinate system monitoring...
-coordinate-system-diagnostic.js:48 ✅ Coordinate system monitoring enabled
-coordinate-system-diagnostic.js:49 📝 Drag pieces and move mouse after release to test coordinate issues
-true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 0 (object system)
-main.js:253 🎯 WebGL hit detection result: 0
-main.js:428 🖱️ Piece hover change: -1 → 0
-main.js:439 ✨ Setting hover effect for piece 0
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 0
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 0
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 0 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 0 (object system)
-main.js:253 🎯 WebGL hit detection result: 0
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 32 (object system)
-main.js:253 🎯 WebGL hit detection result: 32
-main.js:428 🖱️ Piece hover change: 0 → 32
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 0
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 0
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 0 hover: false
-main.js:439 ✨ Setting hover effect for piece 32
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 32
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 32
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 32 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 32 (object system)
-main.js:253 🎯 WebGL hit detection result: 32
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-main.js:428 🖱️ Piece hover change: 32 → 4
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 32
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 32
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 32 hover: false
-main.js:439 ✨ Setting hover effect for piece 4
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 4
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 4
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 4 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-main.js:428 🖱️ Piece hover change: 4 → 34
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 4
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 4
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 4 hover: false
-main.js:439 ✨ Setting hover effect for piece 34
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 34
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 34
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 34 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-main.js:428 🖱️ Piece hover change: 34 → 4
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 34
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 34
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 34 hover: false
-main.js:439 ✨ Setting hover effect for piece 4
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 4
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 4
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 4 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-main.js:298 🖱️ Mouse down at (642, 273)
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-main.js:302 🎯 Hit detection result: 4
-main.js:309 ✅ Activating piece 4
-main.js:325 ✨ Activating piece 4
+(index):110 🎨 Theme system initialized (dev mode)
+(index):111 💡 Dev tools available:
+(index):112    themeManager.setTheme("fluidlock")
+(index):113    themeManager.getAvailableThemes()
+(index):114    themeManager.getCurrentTheme()
+main.js:216 Initializing WebGL Voronoi...
+webgl-renderer.js?v=25:616 ✅ Created connected mesh with 298 vertices
+webgl-renderer.js?v=25:2692 🎉 Puzzle SOLVED!
+main.js:225 ✅ Initialized WebGL Voronoi with 40 pieces
+base.js:372 🎉 Puzzle SOLVED!
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 26 (object system)
+main.js:253 🎯 WebGL hit detection result: 26
+main.js:433 🖱️ Piece hover change: -1 → 26
+main.js:444 ✨ Setting hover effect for piece 26
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 26
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:998 🔗 Creating hover overlay for connected piece 26
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 26 hover: true
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 26 (object system)
+main.js:253 🎯 WebGL hit detection result: 26
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 26 (object system)
+main.js:253 🎯 WebGL hit detection result: 26
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 39 (object system)
+main.js:253 🎯 WebGL hit detection result: 39
+main.js:433 🖱️ Piece hover change: 26 → 39
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 26
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:1001 🔗 Removing hover overlay for connected piece 26
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 26 hover: false
+main.js:444 ✨ Setting hover effect for piece 39
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 39
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:998 🔗 Creating hover overlay for connected piece 39
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 39 hover: true
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 9 (object system)
+main.js:253 🎯 WebGL hit detection result: 9
+main.js:433 🖱️ Piece hover change: 39 → 9
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 39
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:1001 🔗 Removing hover overlay for connected piece 39
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 39 hover: false
+main.js:444 ✨ Setting hover effect for piece 9
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 9
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:998 🔗 Creating hover overlay for connected piece 9
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 9 hover: true
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 9 (object system)
+main.js:253 🎯 WebGL hit detection result: 9
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+main.js:433 🖱️ Piece hover change: 9 → 35
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 9
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:1001 🔗 Removing hover overlay for connected piece 9
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 9 hover: false
+main.js:444 ✨ Setting hover effect for piece 35
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 35
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:998 🔗 Creating hover overlay for connected piece 35
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 35 hover: true
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+main.js:298 🖱️ Mouse down at (631, 212)
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+main.js:302 🎯 Hit detection result: 35
+main.js:309 ✅ Activating piece 35
+main.js:325 ✨ Activating piece 35
 main.js:326 🔍 Debug: this.points: (40) [Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2)]
 main.js:327 🔍 Debug: this.originalPoints: (40) [Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2)]
-main.js:328 🔍 Debug: cellIndex: 4 points.length: 40
-base.js:311 🖱️  Piece 4 → z:1
-main.js:353 🎯 Piece 4 drag offset calculation:
-main.js:354    Original position: (654.6485351557344, 442.48693244932895)
-main.js:355    Current offset: (0, 0)
-main.js:356    Current position: (654.6485351557344, 442.48693244932895)
-main.js:357    Mouse position: (642, 273)
-main.js:358    Drag offset: (-12.648535155734407, -169.48693244932895)
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 4
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-main.js:377 🎮 Piece 4 activated for dragging
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2709 🎉 Puzzle UNSOLVED!
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 4 (object system)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 30 (object system)
-main.js:253 🎯 WebGL hit detection result: 30
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 30 (object system)
-main.js:253 🎯 WebGL hit detection result: 30
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 30 (object system)
-main.js:253 🎯 WebGL hit detection result: 30
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 30 (object system)
-main.js:253 🎯 WebGL hit detection result: 30
-main.js:505 🖱️ Mouse up - isDragging: true, draggedCellIndex: 4
-main.js:519 📏 Piece 4 distance from origin: 123.1px (threshold: 30px)
-main.js:546 🎯 Piece 4 remains at offset position
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 4 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 4, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = 123, -4, 10.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = 123, -4, 10.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = 123, -4, 10.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = 123, -4, 10.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = 123, -4, 10.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = 123, -4, 10.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = 123, -4, 10.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = 123, -4, 10.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = 123, -4, 10.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = 123, -4, 10.1
-main.js:382 🔄 Resetting interaction state for piece 4
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 4 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 4, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = 123, -4, 10.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = 123, -4, 10.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = 123, -4, 10.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = 123, -4, 10.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = 123, -4, 10.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = 123, -4, 10.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = 123, -4, 10.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = 123, -4, 10.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = 123, -4, 10.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = 123, -4, 10.1
-main.js:562 🏁 Mouse up completed for piece 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 4 at offset (20, 0)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 4 (z-index: 1)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 4 at offset (20, 0)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 4 at offset (20, 0)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 4 at offset (20, 0)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 4 at offset (20, 0)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 4 at offset (20, 0)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 4 at offset (20, 0)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 4 at offset (20, 0)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 4 at offset (0, -20)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 4 at offset (0, -20)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-main.js:428 🖱️ Piece hover change: 4 → -1
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 4 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 4, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = 123, 4, 10.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = 123, 4, 10.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = 123, 4, 10.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = 123, 4, 10.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = 123, 4, 10.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = 123, 4, 10.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = 123, 4, 10.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = 123, 4, 10.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = 123, 4, 10.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = 123, 4, 10.1
-main.js:447 🎰 Slot hover change: -1 → 4
-main.js:458 ✨ Setting hover effect for slot 4
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 4 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 4}
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-main.js:428 🖱️ Piece hover change: -1 → 39
-main.js:439 ✨ Setting hover effect for piece 39
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 39
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 39
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 39 hover: true
-main.js:447 🎰 Slot hover change: 4 → -1
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-main.js:428 🖱️ Piece hover change: 39 → 19
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 39
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 39
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 39 hover: false
-main.js:439 ✨ Setting hover effect for piece 19
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 19
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 19
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 19 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-main.js:298 🖱️ Mouse down at (393, 232)
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-main.js:302 🎯 Hit detection result: 19
-main.js:309 ✅ Activating piece 19
-main.js:325 ✨ Activating piece 19
-main.js:326 🔍 Debug: this.points: (40) [Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2)]
-main.js:327 🔍 Debug: this.originalPoints: (40) [Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2)]
-main.js:328 🔍 Debug: cellIndex: 19 points.length: 40
-base.js:311 🖱️  Piece 19 → z:2
-main.js:353 🎯 Piece 19 drag offset calculation:
-main.js:354    Original position: (350.56904405163334, 543.4884548096537)
-main.js:355    Current offset: (0, 0)
-main.js:356    Current position: (350.56904405163334, 543.4884548096537)
-main.js:357    Mouse position: (393, 232)
-main.js:358    Drag offset: (42.43095594836666, -311.4884548096537)
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 19
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-main.js:377 🎮 Piece 19 activated for dragging
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 19 (object system)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-main.js:505 🖱️ Mouse up - isDragging: true, draggedCellIndex: 19
-main.js:519 📏 Piece 19 distance from origin: 192.3px (threshold: 30px)
-main.js:546 🎯 Piece 19 remains at offset position
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 19 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 19, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = -166, -97, 20.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = -166, -97, 20.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = -166, -97, 20.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = -166, -97, 20.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = -166, -97, 20.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = -166, -97, 20.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = -166, -97, 20.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = -166, -97, 20.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = -166, -97, 20.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = -166, -97, 20.1
-main.js:382 🔄 Resetting interaction state for piece 19
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 19 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 19, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = -166, -97, 20.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = -166, -97, 20.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = -166, -97, 20.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = -166, -97, 20.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = -166, -97, 20.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = -166, -97, 20.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = -166, -97, 20.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = -166, -97, 20.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = -166, -97, 20.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = -166, -97, 20.1
-main.js:562 🏁 Mouse up completed for piece 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-main.js:428 🖱️ Piece hover change: 19 → 21
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 19 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 19, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = -166, 97, 20.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = -166, 97, 20.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = -166, 97, 20.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = -166, 97, 20.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = -166, 97, 20.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = -166, 97, 20.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = -166, 97, 20.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = -166, 97, 20.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = -166, 97, 20.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = -166, 97, 20.1
-main.js:439 ✨ Setting hover effect for piece 21
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 21
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 21
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 21 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-main.js:428 🖱️ Piece hover change: 21 → 2
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 21
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 21
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 21 hover: false
-main.js:439 ✨ Setting hover effect for piece 2
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 2
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 2
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 2 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (198, 476) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-main.js:428 🖱️ Piece hover change: 2 → 19
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 2
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 2
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 2 hover: false
-main.js:439 ✨ Setting hover effect for piece 19
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 19 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: hover, hasTexture: true
-webgl-renderer.js?v=25:1015 ✨ Kept original material color for hover (outline-only effect)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 19, state: hover, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = -166, 97, 20.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = -166, 97, 20.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = -166, 97, 20.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = -166, 97, 20.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = -166, 97, 20.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = -166, 97, 20.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = -166, 97, 20.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = -166, 97, 20.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = -166, 97, 20.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = -166, 97, 20.1
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (198, 488) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (198, 513) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (198, 533) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (198, 540) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (199, 545) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (200, 555) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (200, 562) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (201, 566) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (201, 569) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (202, 571) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (202, 572) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (202, 572) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (202, 573) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (202, 573) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (202, 573) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (202, 572) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (202, 571) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (204, 569) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (206, 567) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (209, 565) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (211, 564) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (214, 561) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (217, 559) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (219, 557) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (223, 555) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (226, 552) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (229, 550) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (232, 548) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (235, 546) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (239, 543) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (241, 542) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (244, 540) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (246, 539) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (248, 538) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (250, 536) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (251, 536) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (253, 535) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (254, 534) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (256, 534) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (257, 532) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (258, 532) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (260, 531) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (261, 530) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (263, 529) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (264, 528) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 19: point (266, 527) within polygon of piece at (-166.0, 97.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 19 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-main.js:428 🖱️ Piece hover change: 19 → 2
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 19 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 19, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = -166, 97, 20.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = -166, 97, 20.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = -166, 97, 20.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = -166, 97, 20.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = -166, 97, 20.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = -166, 97, 20.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = -166, 97, 20.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = -166, 97, 20.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = -166, 97, 20.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = -166, 97, 20.1
-main.js:439 ✨ Setting hover effect for piece 2
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 2
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 2
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 2 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 8 (object system)
-main.js:253 🎯 WebGL hit detection result: 8
-main.js:428 🖱️ Piece hover change: 2 → 8
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 2
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 2
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 2 hover: false
-main.js:439 ✨ Setting hover effect for piece 8
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 8
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 8
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 8 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 8 (object system)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 8 (object system)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 8 (object system)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 8 (object system)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 8 (object system)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 8 (object system)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 8 (object system)
-main.js:253 🎯 WebGL hit detection result: 8
-main.js:298 🖱️ Mouse down at (329, 471)
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 8 (object system)
-main.js:253 🎯 WebGL hit detection result: 8
-main.js:302 🎯 Hit detection result: 8
-main.js:309 ✅ Activating piece 8
-main.js:325 ✨ Activating piece 8
-main.js:326 🔍 Debug: this.points: (40) [Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2)]
-main.js:327 🔍 Debug: this.originalPoints: (40) [Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2)]
-main.js:328 🔍 Debug: cellIndex: 8 points.length: 40
-base.js:311 🖱️  Piece 8 → z:3
-main.js:353 🎯 Piece 8 drag offset calculation:
-main.js:354    Original position: (445.0665989221454, 147.8365087775136)
-main.js:355    Current offset: (0, 0)
-main.js:356    Current position: (445.0665989221454, 147.8365087775136)
-main.js:357    Mouse position: (329, 471)
-main.js:358    Drag offset: (-116.06659892214537, 323.1634912224864)
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 8
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-main.js:377 🎮 Piece 8 activated for dragging
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 8 (object system)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 8 (object system)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-main.js:505 🖱️ Mouse up - isDragging: true, draggedCellIndex: 8
-main.js:519 📏 Piece 8 distance from origin: 56.3px (threshold: 30px)
-main.js:546 🎯 Piece 8 remains at offset position
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 8 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 8, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = -56, -6, 30.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = -56, -6, 30.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = -56, -6, 30.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = -56, -6, 30.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = -56, -6, 30.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = -56, -6, 30.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = -56, -6, 30.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = -56, -6, 30.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = -56, -6, 30.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = -56, -6, 30.1
-main.js:382 🔄 Resetting interaction state for piece 8
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 8 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 8, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = -56, -6, 30.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = -56, -6, 30.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = -56, -6, 30.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = -56, -6, 30.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = -56, -6, 30.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = -56, -6, 30.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = -56, -6, 30.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = -56, -6, 30.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = -56, -6, 30.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = -56, -6, 30.1
-main.js:562 🏁 Mouse up completed for piece 8
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 8 at offset (20, 0)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 8 at offset (20, 0)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 8 at offset (20, 0)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 8 at offset (20, 0)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-main.js:428 🖱️ Piece hover change: 8 → 2
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 8 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 8, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = -56, 6, 30.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = -56, 6, 30.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = -56, 6, 30.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = -56, 6, 30.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = -56, 6, 30.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = -56, 6, 30.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = -56, 6, 30.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = -56, 6, 30.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = -56, 6, 30.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = -56, 6, 30.1
-main.js:439 ✨ Setting hover effect for piece 2
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 2
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 2
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 2 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 2 (object system)
-main.js:253 🎯 WebGL hit detection result: 2
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-main.js:428 🖱️ Piece hover change: 2 → 21
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 2
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 2
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 2 hover: false
-main.js:439 ✨ Setting hover effect for piece 21
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 21
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 21
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 21 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-main.js:428 🖱️ Piece hover change: 21 → -1
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 21
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 21
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 21 hover: false
-main.js:447 🎰 Slot hover change: -1 → 19
-main.js:458 ✨ Setting hover effect for slot 19
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 19 at offset (-20, 0)
-main.js:253 🎯 WebGL hit detection result: 19
-main.js:428 🖱️ Piece hover change: -1 → 19
-main.js:439 ✨ Setting hover effect for piece 19
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 19 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: hover, hasTexture: true
-webgl-renderer.js?v=25:1015 ✨ Kept original material color for hover (outline-only effect)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 19, state: hover, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = -166, 97, 20.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = -166, 97, 20.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = -166, 97, 20.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = -166, 97, 20.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = -166, 97, 20.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = -166, 97, 20.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = -166, 97, 20.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = -166, 97, 20.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = -166, 97, 20.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = -166, 97, 20.1
-main.js:447 🎰 Slot hover change: 19 → -1
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 19 at offset (-20, 0)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 19 (z-index: 2)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 19 at offset (-20, 0)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2213 🎯 Expanded hit detection found piece 19 at offset (-20, 0)
-main.js:253 🎯 WebGL hit detection result: 19
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-main.js:428 🖱️ Piece hover change: 19 → -1
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 19 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 19, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = -166, 97, 20.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = -166, 97, 20.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = -166, 97, 20.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = -166, 97, 20.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = -166, 97, 20.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = -166, 97, 20.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = -166, 97, 20.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = -166, 97, 20.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = -166, 97, 20.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = -166, 97, 20.1
-main.js:447 🎰 Slot hover change: -1 → 19
-main.js:458 ✨ Setting hover effect for slot 19
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 19 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 19}
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-main.js:428 🖱️ Piece hover change: -1 → 21
-main.js:439 ✨ Setting hover effect for piece 21
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 21
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 21
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 21 hover: true
-main.js:447 🎰 Slot hover change: 19 → -1
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 21 (object system)
-main.js:253 🎯 WebGL hit detection result: 21
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 8: point (309, 281) within polygon of piece at (-56.0, 6.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 8 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 8
-main.js:428 🖱️ Piece hover change: 21 → 8
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 21
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 21
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 21 hover: false
-main.js:439 ✨ Setting hover effect for piece 8
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 8 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: hover, hasTexture: true
-webgl-renderer.js?v=25:1015 ✨ Kept original material color for hover (outline-only effect)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 8, state: hover, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = -56, 6, 30.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = -56, 6, 30.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = -56, 6, 30.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = -56, 6, 30.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = -56, 6, 30.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = -56, 6, 30.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = -56, 6, 30.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = -56, 6, 30.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = -56, 6, 30.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = -56, 6, 30.1
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 8: point (329, 281) within polygon of piece at (-56.0, 6.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 8 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 8: point (352, 284) within polygon of piece at (-56.0, 6.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 8 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 8
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-main.js:428 🖱️ Piece hover change: 8 → 39
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 8 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 8, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = -56, 6, 30.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = -56, 6, 30.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = -56, 6, 30.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = -56, 6, 30.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = -56, 6, 30.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = -56, 6, 30.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = -56, 6, 30.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = -56, 6, 30.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = -56, 6, 30.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = -56, 6, 30.1
-main.js:439 ✨ Setting hover effect for piece 39
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 39
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 39
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 39 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 39 (object system)
-main.js:253 🎯 WebGL hit detection result: 39
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-main.js:428 🖱️ Piece hover change: 39 → 1
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 39
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 39
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 39 hover: false
-main.js:439 ✨ Setting hover effect for piece 1
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 1
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 1
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 1 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-main.js:298 🖱️ Mouse down at (552, 378)
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-main.js:302 🎯 Hit detection result: 1
-main.js:309 ✅ Activating piece 1
-main.js:325 ✨ Activating piece 1
-main.js:326 🔍 Debug: this.points: (40) [Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2)]
-main.js:327 🔍 Debug: this.originalPoints: (40) [Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2), Array(2)]
-main.js:328 🔍 Debug: cellIndex: 1 points.length: 40
-base.js:311 🖱️  Piece 1 → z:4
-main.js:353 🎯 Piece 1 drag offset calculation:
-main.js:354    Original position: (554.2017172959602, 248.68883519399313)
-main.js:355    Current offset: (0, 0)
-main.js:356    Current position: (554.2017172959602, 248.68883519399313)
-main.js:357    Mouse position: (552, 378)
-main.js:358    Drag offset: (-2.2017172959601794, 129.31116480600687)
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 1
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-main.js:377 🎮 Piece 1 activated for dragging
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 1 (object system)
-main.js:253 🎯 WebGL hit detection result: 1
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 1 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 1}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 1 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 1}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 1 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 1}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2254 ❌ No piece hit at (598, 398)
-webgl-renderer.js?v=25:2502 🔍 Piece States Debug (Object System):
-webgl-renderer.js?v=25:2503    Total pieces: 40
-webgl-renderer.js?v=25:2504    Separate pieces: 4
-webgl-renderer.js?v=25:2505    Connected pieces: 36
-webgl-renderer.js?v=25:2512    Piece states: [solved, unsolved, solved, solved, unsolved, solved, solved, solved, unsolved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, unsolved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved]
-webgl-renderer.js?v=25:2513    Slot states: [filled, empty, filled, filled, empty, filled, filled, filled, empty, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, empty, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled]
-webgl-renderer.js?v=25:2514    Z-indices: [0, 4, 0, 0, 1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-webgl-renderer.js?v=25:2520    Piece 1: pos(46.0, -20.0, 40.0) z-index:4 visible:true state:unsolved
-webgl-renderer.js?v=25:2520    Piece 4: pos(123.0, 4.0, 10.0) z-index:1 visible:true state:unsolved
-webgl-renderer.js?v=25:2520    Piece 8: pos(-56.0, 6.0, 30.0) z-index:3 visible:true state:unsolved
-webgl-renderer.js?v=25:2520    Piece 19: pos(-166.0, 97.0, 20.0) z-index:2 visible:true state:unsolved
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 1 (z-index: 4)
-main.js:262 🎯 Standard hit detection found piece 1
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2245 🎯 WebGL hit: empty slot 1 (object system)
-main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 1}
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 34 (object system)
-main.js:253 🎯 WebGL hit detection result: 34
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:1252 🗑️ Removing 10 glow layers
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-main.js:505 🖱️ Mouse up - isDragging: true, draggedCellIndex: 1
-main.js:519 📏 Piece 1 distance from origin: 146.1px (threshold: 30px)
-main.js:546 🎯 Piece 1 remains at offset position
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 1 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 1, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = 126, -73.99999999999997, 40.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = 126, -73.99999999999997, 40.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = 126, -73.99999999999997, 40.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = 126, -73.99999999999997, 40.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = 126, -73.99999999999997, 40.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = 126, -73.99999999999997, 40.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = 126, -73.99999999999997, 40.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = 126, -73.99999999999997, 40.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = 126, -73.99999999999997, 40.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = 126, -73.99999999999997, 40.1
-main.js:382 🔄 Resetting interaction state for piece 1
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 1 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 1, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = 126, -73.99999999999997, 40.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = 126, -73.99999999999997, 40.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = 126, -73.99999999999997, 40.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = 126, -73.99999999999997, 40.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = 126, -73.99999999999997, 40.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = 126, -73.99999999999997, 40.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = 126, -73.99999999999997, 40.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = 126, -73.99999999999997, 40.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = 126, -73.99999999999997, 40.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = 126, -73.99999999999997, 40.1
-main.js:562 🏁 Mouse up completed for piece 1
-webgl-renderer.js?v=25:2149 🎯 WebGL hit: separate piece 1 (z-index: 4)
-main.js:253 🎯 WebGL hit detection result: 1
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-main.js:428 🖱️ Piece hover change: 1 → 16
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 1 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 1, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = 126, 73.99999999999997, 40.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = 126, 73.99999999999997, 40.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = 126, 73.99999999999997, 40.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = 126, 73.99999999999997, 40.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = 126, 73.99999999999997, 40.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = 126, 73.99999999999997, 40.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = 126, 73.99999999999997, 40.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = 126, 73.99999999999997, 40.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = 126, 73.99999999999997, 40.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = 126, 73.99999999999997, 40.1
-main.js:439 ✨ Setting hover effect for piece 16
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 16
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 16
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 16 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 16 (object system)
-main.js:253 🎯 WebGL hit detection result: 16
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 4: point (768, 423) within polygon of piece at (123.0, 4.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 4 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 4
-main.js:428 🖱️ Piece hover change: 16 → 4
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 16
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 16
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 16 hover: false
-main.js:439 ✨ Setting hover effect for piece 4
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 4 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: hover, hasTexture: true
-webgl-renderer.js?v=25:1015 ✨ Kept original material color for hover (outline-only effect)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 4, state: hover, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = 123, 4, 10.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = 123, 4, 10.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = 123, 4, 10.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = 123, 4, 10.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = 123, 4, 10.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = 123, 4, 10.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = 123, 4, 10.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = 123, 4, 10.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = 123, 4, 10.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = 123, 4, 10.1
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 4: point (810, 410) within polygon of piece at (123.0, 4.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 4 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2386 🔍 Polygon check for piece 4: point (864, 400) within polygon of piece at (123.0, 4.0)
-webgl-renderer.js?v=25:2223 🎯 Fallback hit: piece 4 (bounds/polygon check)
-main.js:253 🎯 WebGL hit detection result: 4
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 32 (object system)
-main.js:253 🎯 WebGL hit detection result: 32
-main.js:428 🖱️ Piece hover change: 4 → 32
-webgl-renderer.js?v=25:942 🔧 Updating separate piece 4 materials
-webgl-renderer.js?v=25:1008 🎨 Material state update: normal, hasTexture: true
-webgl-renderer.js?v=25:1045 🔄 Restored original material state (including texture)
-webgl-renderer.js?v=25:961 🔍 Checking neon glow for piece 4, state: normal, neonGlow exists: true
-webgl-renderer.js?v=25:964 🌟 Setting glow visibility to: false for 10 layers
-webgl-renderer.js?v=25:968    Layer 0: visible = false, position = 123, 4, 10.01
-webgl-renderer.js?v=25:968    Layer 1: visible = false, position = 123, 4, 10.02
-webgl-renderer.js?v=25:968    Layer 2: visible = false, position = 123, 4, 10.03
-webgl-renderer.js?v=25:968    Layer 3: visible = false, position = 123, 4, 10.04
-webgl-renderer.js?v=25:968    Layer 4: visible = false, position = 123, 4, 10.05
-webgl-renderer.js?v=25:968    Layer 5: visible = false, position = 123, 4, 10.06
-webgl-renderer.js?v=25:968    Layer 6: visible = false, position = 123, 4, 10.07
-webgl-renderer.js?v=25:968    Layer 7: visible = false, position = 123, 4, 10.08
-webgl-renderer.js?v=25:968    Layer 8: visible = false, position = 123, 4, 10.09
-webgl-renderer.js?v=25:968    Layer 9: visible = false, position = 123, 4, 10.1
-main.js:439 ✨ Setting hover effect for piece 32
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 32
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 32
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 32 hover: true
-webgl-renderer.js?v=25:2242 🎯 WebGL hit: connected piece 0 (object system)
-main.js:253 🎯 WebGL hit detection result: 0
-main.js:428 🖱️ Piece hover change: 32 → 0
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 32
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 32
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 32 hover: false
-main.js:439 ✨ Setting hover effect for piece 0
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 0
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:989 🔗 Creating hover overlay for connected piece 0
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 0 hover: true
-webgl-renderer.js?v=25:983 ⚠️ No separate piece/outline found for index 0
-webgl-renderer.js?v=25:984 ⚠️ separatePiece: false separateOutline: false
-webgl-renderer.js?v=25:992 🔗 Removing hover overlay for connected piece 0
-webgl-renderer.js?v=25:1346 🖱️ Connected piece 0 hover: false
-analyzeCoordinateSystem()
-coordinate-system-diagnostic.js:255 
-📋 COORDINATE SYSTEM DIAGNOSTIC REPORT
-coordinate-system-diagnostic.js:256 ======================================
-coordinate-system-diagnostic.js:262 
-📊 Statistics:
-coordinate-system-diagnostic.js:263    Total events logged: 589
-coordinate-system-diagnostic.js:264    Releases tracked: 0
-coordinate-system-diagnostic.js:265    Correlations detected: 0
-coordinate-system-diagnostic.js:326 
-✅ NO COORDINATE CORRELATIONS DETECTED
-coordinate-system-diagnostic.js:327    Mouse movement does not appear to affect piece positions
-coordinate-system-diagnostic.js:332 
-📝 Recent Events:
-coordinate-system-diagnostic.js:336    5:52:50 AM: mouse_move - Piece N/A
-coordinate-system-diagnostic.js:336    5:52:50 AM: mouse_move - Piece N/A
-coordinate-system-diagnostic.js:336    5:52:50 AM: mouse_move - Piece N/A
-coordinate-system-diagnostic.js:336    5:52:50 AM: mouse_move - Piece N/A
-coordinate-system-diagnostic.js:336    5:52:50 AM: mouse_move - Piece N/A
-coordinate-system-diagnostic.js:336    5:52:50 AM: mouse_move - Piece N/A
-coordinate-system-diagnostic.js:336    5:52:50 AM: mouse_move - Piece N/A
-coordinate-system-diagnostic.js:336    5:52:50 AM: mouse_move - Piece N/A
-coordinate-system-diagnostic.js:336    5:52:50 AM: mouse_move - Piece N/A
-coordinate-system-diagnostic.js:336    5:52:50 AM: mouse_move - Piece N/A
-{totalEvents: 589, correlations: 0, releases: 0, coordinateLogs: Array(589)}
+main.js:328 🔍 Debug: cellIndex: 35 points.length: 40
+base.js:309 🖱️  Piece 35 → z:1
+main.js:358 🎯 Piece 35 drag offset calculation:
+main.js:359    Original position: (708.4861740904495, 464.8130340985639)
+main.js:360    Current offset: (0, 0)
+main.js:361    Current position: (708.4861740904495, 464.8130340985639)
+main.js:362    Mouse position: (631, 212)
+main.js:363    Drag offset: (-77.48617409044948, -252.8130340985639)
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 35
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+main.js:382 🎮 Piece 35 activated for dragging
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2692 🎉 Puzzle UNSOLVED!
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 35 (object system)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:253 🎯 WebGL hit detection result: {type: 'slot', index: 35}
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2237 ❌ No piece hit at (688, 112)
+webgl-renderer.js?v=25:2485 🔍 Piece States Debug (Object System):
+webgl-renderer.js?v=25:2486    Total pieces: 40
+webgl-renderer.js?v=25:2487    Separate pieces: 1
+webgl-renderer.js?v=25:2488    Connected pieces: 39
+webgl-renderer.js?v=25:2495    Piece states: [solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, unsolved, solved, solved, solved, solved]
+webgl-renderer.js?v=25:2496    Slot states: [filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, empty, filled, filled, filled, filled]
+webgl-renderer.js?v=25:2497    Z-indices: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+webgl-renderer.js?v=25:2503    Piece 35: pos(57.0, 100.0, 10.0) z-index:1 visible:true state:unsolved
+webgl-renderer.js?v=25:2132 🎯 WebGL hit: separate piece 35 (z-index: 1)
+main.js:262 🎯 Standard hit detection found piece 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+main.js:510 🖱️ Mouse up - isDragging: true, draggedCellIndex: 35
+main.js:524 📏 Piece 35 distance from origin: 140.9px (threshold: 30px)
+main.js:551 🎯 Piece 35 remains at offset position
+webgl-renderer.js?v=25:951 🔧 Updating separate piece 35 materials
+webgl-renderer.js?v=25:1017 🎨 Material state update: normal, hasTexture: true
+webgl-renderer.js?v=25:1054 🔄 Restored original material state (including texture)
+webgl-renderer.js?v=25:970 🔍 Checking neon glow for piece 35, state: normal, neonGlow exists: true
+webgl-renderer.js?v=25:973 🌟 Setting glow visibility to: false for 10 layers
+webgl-renderer.js?v=25:977    Layer 0: visible = false, position = 80, 116, 10.01
+webgl-renderer.js?v=25:977    Layer 1: visible = false, position = 80, 116, 10.02
+webgl-renderer.js?v=25:977    Layer 2: visible = false, position = 80, 116, 10.03
+webgl-renderer.js?v=25:977    Layer 3: visible = false, position = 80, 116, 10.04
+webgl-renderer.js?v=25:977    Layer 4: visible = false, position = 80, 116, 10.05
+webgl-renderer.js?v=25:977    Layer 5: visible = false, position = 80, 116, 10.06
+webgl-renderer.js?v=25:977    Layer 6: visible = false, position = 80, 116, 10.07
+webgl-renderer.js?v=25:977    Layer 7: visible = false, position = 80, 116, 10.08
+webgl-renderer.js?v=25:977    Layer 8: visible = false, position = 80, 116, 10.09
+webgl-renderer.js?v=25:977    Layer 9: visible = false, position = 80, 116, 10.1
+main.js:387 🔄 Resetting interaction state for piece 35
+webgl-renderer.js?v=25:951 🔧 Updating separate piece 35 materials
+webgl-renderer.js?v=25:1017 🎨 Material state update: normal, hasTexture: true
+webgl-renderer.js?v=25:1054 🔄 Restored original material state (including texture)
+webgl-renderer.js?v=25:970 🔍 Checking neon glow for piece 35, state: normal, neonGlow exists: true
+webgl-renderer.js?v=25:973 🌟 Setting glow visibility to: false for 10 layers
+webgl-renderer.js?v=25:977    Layer 0: visible = false, position = 80, 116, 10.01
+webgl-renderer.js?v=25:977    Layer 1: visible = false, position = 80, 116, 10.02
+webgl-renderer.js?v=25:977    Layer 2: visible = false, position = 80, 116, 10.03
+webgl-renderer.js?v=25:977    Layer 3: visible = false, position = 80, 116, 10.04
+webgl-renderer.js?v=25:977    Layer 4: visible = false, position = 80, 116, 10.05
+webgl-renderer.js?v=25:977    Layer 5: visible = false, position = 80, 116, 10.06
+webgl-renderer.js?v=25:977    Layer 6: visible = false, position = 80, 116, 10.07
+webgl-renderer.js?v=25:977    Layer 7: visible = false, position = 80, 116, 10.08
+webgl-renderer.js?v=25:977    Layer 8: visible = false, position = 80, 116, 10.09
+webgl-renderer.js?v=25:977    Layer 9: visible = false, position = 80, 116, 10.1
+main.js:567 🏁 Mouse up completed for piece 35
+webgl-renderer.js?v=25:2132 🎯 WebGL hit: separate piece 35 (z-index: 1)
+main.js:253 🎯 WebGL hit detection result: 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+main.js:433 🖱️ Piece hover change: 35 → 22
+webgl-renderer.js?v=25:951 🔧 Updating separate piece 35 materials
+webgl-renderer.js?v=25:1017 🎨 Material state update: normal, hasTexture: true
+webgl-renderer.js?v=25:1054 🔄 Restored original material state (including texture)
+webgl-renderer.js?v=25:970 🔍 Checking neon glow for piece 35, state: normal, neonGlow exists: true
+webgl-renderer.js?v=25:973 🌟 Setting glow visibility to: false for 10 layers
+webgl-renderer.js?v=25:977    Layer 0: visible = false, position = 80, -116, 10.01
+webgl-renderer.js?v=25:977    Layer 1: visible = false, position = 80, -116, 10.02
+webgl-renderer.js?v=25:977    Layer 2: visible = false, position = 80, -116, 10.03
+webgl-renderer.js?v=25:977    Layer 3: visible = false, position = 80, -116, 10.04
+webgl-renderer.js?v=25:977    Layer 4: visible = false, position = 80, -116, 10.05
+webgl-renderer.js?v=25:977    Layer 5: visible = false, position = 80, -116, 10.06
+webgl-renderer.js?v=25:977    Layer 6: visible = false, position = 80, -116, 10.07
+webgl-renderer.js?v=25:977    Layer 7: visible = false, position = 80, -116, 10.08
+webgl-renderer.js?v=25:977    Layer 8: visible = false, position = 80, -116, 10.09
+webgl-renderer.js?v=25:977    Layer 9: visible = false, position = 80, -116, 10.1
+main.js:444 ✨ Setting hover effect for piece 22
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 22
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:998 🔗 Creating hover overlay for connected piece 22
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 22 hover: true
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2237 ❌ No piece hit at (706, 120)
+webgl-renderer.js?v=25:2485 🔍 Piece States Debug (Object System):
+webgl-renderer.js?v=25:2486    Total pieces: 40
+webgl-renderer.js?v=25:2487    Separate pieces: 1
+webgl-renderer.js?v=25:2488    Connected pieces: 39
+webgl-renderer.js?v=25:2495    Piece states: [solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, unsolved, solved, solved, solved, solved]
+webgl-renderer.js?v=25:2496    Slot states: [filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, empty, filled, filled, filled, filled]
+webgl-renderer.js?v=25:2497    Z-indices: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+webgl-renderer.js?v=25:2503    Piece 35: pos(80.0, -116.0, 10.0) z-index:1 visible:true state:unsolved
+webgl-renderer.js?v=25:2237 ❌ No piece hit at (706, 120)
+webgl-renderer.js?v=25:2485 🔍 Piece States Debug (Object System):
+webgl-renderer.js?v=25:2486    Total pieces: 40
+webgl-renderer.js?v=25:2487    Separate pieces: 1
+webgl-renderer.js?v=25:2488    Connected pieces: 39
+webgl-renderer.js?v=25:2495    Piece states: [solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, unsolved, solved, solved, solved, solved]
+webgl-renderer.js?v=25:2496    Slot states: [filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, empty, filled, filled, filled, filled]
+webgl-renderer.js?v=25:2497    Z-indices: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+webgl-renderer.js?v=25:2503    Piece 35: pos(80.0, -116.0, 10.0) z-index:1 visible:true state:unsolved
+webgl-renderer.js?v=25:2237 ❌ No piece hit at (706, 120)
+webgl-renderer.js?v=25:2485 🔍 Piece States Debug (Object System):
+webgl-renderer.js?v=25:2486    Total pieces: 40
+webgl-renderer.js?v=25:2487    Separate pieces: 1
+webgl-renderer.js?v=25:2488    Connected pieces: 39
+webgl-renderer.js?v=25:2495    Piece states: [solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, solved, unsolved, solved, solved, solved, solved]
+webgl-renderer.js?v=25:2496    Slot states: [filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, filled, empty, filled, filled, filled, filled]
+webgl-renderer.js?v=25:2497    Z-indices: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+webgl-renderer.js?v=25:2503    Piece 35: pos(80.0, -116.0, 10.0) z-index:1 visible:true state:unsolved
+webgl-renderer.js?v=25:2228 🎯 WebGL hit: empty slot 35 (object system)
+main.js:279 🎯 Expanded hit detection found piece [object Object] at offset (-20, 0)
+main.js:433 🖱️ Piece hover change: 22 → -1
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 22
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:1001 🔗 Removing hover overlay for connected piece 22
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 22 hover: false
+main.js:452 🎰 Slot hover change: -1 → 35
+main.js:463 ✨ Setting hover effect for slot 35
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+main.js:433 🖱️ Piece hover change: -1 → 22
+main.js:444 ✨ Setting hover effect for piece 22
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 22
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:998 🔗 Creating hover overlay for connected piece 22
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 22 hover: true
+main.js:452 🎰 Slot hover change: 35 → -1
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 22 (object system)
+main.js:253 🎯 WebGL hit detection result: 22
+webgl-renderer.js?v=25:2225 🎯 WebGL hit: connected piece 26 (object system)
+main.js:253 🎯 WebGL hit detection result: 26
+main.js:433 🖱️ Piece hover change: 22 → 26
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 22
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:1001 🔗 Removing hover overlay for connected piece 22
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 22 hover: false
+main.js:444 ✨ Setting hover effect for piece 26
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 26
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:998 🔗 Creating hover overlay for connected piece 26
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 26 hover: true
+webgl-renderer.js?v=25:992 ⚠️ No separate piece/outline found for index 26
+webgl-renderer.js?v=25:993 ⚠️ separatePiece: false separateOutline: false
+webgl-renderer.js?v=25:1001 🔗 Removing hover overlay for connected piece 26
+webgl-renderer.js?v=25:1318 🖱️ Connected piece 26 hover: false

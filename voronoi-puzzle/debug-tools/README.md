@@ -21,10 +21,19 @@ showDebugCommands()
 ## 📁 Files
 
 ### Core Tools
-- **`index.js`** - Central loader and enhanced debug command interface
+- **`index.js`** - Central loader and enhanced debug command interface (includes all tools)
 - **`simple-precision-test.js`** - Raycaster precision testing (proven raycaster precision is NOT the issue)
 - **`scene-state-diagnostic.js`** - Comprehensive scene management diagnostics
 - **`raycaster-precision-test.js`** - Advanced raycaster precision testing suite
+
+### Drag & Coordinate Diagnostics
+- **`drag-coordinate-diagnostic.js`** - Monitor drag coordinate issues and inconsistencies
+- **`position-shift-diagnostic.js`** - Detect piece position shifts after drag release
+- **`mouse-movement-correlation-diagnostic.js`** - Monitor mouse movement correlation with piece jumps
+- **`coordinate-system-diagnostic.js`** - Monitor coordinate system mismatches and CSS interference
+
+### Visual Debug Tools
+- **`visual-debug-overlay.js`** - Real-time visual overlay showing mouse coordinates, piece data, and dragging state
 
 ## 🔧 Available Commands
 
@@ -46,6 +55,28 @@ testUnresponsivePieces()   // Test actual puzzle pieces
 ```javascript
 diagnoseSceneState()       // Comprehensive scene analysis
 autoFixSceneIssues()       // Auto-fix detected scene problems
+```
+
+### Drag & Coordinate Diagnostics
+```javascript
+enableDragMonitoring()     // Monitor drag coordinate issues
+disableDragMonitoring()    // Disable drag monitoring
+analyzeDragIssues()        // Analyze detected drag coordinate issues
+enablePositionShiftMonitoring()    // Monitor piece position shifts after release
+analyzePositionShifts()            // Analyze detected position shifts
+enableMouseCorrelationMonitoring() // Monitor mouse movement correlation
+analyzeMouseCorrelations()         // Analyze mouse-piece movement correlations
+enableCoordinateSystemMonitoring() // Monitor coordinate system mismatches
+analyzeCoordinateSystems()         // Analyze coordinate system issues
+```
+
+### Visual Debug Tools
+```javascript
+showDebugOverlay()         // Show real-time visual debug overlay
+hideDebugOverlay()         // Hide visual debug overlay
+toggleDebugOverlay()       // Toggle visual debug overlay visibility
+trackDebugPiece(index)     // Track specific piece in debug overlay
+makeDebugOverlayInteractive() // Make debug overlay clickable for piece selection
 ```
 
 ### Legacy Debug Commands
@@ -91,6 +122,40 @@ analyzeDragIssues()
 disableDragMonitoring()
 ```
 
+### Visual Debug & Real-time Monitoring
+```javascript
+// 1. Show visual debug overlay
+showDebugOverlay()
+
+// 2. Make overlay interactive for piece selection
+makeDebugOverlayInteractive()
+
+// 3. Track specific piece (optional)
+trackDebugPiece(5) // Track piece index 5
+
+// 4. Hide overlay when done
+hideDebugOverlay()
+// OR toggle visibility
+toggleDebugOverlay()
+```
+
+### Advanced Coordinate Investigation
+```javascript
+// 1. Monitor position shifts after release
+enablePositionShiftMonitoring()
+
+// 2. Monitor mouse movement correlation
+enableMouseCorrelationMonitoring()
+
+// 3. Monitor coordinate system mismatches
+enableCoordinateSystemMonitoring()
+
+// 4. Analyze all collected data
+analyzePositionShifts()
+analyzeMouseCorrelations()
+analyzeCoordinateSystems()
+```
+
 ### Performance Issues
 ```javascript
 // 1. Run all tests
@@ -117,6 +182,14 @@ validateObjectArraySync()
 ```
 
 ## 📊 Test Results Interpretation
+
+### Visual Debug Overlay
+The visual debug overlay provides real-time monitoring of:
+- **Mouse coordinates**: Current mouse position on canvas
+- **Piece data**: Real-time piece positions, states, and offsets
+- **Dragging state**: Whether a piece is currently being dragged
+- **Piece tracking**: Detailed information about specific tracked pieces
+- **Coordinate systems**: Multiple coordinate system values for comparison
 
 ### Raycaster Precision Tests
 - **✅ PASS**: All test meshes detectable at all distances (expected result)

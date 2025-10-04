@@ -196,18 +196,32 @@ class VisualDebugOverlay {
 
         const mouseData = this.currentMousePos || { x: 'N/A', y: 'N/A', clientX: 'N/A', clientY: 'N/A' };
         
-        // Add debugging info
+        // Add debugging info - check both puzzle and renderer for dragging state
         const puzzleExists = !!this.puzzle;
-        const isDragging = puzzleExists ? this.puzzle.isDragging : 'N/A';
-        const draggedPiece = puzzleExists ? this.puzzle.draggedCellIndex : 'N/A';
+        const rendererExists = !!this.renderer;
+        
+        // Check dragging state from puzzle (main controller)
+        // The puzzle might be the main VoronoiPuzzle instance, but the actual dragging is handled by currentRenderer
+        let actualPuzzle = this.puzzle;
+        if (this.puzzle && this.puzzle.currentRenderer) {
+            actualPuzzle = this.puzzle.currentRenderer; // Use the WebGLRenderer instance that actually handles dragging
+        }
+        
+        const puzzleIsDragging = actualPuzzle ? actualPuzzle.isDragging : false;
+        const puzzleDraggedPiece = actualPuzzle ? actualPuzzle.draggedCellIndex : -1;
+        
+        // Check dragging state from renderer (secondary)
+        const rendererIsDragging = rendererExists ? this.renderer.isDragging : false;
+        const rendererDraggedPiece = rendererExists ? this.renderer.draggedPieceIndex : -1;
         
         this.mouseInfo.innerHTML = `
             <div style="color: #00ffff;"><strong>🖱️ Mouse:</strong></div>
             <div>Canvas: (${mouseData.x}, ${mouseData.y})</div>
             <div>Client: (${mouseData.clientX}, ${mouseData.clientY})</div>
             <div>Puzzle exists: ${puzzleExists ? 'YES' : 'NO'}</div>
-            <div>Dragging: ${isDragging}</div>
-            <div>Dragged Piece: ${draggedPiece}</div>
+            <div>Renderer exists: ${rendererExists ? 'YES' : 'NO'}</div>
+            <div style="color: ${puzzleIsDragging ? '#ff0000' : '#00ff00'};">Puzzle Dragging: ${puzzleIsDragging} (${puzzleDraggedPiece})</div>
+            <div style="color: ${rendererIsDragging ? '#ff0000' : '#00ff00'};">Renderer Dragging: ${rendererIsDragging} (${rendererDraggedPiece})</div>
         `;
     }
 
@@ -240,26 +254,38 @@ class VisualDebugOverlay {
 
         const piece = this.renderer.pieces[pieceIndex];
         
-        // Get data from both puzzle and renderer
-        const puzzleOffset = this.puzzle.pieceOffsets ? this.puzzle.pieceOffsets[pieceIndex] : null;
-        const rendererOffset = this.renderer.pieceOffsets ? this.renderer.pieceOffsets[pieceIndex] : null;
-        const offset = rendererOffset || puzzleOffset || { x: 0, y: 0 };
+        // Get offset from unified object system (pieces[i].offset)
+        const offset = piece.offset || { x: 0, y: 0 };
         
-        const originalPoint = this.puzzle.originalPoints ? this.puzzle.originalPoints[pieceIndex] : null;
-        const currentPoint = this.puzzle.points ? this.puzzle.points[pieceIndex] : null;
+        // Get the actual puzzle instance that handles dragging
+        let actualPuzzle = this.puzzle;
+        if (this.puzzle && this.puzzle.currentRenderer) {
+            actualPuzzle = this.puzzle.currentRenderer;
+        }
+        
+        // Get original and current points from puzzle
+        const originalPoint = actualPuzzle && actualPuzzle.originalPoints ? actualPuzzle.originalPoints[pieceIndex] : null;
+        const currentPoint = actualPuzzle && actualPuzzle.points ? actualPuzzle.points[pieceIndex] : null;
         const state = piece.state || 'unknown';
+
+        // Calculate the actual visual position (original + offset)
+        const actualPosition = originalPoint ? 
+            `(${(originalPoint[0] + offset.x).toFixed(1)}, ${(originalPoint[1] + offset.y).toFixed(1)})` : 
+            'N/A';
 
         return `
             <div style="margin-top: 5px; padding: 5px; background: rgba(255,255,255,0.1); border-radius: 3px;">
                 <div style="color: #ffff00;"><strong>Piece ${pieceIndex}:</strong></div>
                 <div>Original Point: (${originalPoint ? originalPoint[0].toFixed(1) : 'N/A'}, ${originalPoint ? originalPoint[1].toFixed(1) : 'N/A'})</div>
                 <div>Current Point: (${currentPoint ? currentPoint[0].toFixed(1) : 'N/A'}, ${currentPoint ? currentPoint[1].toFixed(1) : 'N/A'})</div>
+                <div style="color: #00ffff;"><strong>Actual Position: ${actualPosition}</strong></div>
                 <div>Offset: (${offset.x.toFixed(1)}, ${offset.y.toFixed(1)})</div>
                 <div>State: ${state}</div>
                 <div>Has Mesh: ${piece.mesh ? 'YES' : 'NO'}</div>
                 <div>Mesh Position: ${piece.mesh ? 
                     `(${piece.mesh.position.x.toFixed(1)}, ${piece.mesh.position.y.toFixed(1)})` : 'N/A'}</div>
-                <div>Offset Source: ${rendererOffset ? 'renderer' : (puzzleOffset ? 'puzzle' : 'default')}</div>
+                <div>Mesh Z: ${piece.mesh ? piece.mesh.position.z.toFixed(1) : 'N/A'}</div>
+                <div>Is Dragging: ${actualPuzzle && actualPuzzle.isDragging && actualPuzzle.draggedCellIndex === pieceIndex ? 'YES' : 'NO'}</div>
             </div>
         `;
     }
@@ -270,13 +296,10 @@ class VisualDebugOverlay {
     getSummaryInfo() {
         let html = '';
         
-        // Check both puzzle and renderer data structures
-        const puzzlePieces = this.puzzle.pieces;
+        // Check renderer data structure (unified object system)
         const rendererPieces = this.renderer.pieces;
-        const puzzleOffsets = this.puzzle.pieceOffsets;
-        const rendererOffsets = this.renderer.pieceOffsets;
         
-        html += `<div style="color: #888; font-size: 10px;">Debug: puzzle.pieces=${!!puzzlePieces}, renderer.pieces=${!!rendererPieces}, puzzle.offsets=${!!puzzleOffsets}, renderer.offsets=${!!rendererOffsets}</div>`;
+        html += `<div style="color: #888; font-size: 10px;">Debug: renderer.pieces=${!!rendererPieces}, length=${rendererPieces ? rendererPieces.length : 0}</div>`;
         
         // Use renderer data structure (objects)
         if (!rendererPieces) {
@@ -284,29 +307,96 @@ class VisualDebugOverlay {
             return html;
         }
         
-        const maxPieces = Math.min(rendererPieces.length, 10);
-        let foundOffsets = false;
+        
+        const maxPieces = Math.min(rendererPieces.length, 50); // Increased to show more pieces
+        let foundActivePieces = false;
+        let draggingPiece = -1;
+        
+        // Check if any piece is currently being dragged (check both puzzle and renderer)
+        // The puzzle might be the main VoronoiPuzzle instance, but the actual dragging is handled by currentRenderer
+        let actualPuzzle = this.puzzle;
+        if (this.puzzle && this.puzzle.currentRenderer) {
+            actualPuzzle = this.puzzle.currentRenderer; // Use the WebGLRenderer instance that actually handles dragging
+        }
+        
+        if (actualPuzzle && actualPuzzle.isDragging && actualPuzzle.draggedCellIndex !== -1) {
+            draggingPiece = actualPuzzle.draggedCellIndex;
+        } else if (this.renderer && this.renderer.isDragging && this.renderer.draggedPieceIndex !== -1) {
+            draggingPiece = this.renderer.draggedPieceIndex;
+        }
 
         for (let i = 0; i < maxPieces; i++) {
             const piece = rendererPieces[i];
             if (!piece) continue;
             
-            // Get offset from either puzzle or renderer
-            const offset = rendererOffsets ? rendererOffsets[i] : (piece.offset || { x: 0, y: 0 });
+            // Get offset from unified object system (piece.offset)
+            const offset = piece.offset || { x: 0, y: 0 };
             const state = piece.state || 'unknown';
+            const isDragging = (i === draggingPiece);
             
-            if (offset && (offset.x !== 0 || offset.y !== 0 || state === 'unsolved')) {
-                foundOffsets = true;
+            
+            // Show pieces that have offsets, are unsolved, are being dragged, or have been moved (track movement history)
+            const hasOffset = offset && (offset.x !== 0 || offset.y !== 0);
+            const isUnsolved = state === 'unsolved';
+            const hasBeenMoved = piece.hasBeenMoved || false; // Track if piece has ever been moved
+            
+            
+            if (hasOffset || isUnsolved || isDragging || hasBeenMoved) {
+                foundActivePieces = true;
+                const dragIndicator = isDragging ? ' 🖱️' : '';
+                const movedIndicator = hasBeenMoved && !hasOffset ? ' 📍' : ''; // Show if moved but back at origin
+                
+                // Calculate actual position for display
+                const actualPuzzle = this.puzzle && this.puzzle.currentRenderer ? this.puzzle.currentRenderer : this.puzzle;
+                const originalPoint = actualPuzzle && actualPuzzle.originalPoints ? actualPuzzle.originalPoints[i] : null;
+                const actualPos = originalPoint ? 
+                    `(${(originalPoint[0] + offset.x).toFixed(1)}, ${(originalPoint[1] + offset.y).toFixed(1)})` : 
+                    `Offset: (${offset.x.toFixed(1)}, ${offset.y.toFixed(1)})`;
+                
+                // Add auto-snap indicator if piece was moved but is now back at origin
+                const autoSnappedIndicator = hasBeenMoved && !hasOffset && state === 'solved' ? ' 🔄' : '';
+                
                 html += `
-                    <div style="margin-top: 2px;">
-                        Piece ${i}: ${state} - Offset: (${offset.x.toFixed(1)}, ${offset.y.toFixed(1)})
+                    <div style="margin-top: 2px; color: ${isDragging ? '#ff0000' : hasOffset ? '#ffff00' : '#ffffff'};">
+                        Piece ${i}: ${state}${dragIndicator}${movedIndicator}${autoSnappedIndicator} - ${actualPos}
                     </div>
                 `;
             }
         }
 
-        if (!foundOffsets) {
+        // Always show the currently dragged piece if it exists and wasn't already shown
+        if (draggingPiece !== -1 && draggingPiece >= maxPieces) {
+            const piece = rendererPieces[draggingPiece];
+            if (piece) {
+                const offset = piece.offset || { x: 0, y: 0 };
+                const state = piece.state || 'unknown';
+                const actualPuzzle = this.puzzle && this.puzzle.currentRenderer ? this.puzzle.currentRenderer : this.puzzle;
+                const originalPoint = actualPuzzle && actualPuzzle.originalPoints ? actualPuzzle.originalPoints[draggingPiece] : null;
+                const actualPos = originalPoint ? 
+                    `(${(originalPoint[0] + offset.x).toFixed(1)}, ${(originalPoint[1] + offset.y).toFixed(1)})` : 
+                    `Offset: (${offset.x.toFixed(1)}, ${offset.y.toFixed(1)})`;
+                
+                html += `
+                    <div style="margin-top: 2px; color: #ff0000;">
+                        Piece ${draggingPiece}: ${state} 🖱️ - ${actualPos}
+                    </div>
+                `;
+                foundActivePieces = true;
+            }
+        }
+
+        if (!foundActivePieces) {
             html += '<div style="color: #888;">All pieces at origin</div>';
+            // Fallback: show first few pieces anyway for debugging
+            html += '<div style="color: #888; font-size: 10px; margin-top: 5px;">Debug - First 3 pieces:</div>';
+            for (let i = 0; i < Math.min(3, rendererPieces.length); i++) {
+                const piece = rendererPieces[i];
+                if (piece) {
+                    const offset = piece.offset || { x: 0, y: 0 };
+                    const state = piece.state || 'unknown';
+                    html += `<div style="color: #888; font-size: 10px;">Piece ${i}: ${state} - Offset: (${offset.x.toFixed(1)}, ${offset.y.toFixed(1)})</div>`;
+                }
+            }
         }
 
         return html;
@@ -351,8 +441,9 @@ class VisualDebugOverlay {
             
             if (this.trackedPiece === -1) {
                 // Start tracking first piece with offset
-                for (let i = 0; i < (this.puzzle.pieces ? this.puzzle.pieces.length : 0); i++) {
-                    const offset = this.puzzle.pieceOffsets ? this.puzzle.pieceOffsets[i] : null;
+                for (let i = 0; i < (this.renderer.pieces ? this.renderer.pieces.length : 0); i++) {
+                    const piece = this.renderer.pieces[i];
+                    const offset = piece ? piece.offset : null;
                     if (offset && (offset.x !== 0 || offset.y !== 0)) {
                         this.trackPiece(i);
                         this.highlightPiece(i);
@@ -362,8 +453,9 @@ class VisualDebugOverlay {
             } else {
                 // Cycle to next piece with offset
                 let found = false;
-                for (let i = this.trackedPiece + 1; i < (this.puzzle.pieces ? this.puzzle.pieces.length : 0); i++) {
-                    const offset = this.puzzle.pieceOffsets ? this.puzzle.pieceOffsets[i] : null;
+                for (let i = this.trackedPiece + 1; i < (this.renderer.pieces ? this.renderer.pieces.length : 0); i++) {
+                    const piece = this.renderer.pieces[i];
+                    const offset = piece ? piece.offset : null;
                     if (offset && (offset.x !== 0 || offset.y !== 0)) {
                         this.trackPiece(i);
                         this.highlightPiece(i);

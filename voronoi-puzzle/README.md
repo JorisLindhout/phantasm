@@ -3,9 +3,12 @@
 A high-performance web-based puzzle prototype featuring animated Voronoi cells with WebGL 3D rendering, advanced visual effects, and a unified theming system.
 
 ## TODO
-- [ ] **Fix debug overlay dragging detection** - Debug overlay not recognizing dragging state and piece data
-- [ ] **Investigate piece jumping issue** - Pieces jump when mouse moves after release (coordinate system mismatch)
-- [ ] **Migrate to single object system** - Remove dual array/object state management to eliminate synchronization issues
+- [ ] **Fix unreachable pieces issue** - Some pieces become unresponsive to interaction
+- [ ] **Refactor codebase to use WebGL coordinate system**
+- [ ] **Clean up logging and testing/diagnostic system** - create a unified appraoch to debugging and have the entire codebase adhere to it. Prevent exessive continious logging
+
+### 🔧 Future Development Items
+- [ ] **Enhanced visual piece handling feedback** - Add improved visual feedback for piece interactions (hover effects, drag indicators, etc.)
 
 ## Table of Contents
 
@@ -197,7 +200,7 @@ toggleQuietMode()                   // Toggle quiet mode (reduce noise)
 ```
 
 ### 🏗️ Object-Based Architecture
-The system uses a fully object-based architecture to eliminate synchronization issues:
+The system uses a fully object-based architecture for clean, maintainable code:
 
 #### Piece Objects
 ```javascript
@@ -245,7 +248,7 @@ The puzzle can experience pieces that become **visually present and animating** 
 - **Auto-Fix Tools**: `autoFixSceneIssues()` - Automatically repairs detected scene problems
 
 #### Prevention Strategies:
-- **Object-Based Architecture**: Eliminates array synchronization issues
+- **Object-Based Architecture**: Clean, maintainable code structure
 - **Enhanced State Management**: Better tracking of piece states and relationships
 - **Robust Hit Detection**: Multiple fallback methods for piece selection
 - **Z-Index Management**: Automatic normalization to prevent accumulation
@@ -335,14 +338,14 @@ autoFixSceneIssues()
 1. **Scene Membership**: Checks if pieces are properly in the Three.js scene
 2. **Geometry Validity**: Validates piece geometry and materials
 3. **Raycaster Targets**: Analyzes pieces that raycaster checks for hit detection
-4. **State Synchronization**: Verifies consistency between piece and slot states
+4. **State Validation**: Verifies piece and slot states are valid
 5. **Z-Index Layering**: Identifies layering conflicts and negative z-indices
 
 **Auto-fix capabilities**:
 - Re-adds missing pieces to scene
 - Recreates corrupted geometries
 - Fixes visibility issues
-- Resolves state synchronization problems
+- Resolves state validation problems
 
 ## Future Development
 

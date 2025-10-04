@@ -117,7 +117,7 @@ class CoordinateSystemDiagnostic {
         if (!this.lastReleaseData) return;
         
         const pieceIndex = this.lastReleaseData.pieceIndex;
-        const currentPieceOffset = this.puzzle.pieceOffsets[pieceIndex] || { x: 0, y: 0 };
+        const currentPieceOffset = this.renderer.pieces[pieceIndex]?.offset || { x: 0, y: 0 };
         
         // Calculate mouse movement since release
         const mouseDelta = {
@@ -178,7 +178,7 @@ class CoordinateSystemDiagnostic {
                 timestamp,
                 pieceIndex,
                 mouseCoords: { ...mouseCoords },
-                pieceOffset: { ...(this.puzzle.pieceOffsets[pieceIndex] || { x: 0, y: 0 }) }
+                pieceOffset: { ...(this.renderer.pieces[pieceIndex]?.offset || { x: 0, y: 0 }) }
             };
             
             console.log(`🎯 RELEASE CAPTURED - Piece ${pieceIndex}:`, {
@@ -213,7 +213,7 @@ class CoordinateSystemDiagnostic {
                 timestamp,
                 pieceIndex,
                 mouseCoords: { ...mouseCoords },
-                pieceOffset: { ...(this.puzzle.pieceOffsets[pieceIndex] || { x: 0, y: 0 }) }
+                pieceOffset: { ...(this.renderer.pieces[pieceIndex]?.offset || { x: 0, y: 0 }) }
             });
         }
         

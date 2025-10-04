@@ -100,7 +100,7 @@ class MouseMovementCorrelationDiagnostic {
                 const mouseDistance = Math.sqrt(mouseDelta.x * mouseDelta.x + mouseDelta.y * mouseDelta.y);
                 
                 // Check if piece position has changed
-                const currentPieceOffset = this.puzzle.pieceOffsets[this.lastReleasePiece] || { x: 0, y: 0 };
+                const currentPieceOffset = this.renderer.pieces[this.lastReleasePiece]?.offset || { x: 0, y: 0 };
                 
                 this.movementLogs.push({
                     timestamp: Date.now(),
@@ -180,7 +180,7 @@ class MouseMovementCorrelationDiagnostic {
             
             console.log(`🎯 RELEASE TRACKED - Piece ${this.lastReleasePiece}:`, {
                 releasePosition: `(${coords.x.toFixed(1)}, ${coords.y.toFixed(1)})`,
-                pieceOffset: this.puzzle.pieceOffsets[this.lastReleasePiece] || { x: 0, y: 0 }
+                pieceOffset: this.renderer.pieces[this.lastReleasePiece]?.offset || { x: 0, y: 0 }
             });
         }
         

@@ -795,7 +795,13 @@ class WebGLVoronoiRenderer {
             this.slots[index].pieceId = null;
             this.slots[index].isCorrect = false;
 
-            this.createSeparatePiece(index, offset);
+            // Create separate piece if it doesn't exist, or update position if it does
+            if (!this.pieces[index].mesh) {
+                this.createSeparatePiece(index, offset);
+            } else {
+                // Update existing mesh position
+                this.updateSeparatePiecePosition(index, offset);
+            }
             this.updateConnectedMeshVisibility(); // Update slot visibility
         } else {
             // Piece snapped back - update states (ARRAY SYSTEM)
@@ -817,6 +823,47 @@ class WebGLVoronoiRenderer {
         
         // Check if puzzle is solved after position update
         this.checkSolvedState();
+    }
+    
+    // Update position of existing separate piece
+    updateSeparatePiecePosition(index, offset) {
+        const piece = this.pieces[index];
+        if (!piece.mesh) return;
+        
+        // Get the original position for this piece
+        const originalPoint = this.originalPoints ? this.originalPoints[index] : null;
+        if (originalPoint) {
+            // Position mesh at absolute position (original + offset)
+            // Camera uses screen coordinates, so flip Y to match mouse movement
+            const newX = originalPoint[0] + offset.x;
+            const newY = -(originalPoint[1] + offset.y);
+            piece.mesh.position.x = newX;
+            piece.mesh.position.y = newY;
+            
+            // Debug logging for coordinate tracking
+            if (this.debugLogging.coordinates) {
+                console.log(`🔍 updateSeparatePiecePosition ${index}: original(${originalPoint[0].toFixed(1)}, ${originalPoint[1].toFixed(1)}) + offset(${offset.x.toFixed(1)}, ${offset.y.toFixed(1)}) = mesh(${newX.toFixed(1)}, ${newY.toFixed(1)})`);
+            }
+        } else {
+            // Fallback to offset-only positioning
+            piece.mesh.position.x = offset.x;
+            piece.mesh.position.y = -offset.y;
+        }
+        
+        // Update outline position if it exists
+        if (piece.outline) {
+            piece.outline.position.copy(piece.mesh.position);
+            piece.outline.position.z += 0.1; // Slightly above the piece
+        }
+        
+        // Update glow outline position if it exists
+        if (piece.glowOutline) {
+            piece.glowOutline.forEach(glowLayer => {
+                if (glowLayer) {
+                    glowLayer.position.copy(piece.mesh.position);
+                }
+            });
+        }
     }
     
     // NEW: Auto-snap a piece to its slot
@@ -1162,9 +1209,11 @@ class WebGLVoronoiRenderer {
                 glowOutline.geometry.dispose();
                 glowOutline.geometry = newBoundaryGeometry;
                 
-                // Update position
-                glowOutline.position.copy(position);
-                glowOutline.position.z += config.zOffset;
+                // Update position - use same coordinate system as piece
+                // The position parameter should match the piece's mesh position
+                glowOutline.position.x = position.x;
+                glowOutline.position.y = position.y;
+                glowOutline.position.z = position.z + config.zOffset;
             }
         });
     }
@@ -1202,9 +1251,11 @@ class WebGLVoronoiRenderer {
                 glowOutline.geometry.dispose();
                 glowOutline.geometry = newBoundaryGeometry;
                 
-                // Update position
-                glowOutline.position.copy(position);
-                glowOutline.position.z += config.zOffset;
+                // Update position - use same coordinate system as piece
+                // The position parameter should match the piece's mesh position
+                glowOutline.position.x = position.x;
+                glowOutline.position.y = position.y;
+                glowOutline.position.z = position.z + config.zOffset;
             }
         });
     }
@@ -1261,48 +1312,11 @@ class WebGLVoronoiRenderer {
         // Remove any existing scale animation
         if (piece.scaleAnimation) {
             clearInterval(piece.scaleAnimation);
+            piece.scaleAnimation = null;
         }
         
-        let targetScale;
-        switch (state) {
-            case 'dragging':
-                targetScale = this.getThemeEffect('scaleDragging', 1.1);
-                break;
-            case 'hover':
-                targetScale = this.getThemeEffect('scaleHover', 1.02);
-                break;
-            case 'normal':
-            case 'snapped':
-            default:
-                targetScale = 1.0; // Normal size
-                break;
-        }
-        
-        // Smooth scale animation with jumpy curve (ease-out-bounce)
-        const startScale = piece.scale.x;
-        const duration = 200; // 200ms animation
-        const steps = 10;
-        const stepDuration = duration / steps;
-        
-        let currentStep = 0;
-        piece.scaleAnimation = setInterval(() => {
-            currentStep++;
-            
-            // Jumpy easing function (ease-out-bounce style)
-            const progress = currentStep / steps;
-            const easedProgress = progress < 0.5 
-                ? 4 * progress * progress * progress  // Cubic ease-out
-                : 1 - Math.pow(-2 * progress + 2, 3) / 2; // Bounce effect
-            
-            const newScale = startScale + (targetScale - startScale) * easedProgress;
-            piece.scale.set(newScale, newScale, 1);
-            
-            if (currentStep >= steps) {
-                clearInterval(piece.scaleAnimation);
-                piece.scaleAnimation = null;
-                piece.scale.set(targetScale, targetScale, 1);
-            }
-        }, stepDuration);
+        // Set scale to 1.0 for all states (no visual scaling)
+        piece.scale.set(1.0, 1.0, 1);
     }
     
     // Update hover effect for connected pieces
@@ -1537,8 +1551,19 @@ class WebGLVoronoiRenderer {
         
         // Create mesh
         const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.x = offset.x;
-        mesh.position.y = -offset.y; // Flip Y for camera
+        
+        // Get the original position for this piece
+        const originalPoint = this.originalPoints ? this.originalPoints[index] : null;
+        if (originalPoint) {
+            // Position mesh at absolute position (original + offset)
+            // Camera uses screen coordinates, so flip Y to match mouse movement
+            mesh.position.x = originalPoint[0] + offset.x;
+            mesh.position.y = -(originalPoint[1] + offset.y);
+        } else {
+            // Fallback to offset-only positioning
+            mesh.position.x = offset.x;
+            mesh.position.y = -offset.y;
+        }
         mesh.position.z = this.pieceZIndices[index] * 10;
         
         // Force bounding box computation for hit detection
@@ -2099,7 +2124,17 @@ class WebGLVoronoiRenderer {
                 piece.visible = true;
                 // The position should already be set by updatePiecePosition, but let's ensure it
                 if (pieceObj.offset) {
-                    piece.position.set(pieceObj.offset.x, pieceObj.offset.y, piece.position.z);
+                    // Use same coordinate system as mesh position (original + offset with Y-flip)
+                    const originalPoint = this.originalPoints ? this.originalPoints[index] : null;
+                    if (originalPoint) {
+                        piece.position.set(
+                            originalPoint[0] + pieceObj.offset.x,
+                            -(originalPoint[1] + pieceObj.offset.y),
+                            piece.position.z
+                        );
+                    } else {
+                        piece.position.set(pieceObj.offset.x, -pieceObj.offset.y, piece.position.z);
+                    }
                 }
             }
         }

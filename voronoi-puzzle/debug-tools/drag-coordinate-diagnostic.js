@@ -71,7 +71,7 @@ class DragCoordinateDiagnostic {
                 mouseX: coords.x,
                 mouseY: coords.y,
                 dragOffset: { ...this.puzzle.dragOffset },
-                pieceOffset: { ...(this.puzzle.pieceOffsets[pieceIndex] || { x: 0, y: 0 }) },
+                pieceOffset: { ...(this.renderer.pieces[pieceIndex]?.offset || { x: 0, y: 0 }) },
                 originalPoints: this.puzzle.originalPoints[pieceIndex] ? [...this.puzzle.originalPoints[pieceIndex]] : null,
                 timestamp: Date.now()
             });
@@ -79,7 +79,7 @@ class DragCoordinateDiagnostic {
             console.log(`🎯 DRAG START - Piece ${pieceIndex}:`, {
                 mouse: `(${coords.x}, ${coords.y})`,
                 dragOffset: `(${this.puzzle.dragOffset.x}, ${this.puzzle.dragOffset.y})`,
-                pieceOffset: `(${this.puzzle.pieceOffsets[pieceIndex]?.x || 0}, ${this.puzzle.pieceOffsets[pieceIndex]?.y || 0})`
+                pieceOffset: `(${this.renderer.pieces[pieceIndex]?.offset?.x || 0}, ${this.renderer.pieces[pieceIndex]?.offset?.y || 0})`
             });
         }
         
@@ -104,7 +104,7 @@ class DragCoordinateDiagnostic {
                     mouseX: coords.x,
                     mouseY: coords.y,
                     dragOffset: { ...this.puzzle.dragOffset },
-                    pieceOffset: { ...(this.puzzle.pieceOffsets[pieceIndex] || { x: 0, y: 0 }) },
+                    pieceOffset: { ...(this.renderer.pieces[pieceIndex]?.offset || { x: 0, y: 0 }) },
                     timestamp: Date.now()
                 });
             }
@@ -129,14 +129,14 @@ class DragCoordinateDiagnostic {
                 mouseX: coords.x,
                 mouseY: coords.y,
                 dragOffset: { ...this.puzzle.dragOffset },
-                pieceOffset: { ...(this.puzzle.pieceOffsets[pieceIndex] || { x: 0, y: 0 }) },
+                pieceOffset: { ...(this.renderer.pieces[pieceIndex]?.offset || { x: 0, y: 0 }) },
                 timestamp: Date.now()
             });
             
             console.log(`🎯 DRAG END - Piece ${pieceIndex} (before release):`, {
                 mouse: `(${coords.x}, ${coords.y})`,
                 dragOffset: `(${this.puzzle.dragOffset.x}, ${this.puzzle.dragOffset.y})`,
-                pieceOffset: `(${this.puzzle.pieceOffsets[pieceIndex]?.x || 0}, ${this.puzzle.pieceOffsets[pieceIndex]?.y || 0})`
+                pieceOffset: `(${this.renderer.pieces[pieceIndex]?.offset?.x || 0}, ${this.renderer.pieces[pieceIndex]?.offset?.y || 0})`
             });
         }
         
@@ -154,14 +154,14 @@ class DragCoordinateDiagnostic {
                     mouseX: coords.x,
                     mouseY: coords.y,
                     dragOffset: { ...this.puzzle.dragOffset },
-                    pieceOffset: { ...(this.puzzle.pieceOffsets[pieceIndex] || { x: 0, y: 0 }) },
+                    pieceOffset: { ...(this.renderer.pieces[pieceIndex]?.offset || { x: 0, y: 0 }) },
                     timestamp: Date.now()
                 });
                 
                 console.log(`🎯 DRAG END - Piece ${pieceIndex} (after release):`, {
                     mouse: `(${coords.x}, ${coords.y})`,
                     dragOffset: `(${this.puzzle.dragOffset.x}, ${this.puzzle.dragOffset.y})`,
-                    pieceOffset: `(${this.puzzle.pieceOffsets[pieceIndex]?.x || 0}, ${this.puzzle.pieceOffsets[pieceIndex]?.y || 0})`
+                    pieceOffset: `(${this.renderer.pieces[pieceIndex]?.offset?.x || 0}, ${this.renderer.pieces[pieceIndex]?.offset?.y || 0})`
                 });
                 
                 // Analyze for coordinate issues
