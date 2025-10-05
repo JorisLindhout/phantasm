@@ -64,6 +64,7 @@
                 <button onclick="regeneratePuzzle()">Regenerate Puzzle</button>
                 <button onclick="toggleAnimation()">Toggle Animation</button>
                 <button onclick="toggleGridOutlines()">Toggle Grid Outlines</button>
+                <button onclick="toggleResponsiveCanvas()">Toggle Responsive Canvas</button>
             </div>
         </div>
     </div>
@@ -83,6 +84,9 @@
     <!-- Coordinate System Utilities -->
     <script src="js/coordinate-utils.js"></script>
     <script src="js/position-manager.js"></script>
+    
+    <!-- Responsive Canvas System -->
+    <script src="js/responsive-canvas.js"></script>
     
     <!-- Theme System (ES Modules) -->
     <script type="module" src="js/theme.js"></script>
@@ -176,6 +180,13 @@
             window.voronoiPuzzle?.toggleAnimation();
         }
         
+        // Handle viewport resize
+        window.addEventListener('resize', () => {
+            if (window.responsiveCanvas) {
+                window.responsiveCanvas.handleViewportResize();
+            }
+        });
+        
         
         
         function toggleGridOutlines() {
@@ -199,6 +210,21 @@
                 caret.style.transform = 'rotate(180deg)';
             } else {
                 caret.style.transform = 'rotate(0deg)';
+            }
+        }
+        
+        function toggleResponsiveCanvas() {
+            if (window.responsiveCanvas && window.voronoiPuzzle) {
+                const currentMode = window.responsiveCanvas.isResponsive;
+                window.responsiveCanvas.setResponsiveMode(!currentMode);
+                
+                // Re-setup canvas with new mode
+                window.voronoiPuzzle.currentRenderer?.setupCanvas();
+                
+                // Regenerate puzzle to match new canvas size
+                window.voronoiPuzzle.regeneratePuzzle();
+                
+                console.log(`🎨 Responsive canvas: ${!currentMode ? 'ENABLED' : 'DISABLED'}`);
             }
         }
     </script>

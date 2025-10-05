@@ -2,7 +2,7 @@
   "name": "phantasm",
   "version": "1.0.0",
   "description": "A web-based puzzle prototype featuring animated Voronoi cells with Perlin noise boundaries.",
-  "main": "phantasm.js",
+  "main": "index.html",
   "type": "module",
   "scripts": {
     "dev": "vite",

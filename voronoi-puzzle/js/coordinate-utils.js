@@ -45,6 +45,7 @@ class CoordinateUtils {
     
     /**
      * Normalize mouse event coordinates to WebGL coordinates
+     * Handles canvas positioning correctly by using getBoundingClientRect()
      * 
      * @param {MouseEvent} mouseEvent - The mouse event
      * @param {HTMLCanvasElement} canvas - The canvas element
@@ -52,9 +53,24 @@ class CoordinateUtils {
      */
     static normalizeMouseCoordinates(mouseEvent, canvas) {
         const rect = canvas.getBoundingClientRect();
+        
+        // Calculate coordinates relative to canvas position
         const screenX = mouseEvent.clientX - rect.left;
         const screenY = mouseEvent.clientY - rect.top;
-        return this.screenToWebGL(screenX, screenY, canvas.height);
+        
+        // Scale coordinates to match canvas internal resolution
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        
+        const scaledX = screenX * scaleX;
+        const scaledY = screenY * scaleY;
+        
+        // Debug logging for coordinate transformation
+        if (window.SmartLogger && SmartLogger.categories && SmartLogger.categories['coordinate-transforms']) {
+            SmartLogger.log('coordinate-transforms', `🖱️ Mouse normalization: client(${mouseEvent.clientX}, ${mouseEvent.clientY}) -> rect(${rect.left}, ${rect.top}) -> screen(${screenX.toFixed(1)}, ${screenY.toFixed(1)}) -> scaled(${scaledX.toFixed(1)}, ${scaledY.toFixed(1)})`);
+        }
+        
+        return this.screenToWebGL(scaledX, scaledY, canvas.height);
     }
     
     /**

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Aspect Ratio Test</title>
+    <style>
+        body { margin: 0; padding: 20px; background: #111; color: #fff; font-family: monospace; }
+        .test-container { margin: 20px 0; padding: 20px; border: 1px solid #333; }
+        canvas { border: 1px solid #00DDFF; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Background Image Aspect Ratio Test</h1>
+    
+    <div class="test-container">
+        <h3>Original Background Image (850×478)</h3>
+        <canvas id="original" width="850" height="478"></canvas>
+    </div>
+    
+    <div class="test-container">
+        <h3>Fixed Canvas (1200×675)</h3>
+        <canvas id="fixed" width="1200" height="675"></canvas>
+    </div>
+    
+    <div class="test-container">
+        <h3>Responsive Canvas (800×450)</h3>
+        <canvas id="responsive" width="800" height="450"></canvas>
+    </div>
+    
+    <div id="results"></div>
+
+    <script>
+        // Simulate the calculateBackgroundUV function
+        function calculateBackgroundUV(x, y) {
+            const backgroundImageWidth = 850;  // Original SVG width
+            const backgroundImageHeight = 478; // Original SVG height
+            
+            const u = x / backgroundImageWidth;
+            const v = 1.0 - (y / backgroundImageHeight); // Flip Y for WebGL coordinates
+            
+            return { u, v };
+        }
+        
+        // Test UV coordinate calculations
+        function testUVCoordinates() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h3>UV Coordinate Test Results:</h3>';
+            
+            const testPoints = [
+                { x: 0, y: 0, label: 'Top-left' },
+                { x: 425, y: 239, label: 'Center' },
+                { x: 850, y: 478, label: 'Bottom-right' }
+            ];
+            
+            testPoints.forEach(point => {
+                const uv = calculateBackgroundUV(point.x, point.y);
+                results.innerHTML += `
+                    <p><strong>${point.label}</strong> (${point.x}, ${point.y}) → UV (${uv.u.toFixed(3)}, ${uv.v.toFixed(3)})</p>
+                `;
+            });
+            
+            // Test aspect ratio preservation
+            results.innerHTML += '<h4>Aspect Ratio Analysis:</h4>';
+            
+            // Original image aspect ratio
+            const originalAspectRatio = 850 / 478;
+            results.innerHTML += `<p>Original image aspect ratio: ${originalAspectRatio.toFixed(3)}</p>`;
+            
+            // Test different canvas sizes
+            const canvasSizes = [
+                { width: 1200, height: 675, name: 'Fixed' },
+                { width: 800, height: 450, name: 'Responsive' },
+                { width: 1600, height: 900, name: 'Large' }
+            ];
+            
+            canvasSizes.forEach(size => {
+                const canvasAspectRatio = size.width / size.height;
+                const aspectRatioMatch = Math.abs(canvasAspectRatio - originalAspectRatio) < 0.01;
+                results.innerHTML += `
+                    <p><strong>${size.name} Canvas</strong> (${size.width}×${size.height}): 
+                    aspect ratio ${canvasAspectRatio.toFixed(3)} 
+                    ${aspectRatioMatch ? '✅' : '❌'} ${aspectRatioMatch ? 'matches' : 'differs from'} original</p>
+                `;
+            });
+        }
+        
+        // Load and display background image on canvases
+        function loadBackgroundImage() {
+            const canvases = ['original', 'fixed', 'responsive'];
+            
+            canvases.forEach(canvasId => {
+                const canvas = document.getElementById(canvasId);
+                const ctx = canvas.getContext('2d');
+                
+                // Create a simple test pattern that represents the background
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, '#00DDFF');
+                gradient.addColorStop(0.5, '#00FF64');
+                gradient.addColorStop(1, '#FF6600');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Add text to show dimensions
+                ctx.fillStyle = '#000';
+                ctx.font = '16px monospace';
+                ctx.fillText(`${canvas.width}×${canvas.height}`, 10, 30);
+            });
+        }
+        
+        // Run tests
+        loadBackgroundImage();
+        testUVCoordinates();
+    </script>
+</body>
+</html>

@@ -37,6 +37,10 @@ class WebGLVoronoiRenderer {
         // Store configuration for noise amplitude control
         this.config = config || { noiseAmplitude: 20 };
         
+        // Store original background image dimensions for proper UV mapping
+        this.backgroundImageWidth = 850;  // Original SVG width
+        this.backgroundImageHeight = 478; // Original SVG height
+        
         // Store Voronoi data for connected rendering
         this.voronoiPolygons = [];
         this.connectedMesh = null; // Single mesh for all connected pieces
@@ -225,6 +229,23 @@ class WebGLVoronoiRenderer {
                 }
             );
         });
+    }
+    
+    /**
+     * Calculate proper UV coordinates based on background image dimensions
+     * This ensures the background image maintains its aspect ratio regardless of canvas size
+     * 
+     * @param {number} x - X coordinate in canvas space
+     * @param {number} y - Y coordinate in canvas space
+     * @returns {Object} {u, v} UV coordinates (0-1 range)
+     */
+    calculateBackgroundUV(x, y) {
+        // Calculate UV coordinates based on original background image dimensions
+        // This preserves the aspect ratio of the background image
+        const u = x / this.backgroundImageWidth;
+        const v = 1.0 - (y / this.backgroundImageHeight); // Flip Y for WebGL coordinates
+        
+        return { u, v };
     }
     
     // Initialize Voronoi data for connected rendering
@@ -553,12 +574,14 @@ class WebGLVoronoiRenderer {
             
             // Add center vertex
             vertices.push(centerX, centerY, 0);
-            uvs.push(centerX / this.canvas.width, 1.0 - (centerY / this.canvas.height)); // Flip Y for WebGL coordinates
+            const centerUV = this.calculateBackgroundUV(centerX, centerY);
+            uvs.push(centerUV.u, centerUV.v);
             
             // Add polygon vertices
             for (let i = 0; i < polygon.length; i++) {
                 vertices.push(polygon[i][0], polygon[i][1], 0);
-                uvs.push(polygon[i][0] / this.canvas.width, 1.0 - (polygon[i][1] / this.canvas.height)); // Flip Y for WebGL coordinates
+                const vertexUV = this.calculateBackgroundUV(polygon[i][0], polygon[i][1]);
+                uvs.push(vertexUV.u, vertexUV.v);
             }
             
             // Create triangles (fan from center)
@@ -1557,7 +1580,8 @@ class WebGLVoronoiRenderer {
             for (let i = 0; i < positions.length; i += 3) {
                 const x = positions[i];
                 const y = positions[i + 1];
-                uvs.push(x / this.canvas.width, 1.0 - (y / this.canvas.height)); // Flip Y for WebGL coordinates
+                const vertexUV = this.calculateBackgroundUV(x, y);
+                uvs.push(vertexUV.u, vertexUV.v);
             }
             
             geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
@@ -1798,9 +1822,10 @@ class WebGLVoronoiRenderer {
             // Update center vertex
             positions[vertexIndex * 3] = centerX;
             positions[vertexIndex * 3 + 1] = centerY;
-            // Sync UV coordinates with animated positions for proper texture alignment
-            uvs[vertexIndex * 2] = centerX / this.canvas.width;
-            uvs[vertexIndex * 2 + 1] = 1.0 - (centerY / this.canvas.height); // Flip Y for WebGL coordinates
+                // Sync UV coordinates with animated positions for proper texture alignment
+                const centerUV = this.calculateBackgroundUV(centerX, centerY);
+                uvs[vertexIndex * 2] = centerUV.u;
+                uvs[vertexIndex * 2 + 1] = centerUV.v;
             vertexIndex++;
             
             // Update polygon vertices
@@ -1808,8 +1833,9 @@ class WebGLVoronoiRenderer {
                 positions[vertexIndex * 3] = animatedPolygon[i][0];
                 positions[vertexIndex * 3 + 1] = animatedPolygon[i][1];
                 // Sync UV coordinates with animated positions for proper texture alignment
-                uvs[vertexIndex * 2] = animatedPolygon[i][0] / this.canvas.width;
-                uvs[vertexIndex * 2 + 1] = 1.0 - (animatedPolygon[i][1] / this.canvas.height); // Flip Y for WebGL coordinates
+                const vertexUV = this.calculateBackgroundUV(animatedPolygon[i][0], animatedPolygon[i][1]);
+                uvs[vertexIndex * 2] = vertexUV.u;
+                uvs[vertexIndex * 2 + 1] = vertexUV.v;
                 vertexIndex++;
             }
         }
@@ -1847,7 +1873,8 @@ class WebGLVoronoiRenderer {
                 const x = positions[i];
                 const y = positions[i + 1];
                 // Sync UV coordinates with animated positions
-                uvs.push(x / this.canvas.width, 1.0 - (y / this.canvas.height)); // Flip Y for WebGL coordinates
+                const vertexUV = this.calculateBackgroundUV(x, y);
+                uvs.push(vertexUV.u, vertexUV.v);
             }
             
             newGeometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
@@ -2460,12 +2487,14 @@ class WebGLVoronoiRenderer {
             
             // Add center vertex
             vertices.push(centerX, centerY, 0);
-            uvs.push(centerX / this.canvas.width, 1.0 - (centerY / this.canvas.height)); // Flip Y for WebGL coordinates
+            const centerUV = this.calculateBackgroundUV(centerX, centerY);
+            uvs.push(centerUV.u, centerUV.v);
             
             // Add polygon vertices
             for (let i = 0; i < polygon.length; i++) {
                 vertices.push(polygon[i][0], polygon[i][1], 0);
-                uvs.push(polygon[i][0] / this.canvas.width, 1.0 - (polygon[i][1] / this.canvas.height)); // Flip Y for WebGL coordinates
+                const vertexUV = this.calculateBackgroundUV(polygon[i][0], polygon[i][1]);
+                uvs.push(vertexUV.u, vertexUV.v);
             }
             
             // Create triangles

@@ -69,6 +69,24 @@ class VoronoiPuzzleBase {
     }
 
     setupCanvas() {
+        // Use responsive canvas system if available
+        if (window.responsiveCanvas) {
+            window.responsiveCanvas.setupResponsiveCanvas(this.canvas);
+        } else {
+            // Fallback to fixed size
+            this.setupFixedCanvas();
+        }
+        
+        // Set canvas styling
+        this.canvas.style.display = 'block';
+        this.canvas.style.cursor = 'grab';
+        
+        if (this.debugLogging && this.debugLogging.canvasSetup) {
+            SmartLogger.log('initialization', '🎨 Canvas setup: size', this.canvas.width, 'x', this.canvas.height);
+        }
+    }
+    
+    setupFixedCanvas() {
         // Set fixed canvas size based on 16:9 aspect ratio
         const baseWidth = 1200; // Fixed width
         const baseHeight = 675; // 16:9 aspect ratio (1200 / 1.777...)
@@ -80,20 +98,12 @@ class VoronoiPuzzleBase {
         this.canvas.style.height = baseHeight + 'px';
         
         // Make canvas truly fixed size
-        this.canvas.style.display = 'block';
         this.canvas.style.margin = '0 auto';
         this.canvas.style.maxWidth = 'none';
         this.canvas.style.maxHeight = 'none';
         this.canvas.style.minWidth = baseWidth + 'px';
         this.canvas.style.minHeight = baseHeight + 'px';
         this.canvas.style.flexShrink = '0';
-        
-        if (this.debugLogging && this.debugLogging.canvasSetup) {
-            SmartLogger.log('initialization', '🎨 Canvas setup: Fixed size', baseWidth, 'x', baseHeight);
-        }
-        this.canvas.style.cursor = 'grab';
-        
-        // No resize handling - canvas stays fixed size
     }
 
     generateVoronoi() {
