@@ -2068,7 +2068,7 @@ class WebGLVoronoiRenderer {
         // WebGL: Y=-1 at bottom, Y=+1 at top
         const mouse = new THREE.Vector2(
             (x / this.canvas.width) * 2 - 1,
-            (y / this.canvas.height) * 2 - 1  // No Y-flip needed - already in WebGL coordinates
+            -(y / this.canvas.height) * 2 + 1  // Y-flip needed - mouse coords are in screen coordinates
         );
         
         SmartLogger.log('coordinate-transforms', `🎯 Canvas coords: (${x}, ${y}) -> NDC: (${mouse.x.toFixed(3)}, ${mouse.y.toFixed(3)})`);

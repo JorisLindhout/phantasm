@@ -3,8 +3,7 @@
 A high-performance web-based puzzle prototype featuring animated Voronoi cells with WebGL 3D rendering, advanced visual effects, and a unified theming system.
 
 ## TODO
-- [x] **Fix unreachable pieces issue** - Some pieces become unresponsive to interaction
-- [x] **Clean up logging and testing/diagnostic system** - create a unified approach to debugging and have the entire codebase adhere to it. Prevent excessive continuous logging
+- [] **Fix unreachable pieces issue** - Some pieces become unresponsive to interaction
 
 ## 🐛 Centralized Debug System
 

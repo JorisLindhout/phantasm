@@ -52,19 +52,19 @@ class PositionManager {
             return { x: offset.x, y: offset.y }; // Return just the offset as fallback
         }
         
-        // Convert original point from screen coordinates to WebGL coordinates
+        // Use original point coordinates directly (both mouse and points are in screen coordinates)
         const webglOriginal = {
             x: original[0],
-            y: this.canvasHeight - original[1]  // Convert screen Y to WebGL Y
+            y: original[1]  // No Y-flip needed - both mouse and points use screen coordinates
         };
         
         const position = {
             x: webglOriginal.x + offset.x,
-            y: webglOriginal.y + offset.y  // Now both are in WebGL coordinates
+            y: webglOriginal.y + offset.y  // Now both are in screen coordinates
         };
         
         if (this.debugLogging) {
-            SmartLogger.log('coordinate-transforms', `📍 Piece ${pieceIndex} position: original(${original[0].toFixed(1)}, ${original[1].toFixed(1)}) + offset(${offset.x.toFixed(1)}, ${offset.y.toFixed(1)}) = WebGL(${position.x.toFixed(1)}, ${position.y.toFixed(1)})`);
+            SmartLogger.log('coordinate-transforms', `📍 Piece ${pieceIndex} position: original(${original[0].toFixed(1)}, ${original[1].toFixed(1)}) + offset(${offset.x.toFixed(1)}, ${offset.y.toFixed(1)}) = Screen(${position.x.toFixed(1)}, ${position.y.toFixed(1)})`);
         }
         
         return position;
@@ -178,10 +178,10 @@ class PositionManager {
             return { x: 0, y: 0 };
         }
         
-        // Convert original point from screen coordinates to WebGL coordinates
+        // Use original point coordinates directly (both mouse and points are in screen coordinates)
         return {
             x: original[0],
-            y: this.canvasHeight - original[1]  // Convert screen Y to WebGL Y
+            y: original[1]  // No Y-flip needed - both mouse and points use screen coordinates
         };
     }
     
