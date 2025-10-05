@@ -10,8 +10,9 @@ A high-performance web-based puzzle prototype featuring animated Voronoi cells w
 The project now includes a comprehensive centralized debugging system that replaces fragmented logging with intelligent, context-aware debugging capabilities.
 
 ### 📚 Documentation
-- **[Complete Usage Guide](DEBUG_SYSTEM_GUIDE.md)** - Comprehensive documentation with examples and best practices
-- **[Quick Reference Card](DEBUG_QUICK_REFERENCE.md)** - Essential commands and workflows for quick access
+- **[Complete Usage Guide](docs/debug/DEBUG_SYSTEM_GUIDE.md)** - Comprehensive documentation with examples and best practices
+- **[Quick Reference Card](docs/debug/DEBUG_QUICK_REFERENCE.md)** - Essential commands and workflows for quick access
+- **[Debug Tools Guide](docs/debug/debug-tools.md)** - Detailed documentation for all debug tools
 
 ### 🚀 Quick Start
 ```javascript
@@ -43,6 +44,7 @@ IntegrationTester.runAllTests()
 - [File Structure](#file-structure)
 - [Usage & Controls](#usage--controls)
 - [Development](#development)
+- [Documentation](#documentation)
 - [Known Issues](#known-issues)
 - [Browser Compatibility](#browser-compatibility)
 - [Performance](#performance)
@@ -157,6 +159,16 @@ voronoi-puzzle/
 │   ├── position-manager.js       # Centralized position management
 │   ├── webgl-renderer.js         # WebGL 3D renderer (Three.js)
 │   └── main.js                   # Main application controller
+├── debug-tools/                  # Debug and diagnostic tools
+│   ├── index.js                  # Central debug tools loader
+│   ├── simple-precision-test.js  # Raycaster precision testing
+│   ├── scene-state-diagnostic.js # Scene management diagnostics
+│   └── [other debug tools...]    # Additional diagnostic tools
+├── docs/                         # Project documentation
+│   └── debug/                    # Debug system documentation
+│       ├── DEBUG_SYSTEM_GUIDE.md # Complete debug system guide
+│       ├── DEBUG_QUICK_REFERENCE.md # Quick reference card
+│       └── debug-tools.md        # Debug tools documentation
 └── README.md                     # This documentation
 ```
 
@@ -260,6 +272,40 @@ pieces[index] = {
 - **Future-Proof**: Easy to extend with new properties
 - **Performance**: Object property access is fast and reliable
 
+## Documentation
+
+### 📁 Documentation Structure
+
+All project documentation is organized in the `docs/` folder:
+
+```
+docs/
+└── debug/                          # Debug system documentation
+    ├── DEBUG_SYSTEM_GUIDE.md       # Complete debug system usage guide
+    ├── DEBUG_QUICK_REFERENCE.md    # Quick reference for debug commands
+    └── debug-tools.md              # Debug tools documentation
+```
+
+### 📚 Available Documentation
+
+- **[Debug System Guide](docs/debug/DEBUG_SYSTEM_GUIDE.md)** - Comprehensive guide to the centralized debug system
+- **[Debug Quick Reference](docs/debug/DEBUG_QUICK_REFERENCE.md)** - Essential commands and workflows
+- **[Debug Tools Documentation](docs/debug/debug-tools.md)** - Detailed documentation for all debug tools
+
+### 🎯 Quick Access
+
+For immediate debugging needs:
+```javascript
+// Quick health check
+DebugCommands.info.status()
+
+// Start debugging session
+DebugCommands.workflow.quickDebug()
+
+// Show all available commands
+DebugCommands.info.commands()
+```
+
 ## Known Issues
 
 ### 🔧 "Lost Pieces" / "Unresponsive Pieces" Problem
@@ -329,7 +375,7 @@ The puzzle can experience pieces that become **visually present and animating** 
 
 ## 🔍 Diagnostic Tools
 
-Comprehensive diagnostic and testing tools are available in the `debug-tools/` folder. See [`debug-tools/README.md`](debug-tools/README.md) for complete documentation.
+Comprehensive diagnostic and testing tools are available in the `debug-tools/` folder. See **[Debug Tools Guide](docs/debug/debug-tools.md)** for complete documentation.
 
 ### Quick Start
 ```javascript
