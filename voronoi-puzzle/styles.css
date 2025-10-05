@@ -9,15 +9,6 @@
 /* Import renderer-specific styles */
 @import url('./css/webgl.css');
 
-/* Responsive canvas styles */
-canvas {
-    display: block;
-    background: var(--canvas-background);
-    border: 1px solid var(--cell-border);
-    border-radius: var(--border-radius);
-    transition: border-color var(--transition-speed) ease;
-}
-
 /* Responsive canvas behavior */
 .responsive-canvas canvas {
     /* Responsive sizing handled by JavaScript */

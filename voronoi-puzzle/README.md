@@ -141,7 +141,8 @@ The application uses **WebGL coordinates** as the global standard throughout the
 voronoi-puzzle/
 ├── index.html                    # Main HTML entry point
 ├── styles.css                    # Main CSS (imports modular styles)
-├── noise.js                      # Perlin noise implementation
+├── js/
+│   ├── noise.js                 # Perlin noise implementation
 ├── package.json                  # Project dependencies
 ├── assets/                       # Game assets and images
 │   └── base-image-cube.svg       # Default puzzle background image (16:9 aspect ratio)
