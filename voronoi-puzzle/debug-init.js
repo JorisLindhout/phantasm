@@ -2008,7 +2008,7 @@
                     patterns: ['⚠️ WebGL not available', 'Error initializing', 'WebGL components are not available'],
                     description: 'Critical error messages that users need to see',
                     shouldBeConsoleLog: true,
-                    examples: ['⚠️ WebGL renderer not available or doesn\'t support theming', 'Error initializing Voronoi puzzle']
+                    examples: ['⚠️ WebGL renderer not available or doesn\'t support theming', 'Error initializing Phantasm']
                 },
                 'system-status': {
                     patterns: ['Using WebGL renderer', 'Delaunay available', 'd3 available'],

@@ -1,5 +1,5 @@
 /**
- * Shared Utility Functions for Voronoi Puzzle
+ * Shared Utility Functions for Phantasm
  * Contains helper functions used by both 2D and 3D renderers
  */
 

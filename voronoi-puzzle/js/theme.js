@@ -1,5 +1,5 @@
 /**
- * Unified Theme System for Voronoi Puzzle
+ * Unified Theme System for Phantasm
  * Single source of truth for colors, effects, and visual properties
  * Used by both CSS (via CSS variables) and JavaScript (WebGL materials)
  */

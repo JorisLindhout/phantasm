@@ -1,5 +1,5 @@
 /**
- * Voronoi Puzzle Main Controller
+ * Phantasm Main Controller
  */
 
 class VoronoiPuzzle extends VoronoiPuzzleBase {
@@ -24,7 +24,7 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
             // Initialize with the appropriate renderer
             await this.initializeRenderer();
         } catch (error) {
-            console.error('Error initializing Voronoi puzzle:', error);
+            console.error('Error initializing Phantasm:', error);
         }
     }
 
@@ -684,7 +684,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
 }
 
 /**
- * WebGL Renderer for 3D Voronoi puzzle rendering
+ * WebGL Renderer for 3D Phantasm puzzle rendering
  */
 // WebGL renderer is now handled by the WebGLVoronoiRenderer class in webgl-renderer.js
 /*

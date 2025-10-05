@@ -1,9 +1,9 @@
 /**
- * Shared Base Classes and Utilities for Voronoi Puzzle
+ * Shared Base Classes and Utilities for Phantasm
  * Contains functionality used by both 2D and 3D renderers
  */
 
-// Base configuration for Voronoi puzzle
+// Base configuration for Phantasm
 class VoronoiConfig {
     constructor() {
         this.cellCount = 40;
@@ -14,7 +14,7 @@ class VoronoiConfig {
     }
 }
 
-// Base Voronoi puzzle class with shared functionality
+// Base Phantasm puzzle class with shared functionality
 class VoronoiPuzzleBase {
     constructor() {
         this.canvas = document.getElementById('voronoiCanvas');

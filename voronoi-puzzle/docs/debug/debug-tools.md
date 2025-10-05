@@ -1,6 +1,6 @@
 # Debug Tools
 
-This folder contains comprehensive diagnostic and testing tools for the Voronoi Puzzle WebGL implementation.
+This folder contains comprehensive diagnostic and testing tools for the Phantasm WebGL implementation.
 
 ## 🚀 Quick Start
 

@@ -145,7 +145,7 @@ class ThemeManager {
      */
     saveThemePreference(themeName) {
         try {
-            localStorage.setItem('voronoi-puzzle-theme', themeName);
+            localStorage.setItem('phantasm-theme', themeName);
         } catch (error) {
             console.warn('Could not save theme preference:', error);
         }
@@ -156,7 +156,7 @@ class ThemeManager {
      */
     loadThemePreference() {
         try {
-            const saved = localStorage.getItem('voronoi-puzzle-theme');
+            const saved = localStorage.getItem('phantasm-theme');
             if (saved && THEMES[saved]) {
                 this.applyTheme(saved);
                 return saved;

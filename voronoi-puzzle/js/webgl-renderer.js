@@ -1,5 +1,5 @@
 /**
- * WebGL Renderer for Voronoi Puzzle with proper z-index layering
+ * WebGL Renderer for Phantasm with proper z-index layering
  * Uses Three.js for simplified WebGL management
  */
 

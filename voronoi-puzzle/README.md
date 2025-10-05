@@ -1,4 +1,4 @@
-# Voronoi Puzzle 3D - WebGL Version
+# Phantasm - WebGL Version
 
 A high-performance web-based puzzle prototype featuring animated Voronoi cells with WebGL 3D rendering, advanced visual effects, and a unified theming system.
 
