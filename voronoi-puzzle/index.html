@@ -98,33 +98,7 @@
     <!-- Main puzzle class -->
     <script src="js/main.js"></script>
     
-    <!-- Debug tools - Load after main app is ready -->
-    <script>
-        // Load debug tools after main app is ready
-        window.addEventListener('DOMContentLoaded', function() {
-            if (window.SmartLogger && window.SmartLogger.categories) {
-                SmartLogger.log('debug-tools', '🔧 Loading debug tools...');
-                const debugScripts = [
-                    'debug-tools/simple-precision-test.js',
-                    'debug-tools/scene-state-diagnostic.js',
-                    'debug-tools/drag-coordinate-diagnostic.js',
-                    'debug-tools/position-shift-diagnostic.js',
-                    'debug-tools/mouse-movement-correlation-diagnostic.js',
-                    'debug-tools/coordinate-system-diagnostic.js',
-                    'debug-tools/visual-debug-overlay.js',
-                    'debug-tools/index.js'
-                ];
-                
-                debugScripts.forEach((src, index) => {
-                    setTimeout(() => {
-                        const script = document.createElement('script');
-                        script.src = src;
-                        document.head.appendChild(script);
-                    }, index * 100); // Stagger loading
-                });
-            }
-        });
-    </script>
+    <!-- Debug system disabled - using console.log for debugging -->
     
     <script>
         // Initialize when DOM is loaded

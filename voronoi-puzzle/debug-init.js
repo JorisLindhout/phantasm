@@ -7,25 +7,16 @@
 (function() {
     'use strict';
     
-    // Check if we should load debug system
-    const shouldLoadDebug = 
-        window.location.hostname === 'localhost' || 
-        window.location.hostname === '127.0.0.1' ||
-        window.location.hostname.includes('local') ||
-        window.location.search.includes('debug=true') ||
-        localStorage.getItem('enableDebugSystem') === 'true';
-    
-    if (!shouldLoadDebug) {
-        // Create no-op SmartLogger for production
-        window.SmartLogger = {
-            log: () => {},
-            error: (msg, data) => console.error(msg, data),
-            warn: () => {},
-            debug: () => {}
-        };
-        console.log('🚀 Production mode - debug system disabled');
-        return;
-    }
+    // Debug system disabled - always use production fallback
+    // Create no-op SmartLogger for production
+    window.SmartLogger = {
+        log: () => {},
+        error: (msg, data) => console.error(msg, data),
+        warn: () => {},
+        debug: () => {}
+    };
+    console.log('🚀 Debug system disabled - using console.log for debugging');
+    return;
     
     // Initialize debug system immediately
     console.log('🔧 Initializing debug system...');

@@ -3,7 +3,8 @@
 A high-performance web-based puzzle prototype featuring animated Voronoi cells with WebGL 3D rendering, advanced visual effects, and a unified theming system.
 
 ## TODO
-- [] **Fix unreachable pieces issue** - Some pieces become unresponsive to interaction
+- [] **Fix unreachable pieces issue** - Some pieces become unresponsive to interaction - this seems fixed, but leaving here since we might need to do some more rigorous testing
+- [] **Clean up SmartLogger calls** - Remove 219+ SmartLogger.log() calls using regex pattern `SmartLogger\.log\([^;]*\);` (low priority - no-ops are harmless)
 
 ## 🐛 Centralized Debug System
 

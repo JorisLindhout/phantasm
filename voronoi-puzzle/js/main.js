@@ -49,8 +49,6 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
                     
                     // KEEP: User-facing success message
                     console.log('✅ Using WebGL renderer for proper z-index layering');
-                    SmartLogger.log('initialization', '🔍 Current renderer type:', this.currentRenderer.constructor.name);
-                    SmartLogger.log('initialization', '🔍 WebGL renderer type:', this.webglRenderer ? this.webglRenderer.constructor.name : 'undefined');
                     this.updateRendererStatus('WebGL (with true z-index layering)');
                     
                     // Add WebGL mode class to container
