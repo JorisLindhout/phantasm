@@ -89,7 +89,7 @@ class VoronoiPuzzleBase {
         this.canvas.style.flexShrink = '0';
         
         if (this.debugLogging && this.debugLogging.canvasSetup) {
-            console.log('🎨 Canvas setup: Fixed size', baseWidth, 'x', baseHeight);
+            SmartLogger.log('initialization', '🎨 Canvas setup: Fixed size', baseWidth, 'x', baseHeight);
         }
         this.canvas.style.cursor = 'grab';
         
@@ -112,17 +112,17 @@ class VoronoiPuzzleBase {
         // Create Voronoi diagram using d3-delaunay
         if (typeof d3 !== 'undefined' && d3.Delaunay) {
             if (this.debugLogging && this.debugLogging.canvasSetup) {
-                console.log('Using npm d3-delaunay');
+                SmartLogger.log('initialization', 'Using npm d3-delaunay');
             }
             this.voronoi = d3.Delaunay.from(this.points).voronoi([0, 0, width, height]);
         } else if (typeof Delaunay !== 'undefined') {
             if (this.debugLogging && this.debugLogging.canvasSetup) {
-                console.log('Using direct Delaunay');
+                SmartLogger.log('initialization', 'Using direct Delaunay');
             }
             this.voronoi = Delaunay.from(this.points).voronoi([0, 0, width, height]);
         } else {
             if (this.debugLogging && this.debugLogging.canvasSetup) {
-                console.log('Delaunay not available, using fallback');
+                SmartLogger.log('initialization', 'Delaunay not available, using fallback');
             }
             this.voronoi = this.createFallbackVoronoi();
         }
@@ -203,9 +203,9 @@ class VoronoiPuzzleBase {
     setupDragAndDrop() {
         // Store original points for snap-back functionality
         this.originalPoints = [...this.points];
-        console.log('🔍 Base.js setupDragAndDrop:');
-        console.log('  - this.points length:', this.points ? this.points.length : 'undefined');
-        console.log('  - this.originalPoints length:', this.originalPoints ? this.originalPoints.length : 'undefined');
+        SmartLogger.log('initialization', '🔍 Base.js setupDragAndDrop:');
+        SmartLogger.log('initialization', '  - this.points length:', this.points ? this.points.length : 'undefined');
+        SmartLogger.log('initialization', '  - this.originalPoints length:', this.originalPoints ? this.originalPoints.length : 'undefined');
         
         // Initialize piece offsets for separate pieces mode
         if (this.separatePieces) {
@@ -303,13 +303,13 @@ class VoronoiPuzzleBase {
         // CRITICAL FIX: Normalize z-indices more aggressively to prevent precision issues
         if (maxZIndex > 25) { // Reduced from 100 to 25 to prevent interaction issues
             if (this.debugLogging && this.debugLogging.canvasSetup) {
-                console.log(`🔄 Normalizing z-indices (max was ${maxZIndex})`);
+                SmartLogger.log('piece-states', `🔄 Normalizing z-indices (max was ${maxZIndex})`);
             }
             this.normalizeZIndices();
         }
         
         // Log only the clicked piece's z-index (once per click)
-        console.log(`🖱️  Piece ${cellIndex} → z:${this.pieceZIndex[cellIndex]}`);
+        SmartLogger.log('piece-states', `🖱️  Piece ${cellIndex} -> z:${this.pieceZIndex[cellIndex]}`);
     }
     
     normalizeZIndices() {
@@ -328,7 +328,7 @@ class VoronoiPuzzleBase {
                 this.pieceZIndex[item.index] = newZ;
             });
             
-            console.log(`🔄 Z-indices normalized: max was ${maxZ}, now max is ${Math.max(...this.pieceZIndex)}`);
+            SmartLogger.log('piece-states', `🔄 Z-indices normalized: max was ${maxZ}, now max is ${Math.max(...this.pieceZIndex)}`);
             
             // Update WebGL renderer if available
             if (this.webglRenderer && this.webglRenderer.updatePieceZIndex) {
@@ -372,6 +372,7 @@ class VoronoiPuzzleBase {
     
     // Called when solved state changes
     onSolvedStateChanged(isSolved) {
+        // KEEP: User-facing success message
         console.log(`🎉 Puzzle ${isSolved ? 'SOLVED' : 'UNSOLVED'}!`);
         
         // Add/remove solved class to canvas container
@@ -435,6 +436,7 @@ class VoronoiPuzzleBase {
         this.points = null;
         this.originalPoints = null;
         
+        // KEEP: User-facing success message
         console.log('✅ Base class disposed and cleaned up');
     }
 

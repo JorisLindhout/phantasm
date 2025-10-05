@@ -13,7 +13,7 @@ class SceneStateDiagnostic {
      * Run comprehensive scene state diagnostics
      */
     runFullDiagnostics() {
-        console.log('🔍 Starting Scene State Diagnostics...');
+        SmartLogger.log('debug-tools','🔍 Starting Scene State Diagnostics...');
         
         this.diagnosticResults = [];
         
@@ -42,7 +42,7 @@ class SceneStateDiagnostic {
      * Test 1: Check if pieces are properly in the scene
      */
     analyzeSceneMembership() {
-        console.log('\n📋 Test 1: Scene Membership Analysis');
+        SmartLogger.log('debug-tools','\n📋 Test 1: Scene Membership Analysis');
         
         const sceneIssues = [];
         
@@ -62,9 +62,9 @@ class SceneStateDiagnostic {
                         issue: !isInScene ? 'Not in scene' : 'Not visible'
                     });
                     
-                    console.log(`❌ Piece ${i}: ${!isInScene ? 'Not in scene' : 'Not visible'}`);
+                    SmartLogger.log('debug-tools',`❌ Piece ${i}: ${!isInScene ? 'Not in scene' : 'Not visible'}`);
                 } else {
-                    console.log(`✅ Piece ${i}: In scene and visible`);
+                    SmartLogger.log('debug-tools',`✅ Piece ${i}: In scene and visible`);
                 }
             }
         }
@@ -75,14 +75,14 @@ class SceneStateDiagnostic {
             totalIssues: sceneIssues.length
         });
         
-        console.log(`📊 Scene membership issues: ${sceneIssues.length}`);
+        SmartLogger.log('debug-tools',`📊 Scene membership issues: ${sceneIssues.length}`);
     }
 
     /**
      * Test 2: Check geometry validity
      */
     analyzeGeometryValidity() {
-        console.log('\n🔧 Test 2: Geometry Validity Analysis');
+        SmartLogger.log('debug-tools','\n🔧 Test 2: Geometry Validity Analysis');
         
         const geometryIssues = [];
         
@@ -133,9 +133,9 @@ class SceneStateDiagnostic {
                         position: piece.mesh.position.clone()
                     });
                     
-                    console.log(`❌ Piece ${i}: ${issues.join(', ')}`);
+                    SmartLogger.log('debug-tools',`❌ Piece ${i}: ${issues.join(', ')}`);
                 } else {
-                    console.log(`✅ Piece ${i}: Valid geometry`);
+                    SmartLogger.log('debug-tools',`✅ Piece ${i}: Valid geometry`);
                 }
             }
         }
@@ -146,21 +146,21 @@ class SceneStateDiagnostic {
             totalIssues: geometryIssues.length
         });
         
-        console.log(`📊 Geometry issues: ${geometryIssues.length}`);
+        SmartLogger.log('debug-tools',`📊 Geometry issues: ${geometryIssues.length}`);
     }
 
     /**
      * Test 3: Analyze raycaster target list
      */
     analyzeRaycasterTargets() {
-        console.log('\n🎯 Test 3: Raycaster Target Analysis');
+        SmartLogger.log('debug-tools','\n🎯 Test 3: Raycaster Target Analysis');
         
         // Get pieces that raycaster would check
         const raycasterTargets = this.renderer.pieces
             .map((piece, index) => ({ piece: piece.mesh, index, pieceObj: piece }))
             .filter(({ piece }) => piece !== null);
         
-        console.log(`📊 Raycaster targets: ${raycasterTargets.length} pieces`);
+        SmartLogger.log('debug-tools',`📊 Raycaster targets: ${raycasterTargets.length} pieces`);
         
         // Check each target
         const targetIssues = [];
@@ -196,9 +196,9 @@ class SceneStateDiagnostic {
                     position: piece.position.clone()
                 });
                 
-                console.log(`❌ Target ${index}: ${issues.join(', ')}`);
+                SmartLogger.log('debug-tools',`❌ Target ${index}: ${issues.join(', ')}`);
             } else {
-                console.log(`✅ Target ${index}: Valid`);
+                SmartLogger.log('debug-tools',`✅ Target ${index}: Valid`);
             }
         });
         
@@ -209,14 +209,14 @@ class SceneStateDiagnostic {
             totalIssues: targetIssues.length
         });
         
-        console.log(`📊 Target issues: ${targetIssues.length}`);
+        SmartLogger.log('debug-tools',`📊 Target issues: ${targetIssues.length}`);
     }
 
     /**
      * Test 4: Check state synchronization
      */
     analyzeStateSynchronization() {
-        console.log('\n🔄 Test 4: State Synchronization Analysis');
+        SmartLogger.log('debug-tools','\n🔄 Test 4: State Synchronization Analysis');
         
         const syncIssues = [];
         
@@ -265,9 +265,9 @@ class SceneStateDiagnostic {
                         zIndex: piece.zIndex || this.renderer.pieceZIndices[i] || 0
                     });
                     
-                    console.log(`❌ Piece ${i}: ${issues.join(', ')}`);
+                    SmartLogger.log('debug-tools',`❌ Piece ${i}: ${issues.join(', ')}`);
                 } else {
-                    console.log(`✅ Piece ${i}: Synchronized`);
+                    SmartLogger.log('debug-tools',`✅ Piece ${i}: Synchronized`);
                 }
             }
         }
@@ -278,14 +278,14 @@ class SceneStateDiagnostic {
             totalIssues: syncIssues.length
         });
         
-        console.log(`📊 Sync issues: ${syncIssues.length}`);
+        SmartLogger.log('debug-tools',`📊 Sync issues: ${syncIssues.length}`);
     }
 
     /**
      * Test 5: Analyze z-index and layering
      */
     analyzeZIndexLayering() {
-        console.log('\n📐 Test 5: Z-Index and Layering Analysis');
+        SmartLogger.log('debug-tools','\n📐 Test 5: Z-Index and Layering Analysis');
         
         const layeringIssues = [];
         
@@ -303,9 +303,9 @@ class SceneStateDiagnostic {
         // Sort by z-index
         piecesWithZIndex.sort((a, b) => b.zIndex - a.zIndex);
         
-        console.log('📊 Z-Index Order (highest first):');
+        SmartLogger.log('debug-tools','📊 Z-Index Order (highest first):');
         piecesWithZIndex.forEach(({ index, zIndex, position }) => {
-            console.log(`   Piece ${index}: z-index=${zIndex}, pos=(${position.x.toFixed(1)}, ${position.y.toFixed(1)})`);
+            SmartLogger.log('debug-tools',`   Piece ${index}: z-index=${zIndex}, pos=(${position.x.toFixed(1)}, ${position.y.toFixed(1)})`);
         });
         
         // Check for z-index conflicts
@@ -326,7 +326,7 @@ class SceneStateDiagnostic {
                     issue: `Multiple pieces with same z-index: ${zIndex}`
                 });
                 
-                console.log(`⚠️ Z-index ${zIndex}: ${pieces.length} pieces (${pieces.join(', ')})`);
+                SmartLogger.log('debug-tools',`⚠️ Z-index ${zIndex}: ${pieces.length} pieces (${pieces.join(', ')})`);
             }
         });
         
@@ -338,7 +338,7 @@ class SceneStateDiagnostic {
                 pieces: negativeZIndex.map(({ index }) => index)
             });
             
-            console.log(`❌ Negative z-indices: ${negativeZIndex.map(({ index, zIndex }) => `${index}(${zIndex})`).join(', ')}`);
+            SmartLogger.log('debug-tools',`❌ Negative z-indices: ${negativeZIndex.map(({ index, zIndex }) => `${index}(${zIndex})`).join(', ')}`);
         }
         
         this.diagnosticResults.push({
@@ -348,15 +348,15 @@ class SceneStateDiagnostic {
             totalIssues: layeringIssues.length
         });
         
-        console.log(`📊 Layering issues: ${layeringIssues.length}`);
+        SmartLogger.log('debug-tools',`📊 Layering issues: ${layeringIssues.length}`);
     }
 
     /**
      * Generate comprehensive diagnostic report
      */
     generateDiagnosticReport() {
-        console.log('\n📋 SCENE STATE DIAGNOSTIC REPORT');
-        console.log('==================================');
+        SmartLogger.log('debug-tools','\n📋 SCENE STATE DIAGNOSTIC REPORT');
+        SmartLogger.log('debug-tools','==================================');
         
         let totalIssues = 0;
         let criticalIssues = 0;
@@ -368,53 +368,53 @@ class SceneStateDiagnostic {
                 criticalIssues += result.totalIssues;
             }
             
-            console.log(`\n${result.test}:`);
-            console.log(`   Issues: ${result.totalIssues}`);
+            SmartLogger.log('debug-tools',`\n${result.test}:`);
+            SmartLogger.log('debug-tools',`   Issues: ${result.totalIssues}`);
             
             if (result.issues && result.issues.length > 0) {
                 result.issues.forEach(issue => {
                     if (typeof issue === 'object' && issue.pieceIndex !== undefined) {
-                        console.log(`   - Piece ${issue.pieceIndex}: ${issue.issues ? issue.issues.join(', ') : issue.issue}`);
+                        SmartLogger.log('debug-tools',`   - Piece ${issue.pieceIndex}: ${issue.issues ? issue.issues.join(', ') : issue.issue}`);
                     } else if (typeof issue === 'object' && issue.issue) {
-                        console.log(`   - ${issue.issue}`);
+                        SmartLogger.log('debug-tools',`   - ${issue.issue}`);
                     }
                 });
             }
         });
         
-        console.log('\n🎯 OVERALL ASSESSMENT:');
-        console.log('======================');
-        console.log(`Total issues found: ${totalIssues}`);
-        console.log(`Critical issues: ${criticalIssues}`);
+        SmartLogger.log('debug-tools','\n🎯 OVERALL ASSESSMENT:');
+        SmartLogger.log('debug-tools','======================');
+        SmartLogger.log('debug-tools',`Total issues found: ${totalIssues}`);
+        SmartLogger.log('debug-tools',`Critical issues: ${criticalIssues}`);
         
         if (criticalIssues > 0) {
-            console.log('❌ CRITICAL ISSUES DETECTED:');
-            console.log('   Scene membership or geometry problems found');
-            console.log('   These likely cause piece unresponsiveness');
+            SmartLogger.log('debug-tools','❌ CRITICAL ISSUES DETECTED:');
+            SmartLogger.log('debug-tools','   Scene membership or geometry problems found');
+            SmartLogger.log('debug-tools','   These likely cause piece unresponsiveness');
         } else if (totalIssues > 0) {
-            console.log('⚠️ MINOR ISSUES DETECTED:');
-            console.log('   State synchronization or layering problems');
-            console.log('   May contribute to piece unresponsiveness');
+            SmartLogger.log('debug-tools','⚠️ MINOR ISSUES DETECTED:');
+            SmartLogger.log('debug-tools','   State synchronization or layering problems');
+            SmartLogger.log('debug-tools','   May contribute to piece unresponsiveness');
         } else {
-            console.log('✅ NO OBVIOUS ISSUES DETECTED');
-            console.log('   All pieces appear to be in correct state');
-            console.log('   Issue may be more subtle or timing-related');
+            SmartLogger.log('debug-tools','✅ NO OBVIOUS ISSUES DETECTED');
+            SmartLogger.log('debug-tools','   All pieces appear to be in correct state');
+            SmartLogger.log('debug-tools','   Issue may be more subtle or timing-related');
         }
         
         // Recommendations
-        console.log('\n🔧 RECOMMENDATIONS:');
+        SmartLogger.log('debug-tools','\n🔧 RECOMMENDATIONS:');
         if (criticalIssues > 0) {
-            console.log('1. Fix scene membership issues - ensure pieces are in scene');
-            console.log('2. Fix geometry validity issues - recreate corrupted geometries');
-            console.log('3. Run ensurePieceVisibility() on affected pieces');
+            SmartLogger.log('debug-tools','1. Fix scene membership issues - ensure pieces are in scene');
+            SmartLogger.log('debug-tools','2. Fix geometry validity issues - recreate corrupted geometries');
+            SmartLogger.log('debug-tools','3. Run ensurePieceVisibility() on affected pieces');
         } else if (totalIssues > 0) {
-            console.log('1. Fix state synchronization issues');
-            console.log('2. Resolve z-index conflicts');
-            console.log('3. Check for timing issues in piece updates');
+            SmartLogger.log('debug-tools','1. Fix state synchronization issues');
+            SmartLogger.log('debug-tools','2. Resolve z-index conflicts');
+            SmartLogger.log('debug-tools','3. Check for timing issues in piece updates');
         } else {
-            console.log('1. Investigate timing-related issues');
-            console.log('2. Check for race conditions in piece creation');
-            console.log('3. Examine raycaster intersection logic more closely');
+            SmartLogger.log('debug-tools','1. Investigate timing-related issues');
+            SmartLogger.log('debug-tools','2. Check for race conditions in piece creation');
+            SmartLogger.log('debug-tools','3. Examine raycaster intersection logic more closely');
         }
     }
 
@@ -422,7 +422,7 @@ class SceneStateDiagnostic {
      * Fix detected issues automatically
      */
     autoFixIssues() {
-        console.log('🔧 Attempting to auto-fix detected issues...');
+        SmartLogger.log('debug-tools','🔧 Attempting to auto-fix detected issues...');
         
         let fixedCount = 0;
         
@@ -436,9 +436,9 @@ class SceneStateDiagnostic {
                         if (this.renderer.ensurePieceVisibility) {
                             if (this.renderer.ensurePieceVisibility(pieceIndex)) {
                                 fixedCount++;
-                                console.log(`✅ Fixed piece ${pieceIndex}`);
+                                SmartLogger.log('debug-tools',`✅ Fixed piece ${pieceIndex}`);
                             } else {
-                                console.log(`❌ Failed to fix piece ${pieceIndex}`);
+                                SmartLogger.log('debug-tools',`❌ Failed to fix piece ${pieceIndex}`);
                             }
                         }
                     }
@@ -446,11 +446,11 @@ class SceneStateDiagnostic {
             }
         });
         
-        console.log(`🔧 Auto-fixed ${fixedCount} pieces`);
+        SmartLogger.log('debug-tools',`🔧 Auto-fixed ${fixedCount} pieces`);
         
         // Re-run diagnostics to see if issues are resolved
         if (fixedCount > 0) {
-            console.log('\n🔄 Re-running diagnostics after fixes...');
+            SmartLogger.log('debug-tools','\n🔄 Re-running diagnostics after fixes...');
             this.runFullDiagnostics();
         }
         
@@ -485,7 +485,7 @@ if (typeof window !== 'undefined') {
     const originalShowDebug = window.showDebugCommands;
     window.showDebugCommands = function() {
         if (originalShowDebug) originalShowDebug();
-        console.log('  diagnoseSceneState() - Diagnose scene management issues');
-        console.log('  autoFixSceneIssues() - Auto-fix detected scene issues');
+        SmartLogger.log('debug-tools','  diagnoseSceneState() - Diagnose scene management issues');
+        SmartLogger.log('debug-tools','  autoFixSceneIssues() - Auto-fix detected scene issues');
     };
 }

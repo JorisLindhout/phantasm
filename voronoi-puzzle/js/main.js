@@ -47,11 +47,10 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
                     
                     // WebGL renderer is accessible via getter
                     
-                    if (this.webglRenderer && this.webglRenderer.debugLogging && this.webglRenderer.debugLogging.rendererSwitching) {
-                        console.log('✅ Using WebGL renderer for proper z-index layering');
-                        console.log('🔍 Current renderer type:', this.currentRenderer.constructor.name);
-                        console.log('🔍 WebGL renderer type:', this.webglRenderer ? this.webglRenderer.constructor.name : 'undefined');
-                    }
+                    // KEEP: User-facing success message
+                    console.log('✅ Using WebGL renderer for proper z-index layering');
+                    SmartLogger.log('initialization', '🔍 Current renderer type:', this.currentRenderer.constructor.name);
+                    SmartLogger.log('initialization', '🔍 WebGL renderer type:', this.webglRenderer ? this.webglRenderer.constructor.name : 'undefined');
                     this.updateRendererStatus('WebGL (with true z-index layering)');
                     
                     // Add WebGL mode class to container
@@ -141,6 +140,7 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
         // Call base class dispose
         super.dispose();
         
+        // KEEP: User-facing success message
         console.log('✅ Main puzzle disposed and cleaned up');
     }
 }
@@ -167,15 +167,17 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             this.generateVoronoi();
             
             // Initialize position manager after originalPoints are available
-            console.log('🔍 Main.js position manager initialization:');
-            console.log('  - this.webglRenderer:', !!this.webglRenderer);
-            console.log('  - this.originalPoints:', this.originalPoints);
-            console.log('  - originalPoints length:', this.originalPoints ? this.originalPoints.length : 'undefined');
+            SmartLogger.log('initialization', '🔍 Main.js position manager initialization:');
+            SmartLogger.log('initialization', '  - this.webglRenderer:', !!this.webglRenderer);
+            SmartLogger.log('initialization', '  - this.originalPoints:', this.originalPoints);
+            SmartLogger.log('initialization', '  - originalPoints length:', this.originalPoints ? this.originalPoints.length : 'undefined');
             
             if (this.webglRenderer && this.originalPoints) {
+                // KEEP: User-facing success message
                 console.log('✅ Main.js initializing position manager with', this.originalPoints.length, 'points');
                 this.webglRenderer.initPositionManager(this.originalPoints);
             } else {
+                // KEEP: User-facing warning message
                 console.log('⚠️ Main.js position manager not initialized - missing webglRenderer or originalPoints');
             }
             this.setupControls();
@@ -226,7 +228,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     createWebGLPieces() {
         if (!this.voronoi || !this.webglRenderer) return;
         
-        console.log('Initializing WebGL Voronoi...');
+        SmartLogger.log('initialization', 'Initializing WebGL Voronoi...');
         
         // Get polygons from Voronoi diagram
         const polygonGenerator = this.voronoi.cellPolygons();
@@ -235,6 +237,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         // Initialize the connected Voronoi system
         this.webglRenderer.initializeVoronoi(polygons);
         
+        // KEEP: User-facing success message
         console.log(`✅ Initialized WebGL Voronoi with ${polygons.length} pieces`);
     }
 
@@ -263,7 +266,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             const skipDraggedPiece = this.isDragging;
             const webglResult = this.webglRenderer.findPieceAtPosition(x, y, skipDraggedPiece);
             if (webglResult !== -1) {
-                console.log(`🎯 WebGL hit detection result:`, webglResult);
+                SmartLogger.log('hit-detection', `🎯 WebGL hit detection result:`, webglResult);
                 return webglResult;
             }
         }
@@ -272,7 +275,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         let cellIndex = this.findCellAtPosition(x, y);
         
         if (cellIndex !== -1) {
-            console.log(`🎯 Standard hit detection found piece ${cellIndex}`);
+            SmartLogger.log('hit-detection', `🎯 Standard hit detection found piece ${cellIndex}`);
             return cellIndex;
         }
         
@@ -289,12 +292,12 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         for (const [testX, testY] of searchPoints) {
             cellIndex = this.findCellAtPosition(testX, testY);
             if (cellIndex !== -1) {
-                console.log(`🎯 Expanded hit detection found piece ${cellIndex} at offset (${testX-x}, ${testY-y})`);
+                SmartLogger.log('hit-detection', `🎯 Expanded hit detection found piece ${cellIndex} at offset (${testX-x}, ${testY-y})`);
                 return cellIndex;
             }
         }
         
-        console.log(`🎯 No piece found at (${x}, ${y}) even with expanded search`);
+        SmartLogger.log('hit-detection', `🎯 No piece found at (${x}, ${y}) even with expanded search`);
         return -1;
     }
 
@@ -309,18 +312,18 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         const x = webglCoords.x;
         const y = webglCoords.y;
         
-        console.log(`🖱️ Mouse down at WebGL (${x}, ${y})`);
+        SmartLogger.log('drag-events', `🖱️ Mouse down at WebGL (${x}, ${y})`);
         
         // Find which cell was clicked with improved hit detection
         const hitResult = this.findCellAtPositionImproved(x, y);
-        console.log(`🎯 Hit detection result:`, hitResult);
+        SmartLogger.log('hit-detection', `🎯 Hit detection result:`, hitResult);
         
         // Only activate if we hit a piece (not a slot)
         const isSlot = hitResult && typeof hitResult === 'object' && hitResult.type === 'slot';
         const cellIndex = isSlot ? -1 : hitResult;
         
         if (cellIndex !== -1) {
-            console.log(`✅ Activating piece ${cellIndex}`);
+            SmartLogger.log('drag-events', `✅ Activating piece ${cellIndex}`);
             // Clear any existing slot hover when starting to drag a piece
             if (this.hoveredSlot !== undefined && this.webglRenderer) {
                 this.webglRenderer.updateSlotHover(this.hoveredSlot, false, false);
@@ -329,17 +332,17 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             // Activate the piece
             this.activatePiece(cellIndex, x, y);
         } else if (isSlot) {
-            console.log(`🎰 Clicked on slot ${hitResult.index}, not activating`);
+            SmartLogger.log('hit-detection', `🎰 Clicked on slot ${hitResult.index}, not activating`);
         } else {
-            console.log(`❌ No piece found at click position`);
+            SmartLogger.log('hit-detection', `❌ No piece found at click position`);
         }
     }
     
     activatePiece(cellIndex, x, y) {
-        console.log(`✨ Activating piece ${cellIndex}`);
-        console.log(`🔍 Debug: this.points:`, this.points);
-        console.log(`🔍 Debug: this.originalPoints:`, this.originalPoints);
-        console.log(`🔍 Debug: cellIndex:`, cellIndex, 'points.length:', this.points?.length);
+        SmartLogger.log('drag-events', `✨ Activating piece ${cellIndex}`);
+        SmartLogger.log('initialization', `🔍 Debug: this.points:`, this.points);
+        SmartLogger.log('initialization', `🔍 Debug: this.originalPoints:`, this.originalPoints);
+        SmartLogger.log('initialization', `🔍 Debug: cellIndex:`, cellIndex, 'points.length:', this.points?.length);
         
         // Safety check: ensure points array exists and has the right index
         if (!this.points || !this.points[cellIndex]) {
@@ -363,11 +366,11 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         // Calculate current piece position using position manager
         const currentOffset = this.webglRenderer.pieces[cellIndex].offset || { x: 0, y: 0 };
         
-        console.log('🔍 activatePiece debug:');
-        console.log('  - cellIndex:', cellIndex);
-        console.log('  - currentOffset:', currentOffset);
-        console.log('  - positionManager available:', !!this.webglRenderer.positionManager);
-        console.log('  - originalPoints available:', !!this.webglRenderer.originalPoints);
+        SmartLogger.log('drag-events', '🔍 activatePiece debug:');
+        SmartLogger.log('drag-events', '  - cellIndex:', cellIndex);
+        SmartLogger.log('drag-events', '  - currentOffset:', currentOffset);
+        SmartLogger.log('drag-events', '  - positionManager available:', !!this.webglRenderer.positionManager);
+        SmartLogger.log('drag-events', '  - originalPoints available:', !!this.webglRenderer.originalPoints);
         
         if (!this.webglRenderer.positionManager) {
             console.error('❌ Position manager not available! Using fallback calculation.');
@@ -385,12 +388,12 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         this.dragOffset.x = x - currentPosition.x;
         this.dragOffset.y = y - currentPosition.y;
         
-        console.log(`🎯 Piece ${cellIndex} drag offset calculation:`);
-        console.log(`   Original position: (${this.points[cellIndex][0]}, ${this.points[cellIndex][1]})`);
-        console.log(`   Current offset: (${currentOffset.x}, ${currentOffset.y})`);
-        console.log(`   Current position: (${currentPosition.x}, ${currentPosition.y})`);
-        console.log(`   Mouse position: (${x}, ${y})`);
-        console.log(`   Drag offset: (${this.dragOffset.x}, ${this.dragOffset.y})`);
+        SmartLogger.log('drag-events', `🎯 Piece ${cellIndex} drag offset calculation:`);
+        SmartLogger.log('drag-events', `   Original position: (${this.points[cellIndex][0]}, ${this.points[cellIndex][1]})`);
+        SmartLogger.log('drag-events', `   Current offset: (${currentOffset.x}, ${currentOffset.y})`);
+        SmartLogger.log('drag-events', `   Current position: (${currentPosition.x}, ${currentPosition.y})`);
+        SmartLogger.log('drag-events', `   Mouse position: (${x}, ${y})`);
+        SmartLogger.log('drag-events', `   Drag offset: (${this.dragOffset.x}, ${this.dragOffset.y})`);
         
         // Notify WebGL renderer about dragging state
         if (this.webglRenderer && this.webglRenderer.setDraggingState) {
@@ -409,12 +412,12 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             this.webglRenderer.canvas.style.cursor = 'grabbing';
         }
         
-        console.log(`🎮 Piece ${cellIndex} activated for dragging`);
+        SmartLogger.log('drag-events', `🎮 Piece ${cellIndex} activated for dragging`);
     }
     
     resetInteractionState() {
         if (this.isDragging && this.draggedCellIndex !== -1) {
-            console.log(`🔄 Resetting interaction state for piece ${this.draggedCellIndex}`);
+            SmartLogger.log('drag-events', `🔄 Resetting interaction state for piece ${this.draggedCellIndex}`);
             
             // Reset visual state
             if (this.webglRenderer) {
@@ -461,7 +464,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             
             // Handle piece hover changes
             if (hoveredPiece !== this.hoveredPiece) {
-                console.log(`🖱️ Piece hover change: ${this.hoveredPiece} → ${hoveredPiece}`);
+                SmartLogger.log('drag-events', `🖱️ Piece hover change: ${this.hoveredPiece} -> ${hoveredPiece}`);
                 
                 // Reset previous hovered piece
                 if (this.hoveredPiece !== -1 && this.webglRenderer) {
@@ -472,7 +475,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
                 
                 // Update new hovered piece
                 if (hoveredPiece !== -1 && this.webglRenderer) {
-                    console.log(`✨ Setting hover effect for piece ${hoveredPiece}`);
+                    SmartLogger.log('drag-events', `✨ Setting hover effect for piece ${hoveredPiece}`);
                     this.webglRenderer.updatePieceVisualState(hoveredPiece, 'hover');
                     this.webglRenderer.canvas.style.cursor = 'grab';
                 }
@@ -480,7 +483,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             
             // Handle slot hover changes (only during normal hover, not dragging)
             if (hoveredSlot !== (this.hoveredSlot || -1)) {
-                console.log(`🎰 Slot hover change: ${this.hoveredSlot || -1} → ${hoveredSlot}`);
+                SmartLogger.log('drag-events', `🎰 Slot hover change: ${this.hoveredSlot || -1} -> ${hoveredSlot}`);
                 
                 // Reset previous hovered slot
                 if ((this.hoveredSlot || -1) !== -1 && this.webglRenderer) {
@@ -491,7 +494,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
                 
                 // Update new hovered slot (only show outline, not background during normal hover)
                 if (hoveredSlot !== -1 && this.webglRenderer) {
-                    console.log(`✨ Setting hover effect for slot ${hoveredSlot}`);
+                    SmartLogger.log('drag-events', `✨ Setting hover effect for slot ${hoveredSlot}`);
                     // Only show outline hover during normal hover, not background fill
                     this.webglRenderer.updateSlotHover(hoveredSlot, true, false); // false = not drag hover
                     this.webglRenderer.canvas.style.cursor = 'grab';
@@ -538,7 +541,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     }
 
     handleMouseUp(e) {
-        console.log(`🖱️ Mouse up - isDragging: ${this.isDragging}, draggedCellIndex: ${this.draggedCellIndex}`);
+        SmartLogger.log('drag-events', `🖱️ Mouse up - isDragging: ${this.isDragging}, draggedCellIndex: ${this.draggedCellIndex}`);
         
         if (!this.isDragging || this.draggedCellIndex === -1) {
             // Even if no piece was being dragged, ensure clean state
@@ -552,10 +555,10 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         const currentOffset = this.webglRenderer.pieces[draggedIndex].offset || { x: 0, y: 0 };
         const distance = Math.sqrt(currentOffset.x ** 2 + currentOffset.y ** 2);
         
-        console.log(`📏 Piece ${draggedIndex} distance from origin: ${distance.toFixed(1)}px (threshold: ${this.snapThreshold}px)`);
+        SmartLogger.log('drag-events', `📏 Piece ${draggedIndex} distance from origin: ${distance.toFixed(1)}px (threshold: ${this.snapThreshold}px)`);
         
         if (distance < this.snapThreshold) {
-            console.log(`📌 Piece ${draggedIndex} snapping back to original position`);
+            SmartLogger.log('drag-events', `📌 Piece ${draggedIndex} snapping back to original position`);
             
             // Snap back to original position
             this.webglRenderer.pieces[draggedIndex].offset = { x: 0, y: 0 };
@@ -576,10 +579,10 @@ class WebGLRenderer extends VoronoiPuzzleBase {
                 if (this.webglRenderer) {
                     this.webglRenderer.updatePieceVisualState(draggedIndex, 'normal');
                 }
-                console.log(`✨ Piece ${draggedIndex} snap animation completed`);
+                SmartLogger.log('drag-events', `✨ Piece ${draggedIndex} snap animation completed`);
             }, 2000);
         } else {
-            console.log(`🎯 Piece ${draggedIndex} remains at offset position`);
+            SmartLogger.log('drag-events', `🎯 Piece ${draggedIndex} remains at offset position`);
             
             // Update visual state to normal (not snapped)
             if (this.webglRenderer) {
@@ -595,7 +598,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             this.webglRenderer.checkSolvedState();
         }
         
-        console.log(`🏁 Mouse up completed for piece ${draggedIndex}`);
+        SmartLogger.log('drag-events', `🏁 Mouse up completed for piece ${draggedIndex}`);
     }
     
     handleDragSlotHover(x, y) {
@@ -704,15 +707,17 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             this.generateVoronoi();
             
             // Initialize position manager after originalPoints are available
-            console.log('🔍 Main.js position manager initialization:');
-            console.log('  - this.webglRenderer:', !!this.webglRenderer);
-            console.log('  - this.originalPoints:', this.originalPoints);
-            console.log('  - originalPoints length:', this.originalPoints ? this.originalPoints.length : 'undefined');
+            SmartLogger.log('initialization', '🔍 Main.js position manager initialization:');
+            SmartLogger.log('initialization', '  - this.webglRenderer:', !!this.webglRenderer);
+            SmartLogger.log('initialization', '  - this.originalPoints:', this.originalPoints);
+            SmartLogger.log('initialization', '  - originalPoints length:', this.originalPoints ? this.originalPoints.length : 'undefined');
             
             if (this.webglRenderer && this.originalPoints) {
+                // KEEP: User-facing success message
                 console.log('✅ Main.js initializing position manager with', this.originalPoints.length, 'points');
                 this.webglRenderer.initPositionManager(this.originalPoints);
             } else {
+                // KEEP: User-facing warning message
                 console.log('⚠️ Main.js position manager not initialized - missing webglRenderer or originalPoints');
             }
             this.setupControls();
@@ -763,7 +768,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     createWebGLPieces() {
         if (!this.voronoi || !this.webglRenderer) return;
         
-        console.log('Initializing WebGL Voronoi...');
+        SmartLogger.log('initialization', 'Initializing WebGL Voronoi...');
         
         // Get polygons from Voronoi diagram
         const polygonGenerator = this.voronoi.cellPolygons();
@@ -772,6 +777,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         // Initialize the connected Voronoi system
         this.webglRenderer.initializeVoronoi(polygons);
         
+        // KEEP: User-facing success message
         console.log(`✅ Initialized WebGL Voronoi with ${polygons.length} pieces`);
     }
 
@@ -800,7 +806,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             const skipDraggedPiece = this.isDragging;
             const webglResult = this.webglRenderer.findPieceAtPosition(x, y, skipDraggedPiece);
             if (webglResult !== -1) {
-                console.log(`🎯 WebGL hit detection result:`, webglResult);
+                SmartLogger.log('hit-detection', `🎯 WebGL hit detection result:`, webglResult);
                 return webglResult;
             }
         }
@@ -809,7 +815,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         let cellIndex = this.findCellAtPosition(x, y);
         
         if (cellIndex !== -1) {
-            console.log(`🎯 Standard hit detection found piece ${cellIndex}`);
+            SmartLogger.log('hit-detection', `🎯 Standard hit detection found piece ${cellIndex}`);
             return cellIndex;
         }
         
@@ -826,12 +832,12 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         for (const [testX, testY] of searchPoints) {
             cellIndex = this.findCellAtPosition(testX, testY);
             if (cellIndex !== -1) {
-                console.log(`🎯 Expanded hit detection found piece ${cellIndex} at offset (${testX-x}, ${testY-y})`);
+                SmartLogger.log('hit-detection', `🎯 Expanded hit detection found piece ${cellIndex} at offset (${testX-x}, ${testY-y})`);
                 return cellIndex;
             }
         }
         
-        console.log(`🎯 No piece found at (${x}, ${y}) even with expanded search`);
+        SmartLogger.log('hit-detection', `🎯 No piece found at (${x}, ${y}) even with expanded search`);
         return -1;
     }
 
@@ -846,18 +852,18 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         const x = webglCoords.x;
         const y = webglCoords.y;
         
-        console.log(`🖱️ Mouse down at WebGL (${x}, ${y})`);
+        SmartLogger.log('drag-events', `🖱️ Mouse down at WebGL (${x}, ${y})`);
         
         // Find which cell was clicked with improved hit detection
         const hitResult = this.findCellAtPositionImproved(x, y);
-        console.log(`🎯 Hit detection result:`, hitResult);
+        SmartLogger.log('hit-detection', `🎯 Hit detection result:`, hitResult);
         
         // Only activate if we hit a piece (not a slot)
         const isSlot = hitResult && typeof hitResult === 'object' && hitResult.type === 'slot';
         const cellIndex = isSlot ? -1 : hitResult;
         
         if (cellIndex !== -1) {
-            console.log(`✅ Activating piece ${cellIndex}`);
+            SmartLogger.log('drag-events', `✅ Activating piece ${cellIndex}`);
             // Clear any existing slot hover when starting to drag a piece
             if (this.hoveredSlot !== undefined && this.webglRenderer) {
                 this.webglRenderer.updateSlotHover(this.hoveredSlot, false, false);
@@ -866,17 +872,17 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             // Activate the piece
             this.activatePiece(cellIndex, x, y);
         } else if (isSlot) {
-            console.log(`🎰 Clicked on slot ${hitResult.index}, not activating`);
+            SmartLogger.log('hit-detection', `🎰 Clicked on slot ${hitResult.index}, not activating`);
         } else {
-            console.log(`❌ No piece found at click position`);
+            SmartLogger.log('hit-detection', `❌ No piece found at click position`);
         }
     }
     
     activatePiece(cellIndex, x, y) {
-        console.log(`✨ Activating piece ${cellIndex}`);
-        console.log(`🔍 Debug: this.points:`, this.points);
-        console.log(`🔍 Debug: this.originalPoints:`, this.originalPoints);
-        console.log(`🔍 Debug: cellIndex:`, cellIndex, 'points.length:', this.points?.length);
+        SmartLogger.log('drag-events', `✨ Activating piece ${cellIndex}`);
+        SmartLogger.log('initialization', `🔍 Debug: this.points:`, this.points);
+        SmartLogger.log('initialization', `🔍 Debug: this.originalPoints:`, this.originalPoints);
+        SmartLogger.log('initialization', `🔍 Debug: cellIndex:`, cellIndex, 'points.length:', this.points?.length);
         
         // Safety check: ensure points array exists and has the right index
         if (!this.points || !this.points[cellIndex]) {
@@ -900,11 +906,11 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         // Calculate current piece position using position manager
         const currentOffset = this.webglRenderer.pieces[cellIndex].offset || { x: 0, y: 0 };
         
-        console.log('🔍 activatePiece debug:');
-        console.log('  - cellIndex:', cellIndex);
-        console.log('  - currentOffset:', currentOffset);
-        console.log('  - positionManager available:', !!this.webglRenderer.positionManager);
-        console.log('  - originalPoints available:', !!this.webglRenderer.originalPoints);
+        SmartLogger.log('drag-events', '🔍 activatePiece debug:');
+        SmartLogger.log('drag-events', '  - cellIndex:', cellIndex);
+        SmartLogger.log('drag-events', '  - currentOffset:', currentOffset);
+        SmartLogger.log('drag-events', '  - positionManager available:', !!this.webglRenderer.positionManager);
+        SmartLogger.log('drag-events', '  - originalPoints available:', !!this.webglRenderer.originalPoints);
         
         if (!this.webglRenderer.positionManager) {
             console.error('❌ Position manager not available! Using fallback calculation.');
@@ -922,12 +928,12 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         this.dragOffset.x = x - currentPosition.x;
         this.dragOffset.y = y - currentPosition.y;
         
-        console.log(`🎯 Piece ${cellIndex} drag offset calculation:`);
-        console.log(`   Original position: (${this.points[cellIndex][0]}, ${this.points[cellIndex][1]})`);
-        console.log(`   Current offset: (${currentOffset.x}, ${currentOffset.y})`);
-        console.log(`   Current position: (${currentPosition.x}, ${currentPosition.y})`);
-        console.log(`   Mouse position: (${x}, ${y})`);
-        console.log(`   Drag offset: (${this.dragOffset.x}, ${this.dragOffset.y})`);
+        SmartLogger.log('drag-events', `🎯 Piece ${cellIndex} drag offset calculation:`);
+        SmartLogger.log('drag-events', `   Original position: (${this.points[cellIndex][0]}, ${this.points[cellIndex][1]})`);
+        SmartLogger.log('drag-events', `   Current offset: (${currentOffset.x}, ${currentOffset.y})`);
+        SmartLogger.log('drag-events', `   Current position: (${currentPosition.x}, ${currentPosition.y})`);
+        SmartLogger.log('drag-events', `   Mouse position: (${x}, ${y})`);
+        SmartLogger.log('drag-events', `   Drag offset: (${this.dragOffset.x}, ${this.dragOffset.y})`);
         
         // Notify WebGL renderer about dragging state
         if (this.webglRenderer && this.webglRenderer.setDraggingState) {
@@ -946,12 +952,12 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             this.webglRenderer.canvas.style.cursor = 'grabbing';
         }
         
-        console.log(`🎮 Piece ${cellIndex} activated for dragging`);
+        SmartLogger.log('drag-events', `🎮 Piece ${cellIndex} activated for dragging`);
     }
     
     resetInteractionState() {
         if (this.isDragging && this.draggedCellIndex !== -1) {
-            console.log(`🔄 Resetting interaction state for piece ${this.draggedCellIndex}`);
+            SmartLogger.log('drag-events', `🔄 Resetting interaction state for piece ${this.draggedCellIndex}`);
             
             // Reset visual state
             if (this.webglRenderer) {
@@ -998,7 +1004,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             
             // Handle piece hover changes
             if (hoveredPiece !== this.hoveredPiece) {
-                console.log(`🖱️ Piece hover change: ${this.hoveredPiece} → ${hoveredPiece}`);
+                SmartLogger.log('drag-events', `🖱️ Piece hover change: ${this.hoveredPiece} -> ${hoveredPiece}`);
                 
                 // Reset previous hovered piece
                 if (this.hoveredPiece !== -1 && this.webglRenderer) {
@@ -1010,7 +1016,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
                 // Update new hovered piece
                 if (hoveredPiece !== -1 && this.webglRenderer) {
                     if (this.webglRenderer.debugLogging.hoverEffects) {
-                        console.log(`✨ Setting hover effect for piece ${hoveredPiece}`);
+                        SmartLogger.log('drag-events', `✨ Setting hover effect for piece ${hoveredPiece}`);
                     }
                     this.webglRenderer.updatePieceVisualState(hoveredPiece, 'hover');
                     this.webglRenderer.canvas.style.cursor = 'grab';
@@ -1019,7 +1025,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             
             // Handle slot hover changes (only during normal hover, not dragging)
             if (hoveredSlot !== (this.hoveredSlot || -1)) {
-                console.log(`🎰 Slot hover change: ${this.hoveredSlot || -1} → ${hoveredSlot}`);
+                SmartLogger.log('drag-events', `🎰 Slot hover change: ${this.hoveredSlot || -1} -> ${hoveredSlot}`);
                 
                 // Reset previous hovered slot
                 if ((this.hoveredSlot || -1) !== -1 && this.webglRenderer) {
@@ -1031,7 +1037,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
                 // Update new hovered slot (only show outline, not background during normal hover)
                 if (hoveredSlot !== -1 && this.webglRenderer) {
                     if (this.webglRenderer.debugLogging.hoverEffects) {
-                        console.log(`✨ Setting hover effect for slot ${hoveredSlot}`);
+                        SmartLogger.log('drag-events', `✨ Setting hover effect for slot ${hoveredSlot}`);
                     }
                     // Only show outline hover during normal hover, not background fill
                     this.webglRenderer.updateSlotHover(hoveredSlot, true, false); // false = not drag hover
@@ -1079,7 +1085,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     }
 
     handleMouseUp(e) {
-        console.log(`🖱️ Mouse up - isDragging: ${this.isDragging}, draggedCellIndex: ${this.draggedCellIndex}`);
+        SmartLogger.log('drag-events', `🖱️ Mouse up - isDragging: ${this.isDragging}, draggedCellIndex: ${this.draggedCellIndex}`);
         
         if (!this.isDragging || this.draggedCellIndex === -1) {
             // Even if no piece was being dragged, ensure clean state
@@ -1093,10 +1099,10 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         const currentOffset = this.webglRenderer.pieces[draggedIndex].offset || { x: 0, y: 0 };
         const distance = Math.sqrt(currentOffset.x ** 2 + currentOffset.y ** 2);
         
-        console.log(`📏 Piece ${draggedIndex} distance from origin: ${distance.toFixed(1)}px (threshold: ${this.snapThreshold}px)`);
+        SmartLogger.log('drag-events', `📏 Piece ${draggedIndex} distance from origin: ${distance.toFixed(1)}px (threshold: ${this.snapThreshold}px)`);
         
         if (distance < this.snapThreshold) {
-            console.log(`📌 Piece ${draggedIndex} snapping back to original position`);
+            SmartLogger.log('drag-events', `📌 Piece ${draggedIndex} snapping back to original position`);
             
             // Snap back to original position
             this.webglRenderer.pieces[draggedIndex].offset = { x: 0, y: 0 };
@@ -1117,10 +1123,10 @@ class WebGLRenderer extends VoronoiPuzzleBase {
                 if (this.webglRenderer) {
                     this.webglRenderer.updatePieceVisualState(draggedIndex, 'normal');
                 }
-                console.log(`✨ Piece ${draggedIndex} snap animation completed`);
+                SmartLogger.log('drag-events', `✨ Piece ${draggedIndex} snap animation completed`);
             }, 2000);
         } else {
-            console.log(`🎯 Piece ${draggedIndex} remains at offset position`);
+            SmartLogger.log('drag-events', `🎯 Piece ${draggedIndex} remains at offset position`);
             
             // Update visual state to normal (not snapped)
             if (this.webglRenderer) {
@@ -1136,7 +1142,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             this.webglRenderer.checkSolvedState();
         }
         
-        console.log(`🏁 Mouse up completed for piece ${draggedIndex}`);
+        SmartLogger.log('drag-events', `🏁 Mouse up completed for piece ${draggedIndex}`);
     }
     
     handleDragSlotHover(x, y) {

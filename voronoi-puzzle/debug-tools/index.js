@@ -3,7 +3,7 @@
  * Central loader for all diagnostic and testing tools
  */
 
-console.log('🔧 Loading Debug Tools...');
+SmartLogger.log('debug-tools', '🔧 Loading Debug Tools...');
 
 // Load all debug tools
 const debugTools = {
@@ -143,7 +143,7 @@ window.showDebugCommands = function() {
 
 // Quick diagnostic function
 window.quickDiagnostic = function() {
-    console.log('🚀 Running Quick Diagnostic...');
+    SmartLogger.log('debug-tools', '🚀 Running Quick Diagnostic...');
     
     // Check if renderer exists
     if (!window.webglRenderer) {
@@ -156,21 +156,21 @@ window.quickDiagnostic = function() {
     const unsolvedPieces = window.webglRenderer.pieces.filter(p => p.state === 'unsolved').length;
     const piecesWithMeshes = window.webglRenderer.pieces.filter(p => p.mesh !== null).length;
     
-    console.log(`📊 Basic Stats: ${totalPieces} total, ${unsolvedPieces} unsolved, ${piecesWithMeshes} with meshes`);
+    SmartLogger.log('debug-tools', `📊 Basic Stats: ${totalPieces} total, ${unsolvedPieces} unsolved, ${piecesWithMeshes} with meshes`);
     
     // Run scene diagnostics
-    console.log('\n🔍 Running Scene Diagnostics...');
+    SmartLogger.log('debug-tools', '\n🔍 Running Scene Diagnostics...');
     const sceneResults = window.diagnoseSceneState();
     
     if (sceneResults) {
         const totalIssues = sceneResults.reduce((sum, result) => sum + (result.totalIssues || 0), 0);
         
         if (totalIssues > 0) {
-            console.log(`\n⚠️ Found ${totalIssues} issues - running auto-fix...`);
+            SmartLogger.log('debug-tools', `\n⚠️ Found ${totalIssues} issues - running auto-fix...`);
             const fixedCount = window.autoFixSceneIssues();
-            console.log(`✅ Auto-fixed ${fixedCount} issues`);
+            SmartLogger.log('debug-tools', `✅ Auto-fixed ${fixedCount} issues`);
         } else {
-            console.log('✅ No scene issues detected');
+            SmartLogger.log('debug-tools', '✅ No scene issues detected');
         }
     }
     
@@ -179,8 +179,8 @@ window.quickDiagnostic = function() {
 
 // Comprehensive test suite
 window.runAllTests = function() {
-    console.log('🧪 Running Complete Test Suite...');
-    console.log('=================================');
+    SmartLogger.log('debug-tools', '🧪 Running Complete Test Suite...');
+    SmartLogger.log('debug-tools', '=================================');
     
     if (!window.webglRenderer) {
         console.warn('⚠️ WebGL renderer not available');
@@ -188,45 +188,45 @@ window.runAllTests = function() {
     }
     
     // 1. Quick diagnostic
-    console.log('\n1️⃣ Quick Diagnostic:');
+    SmartLogger.log('debug-tools', '\n1️⃣ Quick Diagnostic:');
     window.quickDiagnostic();
     
     // 2. Raycaster precision tests
-    console.log('\n2️⃣ Raycaster Precision Tests:');
+    SmartLogger.log('debug-tools', '\n2️⃣ Raycaster Precision Tests:');
     const precisionResults = window.runPrecisionTests();
     
     // 3. Scene state diagnostics
-    console.log('\n3️⃣ Scene State Diagnostics:');
+    SmartLogger.log('debug-tools', '\n3️⃣ Scene State Diagnostics:');
     const sceneResults = window.diagnoseSceneState();
     
     // 4. Legacy tests
-    console.log('\n4️⃣ Legacy System Tests:');
+    SmartLogger.log('debug-tools', '\n4️⃣ Legacy System Tests:');
     if (window.runObjectSystemTests) {
         window.runObjectSystemTests();
     }
     
     // Summary
-    console.log('\n📋 TEST SUITE SUMMARY:');
-    console.log('======================');
+    SmartLogger.log('debug-tools', '\n📋 TEST SUITE SUMMARY:');
+    SmartLogger.log('debug-tools', '======================');
     
     if (precisionResults) {
         const syntheticIssues = precisionResults.syntheticResults?.filter(r => !r.isDetectable).length || 0;
         const unresponsivePieces = precisionResults.unresponsivePieces?.length || 0;
-        console.log(`Raycaster Precision: ${syntheticIssues === 0 ? '✅ PASS' : '❌ FAIL'} (${syntheticIssues} synthetic issues)`);
-        console.log(`Unresponsive Pieces: ${unresponsivePieces} found`);
+        SmartLogger.log('debug-tools', `Raycaster Precision: ${syntheticIssues === 0 ? '✅ PASS' : '❌ FAIL'} (${syntheticIssues} synthetic issues)`);
+        SmartLogger.log('debug-tools', `Unresponsive Pieces: ${unresponsivePieces} found`);
     }
     
     if (sceneResults) {
         const totalSceneIssues = sceneResults.reduce((sum, result) => sum + (result.totalIssues || 0), 0);
-        console.log(`Scene State: ${totalSceneIssues === 0 ? '✅ PASS' : '⚠️ ISSUES'} (${totalSceneIssues} issues)`);
+        SmartLogger.log('debug-tools', `Scene State: ${totalSceneIssues === 0 ? '✅ PASS' : '⚠️ ISSUES'} (${totalSceneIssues} issues)`);
     }
     
-    console.log('\n🎯 RECOMMENDATIONS:');
+    SmartLogger.log('debug-tools', '\n🎯 RECOMMENDATIONS:');
     if (sceneResults && sceneResults.some(r => r.totalIssues > 0)) {
-        console.log('  - Run autoFixSceneIssues() to fix detected problems');
+        SmartLogger.log('debug-tools', '  - Run autoFixSceneIssues() to fix detected problems');
     }
     if (precisionResults && precisionResults.unresponsivePieces?.length > 0) {
-        console.log('  - Investigate unresponsive pieces with diagnoseSceneState()');
+        SmartLogger.log('debug-tools', '  - Investigate unresponsive pieces with diagnoseSceneState()');
     }
     
     return {
@@ -235,7 +235,7 @@ window.runAllTests = function() {
     };
 };
 
-console.log('✅ Debug Tools loaded successfully!');
-console.log('📋 Run showDebugCommands() to see all available tools');
-console.log('🚀 Run quickDiagnostic() for a quick health check');
-console.log('🧪 Run runAllTests() for comprehensive testing');
+SmartLogger.log('debug-tools', '✅ Debug Tools loaded successfully!');
+SmartLogger.log('debug-tools', '📋 Run showDebugCommands() to see all available tools');
+SmartLogger.log('debug-tools', '🚀 Run quickDiagnostic() for a quick health check');
+SmartLogger.log('debug-tools', '🧪 Run runAllTests() for comprehensive testing');

@@ -3,11 +3,38 @@
 A high-performance web-based puzzle prototype featuring animated Voronoi cells with WebGL 3D rendering, advanced visual effects, and a unified theming system.
 
 ## TODO
-- [ ] **Fix unreachable pieces issue** - Some pieces become unresponsive to interaction
-- [ ] **Clean up logging and testing/diagnostic system** - create a unified appraoch to debugging and have the entire codebase adhere to it. Prevent exessive continious logging
+- [x] **Fix unreachable pieces issue** - Some pieces become unresponsive to interaction
+- [x] **Clean up logging and testing/diagnostic system** - create a unified approach to debugging and have the entire codebase adhere to it. Prevent excessive continuous logging
 
-### 🔧 Future Development Items
-- [ ] **Enhanced visual piece handling feedback** - Add improved visual feedback for piece interactions (hover effects, drag indicators, etc.)
+## 🐛 Centralized Debug System
+
+The project now includes a comprehensive centralized debugging system that replaces fragmented logging with intelligent, context-aware debugging capabilities.
+
+### 📚 Documentation
+- **[Complete Usage Guide](DEBUG_SYSTEM_GUIDE.md)** - Comprehensive documentation with examples and best practices
+- **[Quick Reference Card](DEBUG_QUICK_REFERENCE.md)** - Essential commands and workflows for quick access
+
+### 🚀 Quick Start
+```javascript
+// Check system status
+DebugCommands.info.status()
+
+// Start quick debugging
+DebugCommands.workflow.quickDebug()
+
+// Run integration tests
+IntegrationTester.runAllTests()
+```
+
+### 🎯 Key Features
+- **SmartLogger** - Category-based filtered logging (reduces 798 logs to ~150 relevant logs)
+- **DebugHub** - Mode switching and category management
+- **ContextManager** - Intelligent debugging scenarios
+- **ResultsAggregator** - Comprehensive diagnostic analysis
+- **ExportSystem** - Data export in multiple formats
+- **Integration Testing** - Quality assurance and backward compatibility
+- **Production Safety** - Zero performance impact in production
+
 
 ## Table of Contents
 
@@ -359,6 +386,8 @@ autoFixSceneIssues()
 
 ## Future Development
 
+### **Enhanced visual piece handling feedback** - Add improved visual feedback for piece interactions (hover effects, drag indicators, etc.)
+
 ### **Phase 1: Responsive Design (Planned)**
 - **Responsive Canvas on Load**: Implement canvas sizing that adapts to screen width while maintaining 16:9 aspect ratio on initial load
 - **Mobile Optimization**: Ensure game is playable on tablets and mobile devices without horizontal scrolling
@@ -376,9 +405,15 @@ autoFixSceneIssues()
 - **Memory Pressure Detection**: Automatic quality reduction when system is under stress
 - **Risk Level**: High - Could cause visual degradation or unexpected behavior
 
+### **Start puzle from unsolved state** - Start the puzzle with it being completely apart. Find a way to give the user an 'inventory' and 'workspace', similar to how you would solve an analogue jigsaw. Perhaps pieces in the inventory are smaller?
+
+### **Add levels** - Each level has its own image, levels are increasingly diffifult
+
 ### **Current Resource Management Features**
 - **Event Listener Cleanup**: Proper cleanup of all event listeners
 - **Object Reference Nullification**: Explicit nullification of object references
 - **Animation Loop Cleanup**: Proper cancellation of animation loops
 - **WebGL Resource Disposal**: Complete cleanup of Three.js objects and textures
 - **Memory Leak Prevention**: Comprehensive disposal system prevents memory leaks
+
+### **Audio** - Investigate adding audio

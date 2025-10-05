@@ -41,14 +41,14 @@ class PositionManager {
             if (window.voronoiPuzzle && window.voronoiPuzzle.points) {
                 points = window.voronoiPuzzle.points;
                 if (this.debugLogging) {
-                    console.log(`🔄 Using fallback points from window.voronoiPuzzle.points (${points.length} points)`);
+                    SmartLogger.log('initialization', `🔄 Using fallback points from window.voronoiPuzzle.points (${points.length} points)`);
                 }
             }
         }
         
         const original = points && points[pieceIndex] ? points[pieceIndex] : null;
         if (!original) {
-            console.warn(`⚠️ No original point found for piece ${pieceIndex}`);
+            // REMOVED: Pure debug noise - no user value
             return { x: offset.x, y: offset.y }; // Return just the offset as fallback
         }
         
@@ -64,7 +64,7 @@ class PositionManager {
         };
         
         if (this.debugLogging) {
-            console.log(`📍 Piece ${pieceIndex} position: original(${original[0].toFixed(1)}, ${original[1].toFixed(1)}) + offset(${offset.x.toFixed(1)}, ${offset.y.toFixed(1)}) = WebGL(${position.x.toFixed(1)}, ${position.y.toFixed(1)})`);
+            SmartLogger.log('coordinate-transforms', `📍 Piece ${pieceIndex} position: original(${original[0].toFixed(1)}, ${original[1].toFixed(1)}) + offset(${offset.x.toFixed(1)}, ${offset.y.toFixed(1)}) = WebGL(${position.x.toFixed(1)}, ${position.y.toFixed(1)})`);
         }
         
         return position;
@@ -96,7 +96,7 @@ class PositionManager {
         };
         
         if (this.debugLogging) {
-            console.log(`🔄 Mouse offset: screen(${mouseOffset.x.toFixed(1)}, ${mouseOffset.y.toFixed(1)}) → WebGL(${webglOffset.x.toFixed(1)}, ${webglOffset.y.toFixed(1)})`);
+            SmartLogger.log('coordinate-transforms', `🔄 Mouse offset: screen(${mouseOffset.x.toFixed(1)}, ${mouseOffset.y.toFixed(1)}) -> WebGL(${webglOffset.x.toFixed(1)}, ${webglOffset.y.toFixed(1)})`);
         }
         
         return webglOffset;
@@ -116,7 +116,7 @@ class PositionManager {
         };
         
         if (this.debugLogging) {
-            console.log(`🔄 WebGL offset: WebGL(${webglOffset.x.toFixed(1)}, ${webglOffset.y.toFixed(1)}) → screen(${mouseOffset.x.toFixed(1)}, ${mouseOffset.y.toFixed(1)})`);
+            SmartLogger.log('coordinate-transforms', `🔄 WebGL offset: WebGL(${webglOffset.x.toFixed(1)}, ${webglOffset.y.toFixed(1)}) -> screen(${mouseOffset.x.toFixed(1)}, ${mouseOffset.y.toFixed(1)})`);
         }
         
         return mouseOffset;
@@ -150,7 +150,7 @@ class PositionManager {
         );
         
         if (this.debugLogging) {
-            console.log(`📏 Piece ${pieceIndex} distance from origin: ${distance.toFixed(1)}px (threshold: ${threshold}px)`);
+            SmartLogger.log('piece-states', `📏 Piece ${pieceIndex} distance from origin: ${distance.toFixed(1)}px (threshold: ${threshold}px)`);
         }
         
         return distance <= threshold;
@@ -174,7 +174,7 @@ class PositionManager {
         
         const original = points && points[pieceIndex] ? points[pieceIndex] : null;
         if (!original) {
-            console.warn(`⚠️ No original point found for piece ${pieceIndex}`);
+            // REMOVED: Pure debug noise - no user value
             return { x: 0, y: 0 };
         }
         
@@ -221,7 +221,7 @@ class PositionManager {
     updateOriginalPoints(newOriginalPoints) {
         this.originalPoints = newOriginalPoints;
         if (this.debugLogging) {
-            console.log(`🔄 Updated original points: ${newOriginalPoints.length} points`);
+            SmartLogger.log('initialization', `🔄 Updated original points: ${newOriginalPoints.length} points`);
         }
     }
 }

@@ -156,7 +156,7 @@ export const ThemeUtils = {
          */
         updateSettings(newSettings) {
             Object.assign(DEBUG_SETTINGS, newSettings);
-            console.log('🔧 Debug settings updated:', DEBUG_SETTINGS);
+            SmartLogger.log('debug-tools', '🔧 Debug settings updated:', DEBUG_SETTINGS);
         },
         
         
@@ -165,7 +165,7 @@ export const ThemeUtils = {
          */
         toggleHitDetection() {
             DEBUG_SETTINGS.showHitDetection = !DEBUG_SETTINGS.showHitDetection;
-            console.log(`🎯 Hit detection logs ${DEBUG_SETTINGS.showHitDetection ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🎯 Hit detection logs ${DEBUG_SETTINGS.showHitDetection ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showHitDetection;
         },
         
@@ -174,7 +174,7 @@ export const ThemeUtils = {
          */
         togglePieceStates() {
             DEBUG_SETTINGS.showPieceStates = !DEBUG_SETTINGS.showPieceStates;
-            console.log(`📊 Piece state logs ${DEBUG_SETTINGS.showPieceStates ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `📊 Piece state logs ${DEBUG_SETTINGS.showPieceStates ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showPieceStates;
         },
         
@@ -183,7 +183,7 @@ export const ThemeUtils = {
          */
         toggleInteractionDebug() {
             DEBUG_SETTINGS.showInteractionDebug = !DEBUG_SETTINGS.showInteractionDebug;
-            console.log(`🖱️ Interaction debug logs ${DEBUG_SETTINGS.showInteractionDebug ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🖱️ Interaction debug logs ${DEBUG_SETTINGS.showInteractionDebug ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showInteractionDebug;
         },
         
@@ -192,7 +192,7 @@ export const ThemeUtils = {
          */
         toggleMaterialUpdates() {
             DEBUG_SETTINGS.showMaterialUpdates = !DEBUG_SETTINGS.showMaterialUpdates;
-            console.log(`🎨 Material update logs ${DEBUG_SETTINGS.showMaterialUpdates ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🎨 Material update logs ${DEBUG_SETTINGS.showMaterialUpdates ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showMaterialUpdates;
         },
         
@@ -201,7 +201,7 @@ export const ThemeUtils = {
          */
         toggleHoverEffects() {
             DEBUG_SETTINGS.showHoverEffects = !DEBUG_SETTINGS.showHoverEffects;
-            console.log(`✨ Hover effect logs ${DEBUG_SETTINGS.showHoverEffects ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `✨ Hover effect logs ${DEBUG_SETTINGS.showHoverEffects ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showHoverEffects;
         },
         
@@ -210,7 +210,7 @@ export const ThemeUtils = {
          */
         toggleNeonGlow() {
             DEBUG_SETTINGS.showNeonGlow = !DEBUG_SETTINGS.showNeonGlow;
-            console.log(`🌟 Neon glow logs ${DEBUG_SETTINGS.showNeonGlow ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🌟 Neon glow logs ${DEBUG_SETTINGS.showNeonGlow ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showNeonGlow;
         },
         
@@ -219,7 +219,7 @@ export const ThemeUtils = {
          */
         toggleStyling() {
             DEBUG_SETTINGS.showStyling = !DEBUG_SETTINGS.showStyling;
-            console.log(`🎨 Styling logs ${DEBUG_SETTINGS.showStyling ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🎨 Styling logs ${DEBUG_SETTINGS.showStyling ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showStyling;
         },
         
@@ -228,7 +228,7 @@ export const ThemeUtils = {
          */
         toggleInitialization() {
             DEBUG_SETTINGS.showInitialization = !DEBUG_SETTINGS.showInitialization;
-            console.log(`🔍 Initialization logs ${DEBUG_SETTINGS.showInitialization ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🔍 Initialization logs ${DEBUG_SETTINGS.showInitialization ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showInitialization;
         },
         
@@ -237,7 +237,7 @@ export const ThemeUtils = {
          */
         toggleCoordinates() {
             DEBUG_SETTINGS.showCoordinates = !DEBUG_SETTINGS.showCoordinates;
-            console.log(`🎯 Coordinate logs ${DEBUG_SETTINGS.showCoordinates ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🎯 Coordinate logs ${DEBUG_SETTINGS.showCoordinates ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showCoordinates;
         },
         
@@ -246,7 +246,7 @@ export const ThemeUtils = {
          */
         toggleRendererSwitching() {
             DEBUG_SETTINGS.showRendererSwitching = !DEBUG_SETTINGS.showRendererSwitching;
-            console.log(`🔄 Renderer switching logs ${DEBUG_SETTINGS.showRendererSwitching ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🔄 Renderer switching logs ${DEBUG_SETTINGS.showRendererSwitching ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showRendererSwitching;
         },
         
@@ -255,7 +255,7 @@ export const ThemeUtils = {
          */
         toggleCanvasSetup() {
             DEBUG_SETTINGS.showCanvasSetup = !DEBUG_SETTINGS.showCanvasSetup;
-            console.log(`🎨 Canvas setup logs ${DEBUG_SETTINGS.showCanvasSetup ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🎨 Canvas setup logs ${DEBUG_SETTINGS.showCanvasSetup ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showCanvasSetup;
         },
         
@@ -264,7 +264,7 @@ export const ThemeUtils = {
          */
         toggleGlowEffects() {
             DEBUG_SETTINGS.showGlowEffects = !DEBUG_SETTINGS.showGlowEffects;
-            console.log(`✨ Glow effect logs ${DEBUG_SETTINGS.showGlowEffects ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `✨ Glow effect logs ${DEBUG_SETTINGS.showGlowEffects ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showGlowEffects;
         },
         
@@ -273,7 +273,7 @@ export const ThemeUtils = {
          */
         toggleAnimation() {
             DEBUG_SETTINGS.showAnimation = !DEBUG_SETTINGS.showAnimation;
-            console.log(`🎬 Animation logs ${DEBUG_SETTINGS.showAnimation ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🎬 Animation logs ${DEBUG_SETTINGS.showAnimation ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showAnimation;
         },
         
@@ -282,7 +282,7 @@ export const ThemeUtils = {
          */
         toggleVisualStates() {
             DEBUG_SETTINGS.showVisualStates = !DEBUG_SETTINGS.showVisualStates;
-            console.log(`🎨 Visual state logs ${DEBUG_SETTINGS.showVisualStates ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🎨 Visual state logs ${DEBUG_SETTINGS.showVisualStates ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showVisualStates;
         },
         
@@ -291,7 +291,7 @@ export const ThemeUtils = {
          */
         toggleCreation() {
             DEBUG_SETTINGS.showCreation = !DEBUG_SETTINGS.showCreation;
-            console.log(`🏗️ Creation logs ${DEBUG_SETTINGS.showCreation ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🏗️ Creation logs ${DEBUG_SETTINGS.showCreation ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.showCreation;
         },
         
@@ -306,7 +306,7 @@ export const ThemeUtils = {
             DEBUG_SETTINGS.showAnimation = true;
             DEBUG_SETTINGS.showVisualStates = true;
             DEBUG_SETTINGS.showCreation = true;
-            console.log('🔧 All debug logs ENABLED');
+            SmartLogger.log('debug-tools', '🔧 All debug logs ENABLED');
         },
         
         /**
@@ -320,7 +320,7 @@ export const ThemeUtils = {
             DEBUG_SETTINGS.showAnimation = false;
             DEBUG_SETTINGS.showVisualStates = false;
             DEBUG_SETTINGS.showCreation = false;
-            console.log('🔧 All debug logs DISABLED');
+            SmartLogger.log('debug-tools', '🔧 All debug logs DISABLED');
         },
         
         /**
@@ -328,7 +328,7 @@ export const ThemeUtils = {
          */
         toggleQuietMode() {
             DEBUG_SETTINGS.quietMode = !DEBUG_SETTINGS.quietMode;
-            console.log(`🔇 Quiet mode ${DEBUG_SETTINGS.quietMode ? 'ENABLED' : 'DISABLED'}`);
+            SmartLogger.log('debug-tools', `🔇 Quiet mode ${DEBUG_SETTINGS.quietMode ? 'ENABLED' : 'DISABLED'}`);
             return DEBUG_SETTINGS.quietMode;
         },
         
@@ -337,7 +337,7 @@ export const ThemeUtils = {
          */
         enableQuietMode() {
             DEBUG_SETTINGS.quietMode = true;
-            console.log('🔇 Quiet mode ENABLED - reduced logging');
+            SmartLogger.log('debug-tools', '🔇 Quiet mode ENABLED - reduced logging');
         },
         
         /**
@@ -345,7 +345,7 @@ export const ThemeUtils = {
          */
         disableQuietMode() {
             DEBUG_SETTINGS.quietMode = false;
-            console.log('🔇 Quiet mode DISABLED - full logging');
+            SmartLogger.log('debug-tools', '🔇 Quiet mode DISABLED - full logging');
         }
     }
 };

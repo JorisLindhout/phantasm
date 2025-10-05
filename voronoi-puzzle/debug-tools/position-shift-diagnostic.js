@@ -17,10 +17,10 @@ class PositionShiftDiagnostic {
      * Enable position shift monitoring
      */
     enablePositionShiftMonitoring() {
-        console.log('🔍 Enabling position shift monitoring...');
+        SmartLogger.log('debug-tools','🔍 Enabling position shift monitoring...');
         
         if (this.isMonitoring) {
-            console.log('⚠️ Position shift monitoring already enabled');
+            SmartLogger.log('debug-tools','⚠️ Position shift monitoring already enabled');
             return;
         }
         
@@ -34,18 +34,18 @@ class PositionShiftDiagnostic {
         this.puzzle.handleMouseUp = this.monitoredHandleMouseUp.bind(this);
         this.renderer.updatePiecePosition = this.monitoredUpdatePiecePosition.bind(this);
         
-        console.log('✅ Position shift monitoring enabled');
-        console.log('📝 Now drag and release pieces to capture position shifts');
+        SmartLogger.log('debug-tools','✅ Position shift monitoring enabled');
+        SmartLogger.log('debug-tools','📝 Now drag and release pieces to capture position shifts');
     }
 
     /**
      * Disable position shift monitoring
      */
     disablePositionShiftMonitoring() {
-        console.log('🔍 Disabling position shift monitoring...');
+        SmartLogger.log('debug-tools','🔍 Disabling position shift monitoring...');
         
         if (!this.isMonitoring) {
-            console.log('⚠️ Position shift monitoring not enabled');
+            SmartLogger.log('debug-tools','⚠️ Position shift monitoring not enabled');
             return;
         }
         
@@ -59,7 +59,7 @@ class PositionShiftDiagnostic {
             this.renderer.updatePiecePosition = this.originalUpdatePiecePosition;
         }
         
-        console.log('✅ Position shift monitoring disabled');
+        SmartLogger.log('debug-tools','✅ Position shift monitoring disabled');
     }
 
     /**
@@ -87,7 +87,7 @@ class PositionShiftDiagnostic {
             
             this.releaseLogs.push(releaseLog);
             
-            console.log(`🎯 RELEASE CAPTURED - Piece ${pieceIndex}:`, {
+            SmartLogger.log('debug-tools',`🎯 RELEASE CAPTURED - Piece ${pieceIndex}:`, {
                 mouse: `(${coords.x.toFixed(1)}, ${coords.y.toFixed(1)})`,
                 pieceAtRelease: `(${releaseLog.piecePositionAtRelease.x.toFixed(1)}, ${releaseLog.piecePositionAtRelease.y.toFixed(1)})`,
                 offsetAtRelease: `(${currentOffset.x.toFixed(1)}, ${currentOffset.y.toFixed(1)})`
@@ -145,7 +145,7 @@ class PositionShiftDiagnostic {
                 
                 this.positionShifts.push(positionShift);
                 
-                console.log(`🔄 POSITION SHIFT DETECTED - Piece ${pieceIndex}:`, {
+                SmartLogger.log('debug-tools',`🔄 POSITION SHIFT DETECTED - Piece ${pieceIndex}:`, {
                     timeToShift: timeSinceRelease + 'ms',
                     shiftDistance: shiftDistance.toFixed(2) + 'px',
                     from: `(${releaseLog.piecePositionAtRelease.x.toFixed(1)}, ${releaseLog.piecePositionAtRelease.y.toFixed(1)})`,
@@ -180,7 +180,7 @@ class PositionShiftDiagnostic {
             
             if (recentRelease) {
                 const timeSinceRelease = Date.now() - recentRelease.releaseTime;
-                console.log(`📐 Position Update - Piece ${index} (${timeSinceRelease}ms after release):`, {
+                SmartLogger.log('debug-tools',`📐 Position Update - Piece ${index} (${timeSinceRelease}ms after release):`, {
                     newOffset: `(${offset.x.toFixed(1)}, ${offset.y.toFixed(1)})`
                 });
             }
@@ -204,59 +204,59 @@ class PositionShiftDiagnostic {
      * Generate position shift report
      */
     generatePositionShiftReport() {
-        console.log('\n📋 POSITION SHIFT DIAGNOSTIC REPORT');
-        console.log('====================================');
+        SmartLogger.log('debug-tools','\n📋 POSITION SHIFT DIAGNOSTIC REPORT');
+        SmartLogger.log('debug-tools','====================================');
         
-        console.log(`\n📊 Statistics:`);
-        console.log(`   Total releases monitored: ${this.releaseLogs.length}`);
-        console.log(`   Position shifts detected: ${this.positionShifts.length}`);
+        SmartLogger.log('debug-tools',`\n📊 Statistics:`);
+        SmartLogger.log('debug-tools',`   Total releases monitored: ${this.releaseLogs.length}`);
+        SmartLogger.log('debug-tools',`   Position shifts detected: ${this.positionShifts.length}`);
         
         if (this.positionShifts.length > 0) {
-            console.log('\n🔄 POSITION SHIFTS DETECTED:');
+            SmartLogger.log('debug-tools','\n🔄 POSITION SHIFTS DETECTED:');
             
             this.positionShifts.forEach((shift, index) => {
-                console.log(`\n   Shift ${index + 1} - Piece ${shift.pieceIndex}:`);
-                console.log(`     Time to shift: ${shift.timeToShift}ms`);
-                console.log(`     Shift distance: ${shift.shiftDistance.toFixed(2)}px`);
-                console.log(`     From position: (${shift.fromPosition.x.toFixed(1)}, ${shift.fromPosition.y.toFixed(1)})`);
-                console.log(`     To position: (${shift.toPosition.x.toFixed(1)}, ${shift.toPosition.y.toFixed(1)})`);
-                console.log(`     Position delta: (${shift.positionDelta.x.toFixed(1)}, ${shift.positionDelta.y.toFixed(1)})`);
-                console.log(`     Mouse position: (${shift.mousePosition.x.toFixed(1)}, ${shift.mousePosition.y.toFixed(1)})`);
-                console.log(`     From offset: (${shift.fromOffset.x.toFixed(1)}, ${shift.fromOffset.y.toFixed(1)})`);
-                console.log(`     To offset: (${shift.toOffset.x.toFixed(1)}, ${shift.toOffset.y.toFixed(1)})`);
+                SmartLogger.log('debug-tools',`\n   Shift ${index + 1} - Piece ${shift.pieceIndex}:`);
+                SmartLogger.log('debug-tools',`     Time to shift: ${shift.timeToShift}ms`);
+                SmartLogger.log('debug-tools',`     Shift distance: ${shift.shiftDistance.toFixed(2)}px`);
+                SmartLogger.log('debug-tools',`     From position: (${shift.fromPosition.x.toFixed(1)}, ${shift.fromPosition.y.toFixed(1)})`);
+                SmartLogger.log('debug-tools',`     To position: (${shift.toPosition.x.toFixed(1)}, ${shift.toPosition.y.toFixed(1)})`);
+                SmartLogger.log('debug-tools',`     Position delta: (${shift.positionDelta.x.toFixed(1)}, ${shift.positionDelta.y.toFixed(1)})`);
+                SmartLogger.log('debug-tools',`     Mouse position: (${shift.mousePosition.x.toFixed(1)}, ${shift.mousePosition.y.toFixed(1)})`);
+                SmartLogger.log('debug-tools',`     From offset: (${shift.fromOffset.x.toFixed(1)}, ${shift.fromOffset.y.toFixed(1)})`);
+                SmartLogger.log('debug-tools',`     To offset: (${shift.toOffset.x.toFixed(1)}, ${shift.toOffset.y.toFixed(1)})`);
             });
             
             // Analyze patterns
             const avgShiftDistance = this.positionShifts.reduce((sum, shift) => sum + shift.shiftDistance, 0) / this.positionShifts.length;
             const avgTimeToShift = this.positionShifts.reduce((sum, shift) => sum + shift.timeToShift, 0) / this.positionShifts.length;
             
-            console.log('\n📈 Pattern Analysis:');
-            console.log(`   Average shift distance: ${avgShiftDistance.toFixed(2)}px`);
-            console.log(`   Average time to shift: ${avgTimeToShift.toFixed(1)}ms`);
+            SmartLogger.log('debug-tools','\n📈 Pattern Analysis:');
+            SmartLogger.log('debug-tools',`   Average shift distance: ${avgShiftDistance.toFixed(2)}px`);
+            SmartLogger.log('debug-tools',`   Average time to shift: ${avgTimeToShift.toFixed(1)}ms`);
             
-            console.log('\n🎯 LIKELY CAUSES:');
-            console.log('   1. Snap-back logic triggering incorrectly');
-            console.log('   2. Auto-snap system interfering with manual positioning');
-            console.log('   3. Position correction after release');
-            console.log('   4. Race condition between release and position update');
+            SmartLogger.log('debug-tools','\n🎯 LIKELY CAUSES:');
+            SmartLogger.log('debug-tools','   1. Snap-back logic triggering incorrectly');
+            SmartLogger.log('debug-tools','   2. Auto-snap system interfering with manual positioning');
+            SmartLogger.log('debug-tools','   3. Position correction after release');
+            SmartLogger.log('debug-tools','   4. Race condition between release and position update');
             
-            console.log('\n🔧 RECOMMENDED FIXES:');
-            console.log('   1. Review snap-back threshold and logic');
-            console.log('   2. Check auto-snap timing and conditions');
-            console.log('   3. Add position validation before corrections');
-            console.log('   4. Implement debouncing for position updates');
+            SmartLogger.log('debug-tools','\n🔧 RECOMMENDED FIXES:');
+            SmartLogger.log('debug-tools','   1. Review snap-back threshold and logic');
+            SmartLogger.log('debug-tools','   2. Check auto-snap timing and conditions');
+            SmartLogger.log('debug-tools','   3. Add position validation before corrections');
+            SmartLogger.log('debug-tools','   4. Implement debouncing for position updates');
             
         } else {
-            console.log('\n✅ NO POSITION SHIFTS DETECTED');
-            console.log('   Pieces maintain their release positions');
+            SmartLogger.log('debug-tools','\n✅ NO POSITION SHIFTS DETECTED');
+            SmartLogger.log('debug-tools','   Pieces maintain their release positions');
         }
         
         // Show recent releases
         if (this.releaseLogs.length > 0) {
-            console.log('\n📝 Recent Releases:');
+            SmartLogger.log('debug-tools','\n📝 Recent Releases:');
             const recentReleases = this.releaseLogs.slice(-5);
             recentReleases.forEach(log => {
-                console.log(`   Piece ${log.pieceIndex}: pos(${log.piecePositionAtRelease.x.toFixed(1)}, ${log.piecePositionAtRelease.y.toFixed(1)})`);
+                SmartLogger.log('debug-tools',`   Piece ${log.pieceIndex}: pos(${log.piecePositionAtRelease.x.toFixed(1)}, ${log.piecePositionAtRelease.y.toFixed(1)})`);
             });
         }
         
@@ -273,7 +273,7 @@ class PositionShiftDiagnostic {
     clearPositionShiftData() {
         this.releaseLogs = [];
         this.positionShifts = [];
-        console.log('🗑️ Position shift diagnostic data cleared');
+        SmartLogger.log('debug-tools','🗑️ Position shift diagnostic data cleared');
     }
 }
 
@@ -325,9 +325,9 @@ if (typeof window !== 'undefined') {
     const originalShowDebug = window.showDebugCommands;
     window.showDebugCommands = function() {
         if (originalShowDebug) originalShowDebug();
-        console.log('  enablePositionShiftMonitoring() - Monitor position shifts after release');
-        console.log('  disablePositionShiftMonitoring() - Disable position shift monitoring');
-        console.log('  analyzePositionShifts() - Analyze detected position shifts');
-        console.log('  clearPositionShiftData() - Clear position shift diagnostic data');
+        SmartLogger.log('debug-tools','  enablePositionShiftMonitoring() - Monitor position shifts after release');
+        SmartLogger.log('debug-tools','  disablePositionShiftMonitoring() - Disable position shift monitoring');
+        SmartLogger.log('debug-tools','  analyzePositionShifts() - Analyze detected position shifts');
+        SmartLogger.log('debug-tools','  clearPositionShiftData() - Clear position shift diagnostic data');
     };
 }

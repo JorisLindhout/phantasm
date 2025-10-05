@@ -27,10 +27,10 @@ class CoordinateSystemDiagnostic {
      * Enable coordinate system monitoring
      */
     enableCoordinateMonitoring() {
-        console.log('🔍 Enabling coordinate system monitoring...');
+        SmartLogger.log('debug-tools','🔍 Enabling coordinate system monitoring...');
         
         if (this.isMonitoring) {
-            console.log('⚠️ Coordinate monitoring already enabled');
+            SmartLogger.log('debug-tools','⚠️ Coordinate monitoring already enabled');
             return;
         }
         
@@ -50,18 +50,18 @@ class CoordinateSystemDiagnostic {
         this.canvas = this.renderer.canvas;
         this.canvas.addEventListener('mousemove', this.trackAllMouseMovement.bind(this));
         
-        console.log('✅ Coordinate system monitoring enabled');
-        console.log('📝 Drag pieces and move mouse after release to test coordinate issues');
+        SmartLogger.log('debug-tools','✅ Coordinate system monitoring enabled');
+        SmartLogger.log('debug-tools','📝 Drag pieces and move mouse after release to test coordinate issues');
     }
 
     /**
      * Disable coordinate system monitoring
      */
     disableCoordinateMonitoring() {
-        console.log('🔍 Disabling coordinate system monitoring...');
+        SmartLogger.log('debug-tools','🔍 Disabling coordinate system monitoring...');
         
         if (!this.isMonitoring) {
-            console.log('⚠️ Coordinate monitoring not enabled');
+            SmartLogger.log('debug-tools','⚠️ Coordinate monitoring not enabled');
             return;
         }
         
@@ -83,7 +83,7 @@ class CoordinateSystemDiagnostic {
             this.canvas.removeEventListener('mousemove', this.trackAllMouseMovement.bind(this));
         }
         
-        console.log('✅ Coordinate system monitoring disabled');
+        SmartLogger.log('debug-tools','✅ Coordinate system monitoring disabled');
     }
 
     /**
@@ -159,7 +159,7 @@ class CoordinateSystemDiagnostic {
                 ...correlation
             });
             
-            console.log(`🔄 COORDINATE CORRELATION - Piece ${pieceIndex}:`, {
+            SmartLogger.log('debug-tools',`🔄 COORDINATE CORRELATION - Piece ${pieceIndex}:`, {
                 timeSinceRelease: correlation.timeSinceRelease + 'ms',
                 mouseMovement: `(${mouseDelta.x.toFixed(1)}, ${mouseDelta.y.toFixed(1)}) = ${mouseDistance.toFixed(1)}px`,
                 pieceMovement: `(${pieceDelta.x.toFixed(1)}, ${pieceDelta.y.toFixed(1)}) = ${pieceDistance.toFixed(1)}px`,
@@ -186,7 +186,7 @@ class CoordinateSystemDiagnostic {
                 pieceOffset: { ...(this.renderer.pieces[pieceIndex]?.offset || { x: 0, y: 0 }) }
             };
             
-            console.log(`🎯 RELEASE CAPTURED - Piece ${pieceIndex}:`, {
+            SmartLogger.log('debug-tools',`🎯 RELEASE CAPTURED - Piece ${pieceIndex}:`, {
                 mousePosition: `(${mouseCoords.x.toFixed(1)}, ${mouseCoords.y.toFixed(1)})`,
                 pieceOffset: `(${this.lastReleaseData.pieceOffset.x.toFixed(1)}, ${this.lastReleaseData.pieceOffset.y.toFixed(1)})`
             });
@@ -257,20 +257,20 @@ class CoordinateSystemDiagnostic {
      * Generate coordinate system analysis report
      */
     generateCoordinateReport() {
-        console.log('\n📋 COORDINATE SYSTEM DIAGNOSTIC REPORT');
-        console.log('======================================');
+        SmartLogger.log('debug-tools','\n📋 COORDINATE SYSTEM DIAGNOSTIC REPORT');
+        SmartLogger.log('debug-tools','======================================');
         
         const totalEvents = this.coordinateLogs.length;
         const correlations = this.coordinateLogs.filter(log => log.type === 'correlation_detected');
         const releases = this.coordinateLogs.filter(log => log.type === 'release');
         
-        console.log(`\n📊 Statistics:`);
-        console.log(`   Total events logged: ${totalEvents}`);
-        console.log(`   Releases tracked: ${releases.length}`);
-        console.log(`   Correlations detected: ${correlations.length}`);
+        SmartLogger.log('debug-tools',`\n📊 Statistics:`);
+        SmartLogger.log('debug-tools',`   Total events logged: ${totalEvents}`);
+        SmartLogger.log('debug-tools',`   Releases tracked: ${releases.length}`);
+        SmartLogger.log('debug-tools',`   Correlations detected: ${correlations.length}`);
         
         if (correlations.length > 0) {
-            console.log('\n🔄 COORDINATE CORRELATIONS DETECTED:');
+            SmartLogger.log('debug-tools','\n🔄 COORDINATE CORRELATIONS DETECTED:');
             
             // Analyze correlation patterns
             let smallMouseLargePiece = 0;
@@ -282,11 +282,11 @@ class CoordinateSystemDiagnostic {
                 const pieceDist = correlation.pieceDistance;
                 const ratio = mouseDist > 0 ? pieceDist / mouseDist : 0;
                 
-                console.log(`\n   Correlation ${index + 1} - Piece ${correlation.pieceIndex}:`);
-                console.log(`     Time since release: ${correlation.timeSinceRelease}ms`);
-                console.log(`     Mouse movement: ${mouseDist.toFixed(2)}px`);
-                console.log(`     Piece movement: ${pieceDist.toFixed(2)}px`);
-                console.log(`     Movement ratio: ${ratio.toFixed(2)}`);
+                SmartLogger.log('debug-tools',`\n   Correlation ${index + 1} - Piece ${correlation.pieceIndex}:`);
+                SmartLogger.log('debug-tools',`     Time since release: ${correlation.timeSinceRelease}ms`);
+                SmartLogger.log('debug-tools',`     Mouse movement: ${mouseDist.toFixed(2)}px`);
+                SmartLogger.log('debug-tools',`     Piece movement: ${pieceDist.toFixed(2)}px`);
+                SmartLogger.log('debug-tools',`     Movement ratio: ${ratio.toFixed(2)}`);
                 
                 // Check for inverse relationship
                 if (mouseDist < 10 && pieceDist > 20) {
@@ -305,40 +305,40 @@ class CoordinateSystemDiagnostic {
                 }
             });
             
-            console.log('\n📈 Pattern Analysis:');
-            console.log(`   Small mouse → Large piece movements: ${smallMouseLargePiece}`);
-            console.log(`   Large mouse → Small piece movements: ${largeMouseSmallPiece}`);
-            console.log(`   Directional matches: ${directionalMatches}/${correlations.length}`);
+            SmartLogger.log('debug-tools','\n📈 Pattern Analysis:');
+            SmartLogger.log('debug-tools',`   Small mouse → Large piece movements: ${smallMouseLargePiece}`);
+            SmartLogger.log('debug-tools',`   Large mouse → Small piece movements: ${largeMouseSmallPiece}`);
+            SmartLogger.log('debug-tools',`   Directional matches: ${directionalMatches}/${correlations.length}`);
             
-            console.log('\n🎯 DIAGNOSIS:');
+            SmartLogger.log('debug-tools','\n🎯 DIAGNOSIS:');
             if (smallMouseLargePiece > 0 || largeMouseSmallPiece > 0) {
-                console.log('   ✅ INVERSE RELATIONSHIP CONFIRMED');
-                console.log('   🎯 Likely cause: Coordinate system scaling issue or CSS interference');
+                SmartLogger.log('debug-tools','   ✅ INVERSE RELATIONSHIP CONFIRMED');
+                SmartLogger.log('debug-tools','   🎯 Likely cause: Coordinate system scaling issue or CSS interference');
             }
             
             if (directionalMatches > correlations.length * 0.7) {
-                console.log('   ✅ DIRECTIONAL CORRELATION CONFIRMED');
-                console.log('   🎯 Likely cause: Piece still connected to mouse after release');
+                SmartLogger.log('debug-tools','   ✅ DIRECTIONAL CORRELATION CONFIRMED');
+                SmartLogger.log('debug-tools','   🎯 Likely cause: Piece still connected to mouse after release');
             }
             
-            console.log('\n🔧 RECOMMENDED INVESTIGATIONS:');
-            console.log('   1. Check CSS transform/scale properties on canvas or parent elements');
-            console.log('   2. Verify coordinate system consistency between mouse and piece positioning');
-            console.log('   3. Check for lingering event listeners or drag state not being reset');
-            console.log('   4. Investigate browser zoom level or device pixel ratio effects');
+            SmartLogger.log('debug-tools','\n🔧 RECOMMENDED INVESTIGATIONS:');
+            SmartLogger.log('debug-tools','   1. Check CSS transform/scale properties on canvas or parent elements');
+            SmartLogger.log('debug-tools','   2. Verify coordinate system consistency between mouse and piece positioning');
+            SmartLogger.log('debug-tools','   3. Check for lingering event listeners or drag state not being reset');
+            SmartLogger.log('debug-tools','   4. Investigate browser zoom level or device pixel ratio effects');
             
         } else {
-            console.log('\n✅ NO COORDINATE CORRELATIONS DETECTED');
-            console.log('   Mouse movement does not appear to affect piece positions');
+            SmartLogger.log('debug-tools','\n✅ NO COORDINATE CORRELATIONS DETECTED');
+            SmartLogger.log('debug-tools','   Mouse movement does not appear to affect piece positions');
         }
         
         // Show recent events
         if (this.coordinateLogs.length > 0) {
-            console.log('\n📝 Recent Events:');
+            SmartLogger.log('debug-tools','\n📝 Recent Events:');
             const recentEvents = this.coordinateLogs.slice(-10);
             recentEvents.forEach(event => {
                 const time = new Date(event.timestamp).toLocaleTimeString();
-                console.log(`   ${time}: ${event.type} - Piece ${event.pieceIndex || 'N/A'}`);
+                SmartLogger.log('debug-tools',`   ${time}: ${event.type} - Piece ${event.pieceIndex || 'N/A'}`);
             });
         }
         
@@ -356,7 +356,7 @@ class CoordinateSystemDiagnostic {
     clearCoordinateData() {
         this.coordinateLogs = [];
         this.lastReleaseData = null;
-        console.log('🗑️ Coordinate system diagnostic data cleared');
+        SmartLogger.log('debug-tools','🗑️ Coordinate system diagnostic data cleared');
     }
 }
 
@@ -408,9 +408,9 @@ if (typeof window !== 'undefined') {
     const originalShowDebug = window.showDebugCommands;
     window.showDebugCommands = function() {
         if (originalShowDebug) originalShowDebug();
-        console.log('  enableCoordinateMonitoring() - Monitor coordinate system issues');
-        console.log('  disableCoordinateMonitoring() - Disable coordinate monitoring');
-        console.log('  analyzeCoordinateSystem() - Analyze coordinate system correlations');
-        console.log('  clearCoordinateData() - Clear coordinate diagnostic data');
+        SmartLogger.log('debug-tools','  enableCoordinateMonitoring() - Monitor coordinate system issues');
+        SmartLogger.log('debug-tools','  disableCoordinateMonitoring() - Disable coordinate monitoring');
+        SmartLogger.log('debug-tools','  analyzeCoordinateSystem() - Analyze coordinate system correlations');
+        SmartLogger.log('debug-tools','  clearCoordinateData() - Clear coordinate diagnostic data');
     };
 }

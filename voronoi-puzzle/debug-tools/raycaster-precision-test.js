@@ -14,7 +14,7 @@ class RaycasterPrecisionTest {
      * Run comprehensive precision tests
      */
     runAllTests() {
-        console.log('🧪 Starting Raycaster Precision Tests...');
+        SmartLogger.log('debug-tools',('🧪 Starting Raycaster Precision Tests...');
         
         this.testResults = [];
         
@@ -40,7 +40,7 @@ class RaycasterPrecisionTest {
      * Test 1: Check raycaster precision at different coordinate ranges
      */
     testCoordinateRanges() {
-        console.log('📊 Test 1: Coordinate Range Precision');
+        SmartLogger.log('debug-tools',('📊 Test 1: Coordinate Range Precision');
         
         const ranges = [
             { name: 'Near origin', min: -10, max: 10 },
@@ -82,7 +82,7 @@ class RaycasterPrecisionTest {
 
         const successRate = (successCount / totalTests) * 100;
         
-        console.log(`   ${range.name}: ${successCount}/${totalTests} (${successRate.toFixed(1)}%)`);
+        SmartLogger.log('debug-tools',(`   ${range.name}: ${successCount}/${totalTests} (${successRate.toFixed(1)}%)`);
         
         return {
             successRate,
@@ -96,7 +96,7 @@ class RaycasterPrecisionTest {
      * Test 2: Progressive coordinate testing
      */
     testProgressiveCoordinates() {
-        console.log('📈 Test 2: Progressive Coordinate Testing');
+        SmartLogger.log('debug-tools',('📈 Test 2: Progressive Coordinate Testing');
         
         const distances = [10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000];
         
@@ -128,7 +128,7 @@ class RaycasterPrecisionTest {
 
         const successRate = (successCount / angles.length) * 100;
         
-        console.log(`   Distance ${distance}: ${successCount}/${angles.length} (${successRate.toFixed(1)}%)`);
+        SmartLogger.log('debug-tools',(`   Distance ${distance}: ${successCount}/${angles.length} (${successRate.toFixed(1)}%)`);
         
         return {
             successRate,
@@ -142,7 +142,7 @@ class RaycasterPrecisionTest {
      * Test 3: Visual vs Collision detection comparison
      */
     testVisualVsCollision() {
-        console.log('👁️ Test 3: Visual vs Collision Detection');
+        SmartLogger.log('debug-tools',('👁️ Test 3: Visual vs Collision Detection');
         
         // Create a test mesh at different distances
         const distances = [100, 1000, 10000, 100000];
@@ -184,7 +184,7 @@ class RaycasterPrecisionTest {
         geometry.dispose();
         material.dispose();
         
-        console.log(`   Distance ${distance}: Detectable = ${isDetectable}`);
+        SmartLogger.log('debug-tools',(`   Distance ${distance}: Detectable = ${isDetectable}`);
         
         return {
             isDetectable,
@@ -196,7 +196,7 @@ class RaycasterPrecisionTest {
      * Test 4: Test with actual piece geometry
      */
     testWithActualPieces() {
-        console.log('🧩 Test 4: Actual Piece Geometry Testing');
+        SmartLogger.log('debug-tools',('🧩 Test 4: Actual Piece Geometry Testing');
         
         // Find pieces that are currently unresponsive
         const unresponsivePieces = this.findUnresponsivePieces();
@@ -230,7 +230,7 @@ class RaycasterPrecisionTest {
             }
         }
         
-        console.log(`   Found ${unresponsive.length} potentially unresponsive pieces`);
+        SmartLogger.log('debug-tools',(`   Found ${unresponsive.length} potentially unresponsive pieces`);
         return unresponsive;
     }
 
@@ -254,7 +254,7 @@ class RaycasterPrecisionTest {
         // Calculate distance from origin
         const distanceFromOrigin = Math.sqrt(worldPosition.x * worldPosition.x + worldPosition.y * worldPosition.y);
         
-        console.log(`   Piece ${pieceIndex}: Distance=${distanceFromOrigin.toFixed(1)}, Responsive=${isResponsive}`);
+        SmartLogger.log('debug-tools',(`   Piece ${pieceIndex}: Distance=${distanceFromOrigin.toFixed(1)}, Responsive=${isResponsive}`);
         
         return {
             isResponsive,
@@ -299,8 +299,8 @@ class RaycasterPrecisionTest {
      * Generate comprehensive test report
      */
     generateReport() {
-        console.log('\n📋 RAYCASTER PRECISION TEST REPORT');
-        console.log('=====================================');
+        SmartLogger.log('debug-tools',('\n📋 RAYCASTER PRECISION TEST REPORT');
+        SmartLogger.log('debug-tools',('=====================================');
         
         // Group results by test type
         const groupedResults = {};
@@ -313,7 +313,7 @@ class RaycasterPrecisionTest {
         
         // Analyze each test type
         Object.keys(groupedResults).forEach(testType => {
-            console.log(`\n${testType}:`);
+            SmartLogger.log('debug-tools',(`\n${testType}:`);
             const results = groupedResults[testType];
             
             if (testType === 'Coordinate Ranges') {
@@ -334,27 +334,27 @@ class RaycasterPrecisionTest {
     analyzeCoordinateRanges(results) {
         results.forEach(result => {
             const status = result.successRate > 80 ? '✅' : result.successRate > 50 ? '⚠️' : '❌';
-            console.log(`  ${status} ${result.range.name}: ${result.successRate.toFixed(1)}% success`);
+            SmartLogger.log('debug-tools',(`  ${status} ${result.range.name}: ${result.successRate.toFixed(1)}% success`);
         });
     }
 
     analyzeProgressiveCoordinates(results) {
         results.forEach(result => {
             const status = result.successRate > 80 ? '✅' : result.successRate > 50 ? '⚠️' : '❌';
-            console.log(`  ${status} Distance ${result.distance}: ${result.successRate.toFixed(1)}% success`);
+            SmartLogger.log('debug-tools',(`  ${status} Distance ${result.distance}: ${result.successRate.toFixed(1)}% success`);
         });
         
         // Find precision threshold
         const threshold = results.find(r => r.successRate < 50);
         if (threshold) {
-            console.log(`  🎯 Precision threshold appears around distance: ${threshold.distance}`);
+            SmartLogger.log('debug-tools',(`  🎯 Precision threshold appears around distance: ${threshold.distance}`);
         }
     }
 
     analyzeVisualVsCollision(results) {
         results.forEach(result => {
             const status = result.isDetectable ? '✅' : '❌';
-            console.log(`  ${status} Distance ${result.distance}: ${result.isDetectable ? 'Detectable' : 'Not detectable'}`);
+            SmartLogger.log('debug-tools',(`  ${status} Distance ${result.distance}: ${result.isDetectable ? 'Detectable' : 'Not detectable'}`);
         });
     }
 
@@ -362,33 +362,33 @@ class RaycasterPrecisionTest {
         const unresponsive = results.filter(r => !r.isResponsive);
         const responsive = results.filter(r => r.isResponsive);
         
-        console.log(`  📊 Responsive pieces: ${responsive.length}`);
-        console.log(`  📊 Unresponsive pieces: ${unresponsive.length}`);
+        SmartLogger.log('debug-tools',(`  📊 Responsive pieces: ${responsive.length}`);
+        SmartLogger.log('debug-tools',(`  📊 Unresponsive pieces: ${unresponsive.length}`);
         
         if (unresponsive.length > 0) {
-            console.log('  🎯 Unresponsive pieces:');
+            SmartLogger.log('debug-tools',('  🎯 Unresponsive pieces:');
             unresponsive.forEach(result => {
-                console.log(`    Piece ${result.pieceIndex}: Distance=${result.distanceFromOrigin.toFixed(1)}`);
+                SmartLogger.log('debug-tools',(`    Piece ${result.pieceIndex}: Distance=${result.distanceFromOrigin.toFixed(1)}`);
             });
         }
     }
 
     generateConclusion() {
-        console.log('\n🎯 CONCLUSION:');
+        SmartLogger.log('debug-tools',('\n🎯 CONCLUSION:');
         
         // Check if precision degrades with distance
         const progressiveResults = this.testResults.filter(r => r.test === 'Progressive Coordinates');
         const hasPrecisionDegradation = progressiveResults.some(r => r.successRate < 50);
         
         if (hasPrecisionDegradation) {
-            console.log('✅ HYPOTHESIS CONFIRMED: Raycaster precision degrades with large coordinates');
+            SmartLogger.log('debug-tools',('✅ HYPOTHESIS CONFIRMED: Raycaster precision degrades with large coordinates');
             
             const threshold = progressiveResults.find(r => r.successRate < 50);
             if (threshold) {
-                console.log(`   Precision threshold: ~${threshold.distance} units from origin`);
+                SmartLogger.log('debug-tools',(`   Precision threshold: ~${threshold.distance} units from origin`);
             }
         } else {
-            console.log('❌ HYPOTHESIS REJECTED: Raycaster precision does not degrade significantly');
+            SmartLogger.log('debug-tools',('❌ HYPOTHESIS REJECTED: Raycaster precision does not degrade significantly');
         }
         
         // Check actual pieces
@@ -396,8 +396,8 @@ class RaycasterPrecisionTest {
         const unresponsivePieces = actualResults.filter(r => !r.isResponsive);
         
         if (unresponsivePieces.length > 0) {
-            console.log(`\n🔧 ACTION NEEDED: ${unresponsivePieces.length} pieces are unresponsive`);
-            console.log('   Consider implementing coordinate-based fixes for distant pieces');
+            SmartLogger.log('debug-tools',(`\n🔧 ACTION NEEDED: ${unresponsivePieces.length} pieces are unresponsive`);
+            SmartLogger.log('debug-tools',('   Consider implementing coordinate-based fixes for distant pieces');
         }
     }
 
@@ -405,7 +405,7 @@ class RaycasterPrecisionTest {
      * Create visual debugging tools
      */
     createVisualDebugTools() {
-        console.log('🎨 Creating visual debugging tools...');
+        SmartLogger.log('debug-tools',('🎨 Creating visual debugging tools...');
         
         // Add debug overlay to show raycaster precision zones
         this.createPrecisionZoneOverlay();
@@ -416,12 +416,12 @@ class RaycasterPrecisionTest {
 
     createPrecisionZoneOverlay() {
         // This would create visual indicators showing where raycaster precision is good/bad
-        console.log('   Precision zone overlay created');
+        SmartLogger.log('debug-tools',('   Precision zone overlay created');
     }
 
     createDistanceIndicators() {
         // This would show distance from origin for each piece
-        console.log('   Distance indicators created');
+        SmartLogger.log('debug-tools',('   Distance indicators created');
     }
 }
 
@@ -442,6 +442,6 @@ if (typeof window !== 'undefined') {
     const originalShowDebug = window.showDebugCommands;
     window.showDebugCommands = function() {
         originalShowDebug();
-        console.log('  testRaycasterPrecision() - Test raycaster precision with large coordinates');
+        SmartLogger.log('debug-tools',('  testRaycasterPrecision() - Test raycaster precision with large coordinates');
     };
 }

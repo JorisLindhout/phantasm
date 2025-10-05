@@ -15,7 +15,7 @@ class DragCoordinateDiagnostic {
      * Enable drag coordinate monitoring
      */
     enableDragMonitoring() {
-        console.log('🔍 Enabling drag coordinate monitoring...');
+        SmartLogger.log('debug-tools','🔍 Enabling drag coordinate monitoring...');
         
         // Store original methods
         this.originalHandleMouseUp = this.puzzle.handleMouseUp;
@@ -29,14 +29,14 @@ class DragCoordinateDiagnostic {
         this.puzzle.handleMouseUp = this.monitoredHandleMouseUp.bind(this);
         this.renderer.updatePiecePosition = this.monitoredUpdatePiecePosition.bind(this);
         
-        console.log('✅ Drag coordinate monitoring enabled');
+        SmartLogger.log('debug-tools','✅ Drag coordinate monitoring enabled');
     }
 
     /**
      * Disable drag coordinate monitoring
      */
     disableDragMonitoring() {
-        console.log('🔍 Disabling drag coordinate monitoring...');
+        SmartLogger.log('debug-tools','🔍 Disabling drag coordinate monitoring...');
         
         // Restore original methods
         if (this.originalHandleMouseUp) {
@@ -52,7 +52,7 @@ class DragCoordinateDiagnostic {
             this.renderer.updatePiecePosition = this.originalUpdatePiecePosition;
         }
         
-        console.log('✅ Drag coordinate monitoring disabled');
+        SmartLogger.log('debug-tools','✅ Drag coordinate monitoring disabled');
     }
 
     /**
@@ -76,7 +76,7 @@ class DragCoordinateDiagnostic {
                 timestamp: Date.now()
             });
             
-            console.log(`🎯 DRAG START - Piece ${pieceIndex}:`, {
+            SmartLogger.log('debug-tools',`🎯 DRAG START - Piece ${pieceIndex}:`, {
                 mouse: `(${coords.x}, ${coords.y})`,
                 dragOffset: `(${this.puzzle.dragOffset.x}, ${this.puzzle.dragOffset.y})`,
                 pieceOffset: `(${this.renderer.pieces[pieceIndex]?.offset?.x || 0}, ${this.renderer.pieces[pieceIndex]?.offset?.y || 0})`
@@ -133,7 +133,7 @@ class DragCoordinateDiagnostic {
                 timestamp: Date.now()
             });
             
-            console.log(`🎯 DRAG END - Piece ${pieceIndex} (before release):`, {
+            SmartLogger.log('debug-tools',`🎯 DRAG END - Piece ${pieceIndex} (before release):`, {
                 mouse: `(${coords.x}, ${coords.y})`,
                 dragOffset: `(${this.puzzle.dragOffset.x}, ${this.puzzle.dragOffset.y})`,
                 pieceOffset: `(${this.renderer.pieces[pieceIndex]?.offset?.x || 0}, ${this.renderer.pieces[pieceIndex]?.offset?.y || 0})`
@@ -158,7 +158,7 @@ class DragCoordinateDiagnostic {
                     timestamp: Date.now()
                 });
                 
-                console.log(`🎯 DRAG END - Piece ${pieceIndex} (after release):`, {
+                SmartLogger.log('debug-tools',`🎯 DRAG END - Piece ${pieceIndex} (after release):`, {
                     mouse: `(${coords.x}, ${coords.y})`,
                     dragOffset: `(${this.puzzle.dragOffset.x}, ${this.puzzle.dragOffset.y})`,
                     pieceOffset: `(${this.renderer.pieces[pieceIndex]?.offset?.x || 0}, ${this.renderer.pieces[pieceIndex]?.offset?.y || 0})`
@@ -225,14 +225,14 @@ class DragCoordinateDiagnostic {
             
             this.coordinateIssues.push(issue);
             
-            console.log(`❌ COORDINATE ISSUE DETECTED - Piece ${pieceIndex}:`, {
+            SmartLogger.log('debug-tools',`❌ COORDINATE ISSUE DETECTED - Piece ${pieceIndex}:`, {
                 shiftDistance: shiftDistance.toFixed(2) + 'px',
                 positionShift: `(${positionShift.x.toFixed(1)}, ${positionShift.y.toFixed(1)})`,
                 before: `(${beforeRelease.pieceOffset.x.toFixed(1)}, ${beforeRelease.pieceOffset.y.toFixed(1)})`,
                 after: `(${afterRelease.pieceOffset.x.toFixed(1)}, ${afterRelease.pieceOffset.y.toFixed(1)})`
             });
         } else {
-            console.log(`✅ No coordinate issues for piece ${pieceIndex}`);
+            SmartLogger.log('debug-tools',`✅ No coordinate issues for piece ${pieceIndex}`);
         }
     }
 
@@ -251,48 +251,48 @@ class DragCoordinateDiagnostic {
      * Generate diagnostic report
      */
     generateReport() {
-        console.log('\n📋 DRAG COORDINATE DIAGNOSTIC REPORT');
-        console.log('====================================');
+        SmartLogger.log('debug-tools','\n📋 DRAG COORDINATE DIAGNOSTIC REPORT');
+        SmartLogger.log('debug-tools','====================================');
         
-        console.log(`\n📊 Statistics:`);
-        console.log(`   Total drag events logged: ${this.dragLogs.length}`);
-        console.log(`   Coordinate issues found: ${this.coordinateIssues.length}`);
+        SmartLogger.log('debug-tools',`\n📊 Statistics:`);
+        SmartLogger.log('debug-tools',`   Total drag events logged: ${this.dragLogs.length}`);
+        SmartLogger.log('debug-tools',`   Coordinate issues found: ${this.coordinateIssues.length}`);
         
         if (this.coordinateIssues.length > 0) {
-            console.log('\n❌ COORDINATE ISSUES DETECTED:');
+            SmartLogger.log('debug-tools','\n❌ COORDINATE ISSUES DETECTED:');
             
             this.coordinateIssues.forEach((issue, index) => {
-                console.log(`\n   Issue ${index + 1} - Piece ${issue.pieceIndex}:`);
-                console.log(`     Shift distance: ${issue.shiftDistance.toFixed(2)}px`);
-                console.log(`     Position shift: (${issue.positionShift.x.toFixed(1)}, ${issue.positionShift.y.toFixed(1)})`);
-                console.log(`     Before: (${issue.beforeOffset.x.toFixed(1)}, ${issue.beforeOffset.y.toFixed(1)})`);
-                console.log(`     After: (${issue.afterOffset.x.toFixed(1)}, ${issue.afterOffset.y.toFixed(1)})`);
-                console.log(`     Mouse: (${issue.mousePosition.x.toFixed(1)}, ${issue.mousePosition.y.toFixed(1)})`);
+                SmartLogger.log('debug-tools',`\n   Issue ${index + 1} - Piece ${issue.pieceIndex}:`);
+                SmartLogger.log('debug-tools',`     Shift distance: ${issue.shiftDistance.toFixed(2)}px`);
+                SmartLogger.log('debug-tools',`     Position shift: (${issue.positionShift.x.toFixed(1)}, ${issue.positionShift.y.toFixed(1)})`);
+                SmartLogger.log('debug-tools',`     Before: (${issue.beforeOffset.x.toFixed(1)}, ${issue.beforeOffset.y.toFixed(1)})`);
+                SmartLogger.log('debug-tools',`     After: (${issue.afterOffset.x.toFixed(1)}, ${issue.afterOffset.y.toFixed(1)})`);
+                SmartLogger.log('debug-tools',`     Mouse: (${issue.mousePosition.x.toFixed(1)}, ${issue.mousePosition.y.toFixed(1)})`);
             });
             
-            console.log('\n🎯 POTENTIAL CAUSES:');
-            console.log('   1. Drag offset calculation inconsistency');
-            console.log('   2. Mouse coordinate rounding errors');
-            console.log('   3. Timing issues between mouse events');
-            console.log('   4. Piece position update race conditions');
+            SmartLogger.log('debug-tools','\n🎯 POTENTIAL CAUSES:');
+            SmartLogger.log('debug-tools','   1. Drag offset calculation inconsistency');
+            SmartLogger.log('debug-tools','   2. Mouse coordinate rounding errors');
+            SmartLogger.log('debug-tools','   3. Timing issues between mouse events');
+            SmartLogger.log('debug-tools','   4. Piece position update race conditions');
             
-            console.log('\n🔧 RECOMMENDED FIXES:');
-            console.log('   1. Improve drag offset calculation precision');
-            console.log('   2. Add coordinate validation before position updates');
-            console.log('   3. Implement debouncing for rapid position updates');
-            console.log('   4. Add coordinate consistency checks');
+            SmartLogger.log('debug-tools','\n🔧 RECOMMENDED FIXES:');
+            SmartLogger.log('debug-tools','   1. Improve drag offset calculation precision');
+            SmartLogger.log('debug-tools','   2. Add coordinate validation before position updates');
+            SmartLogger.log('debug-tools','   3. Implement debouncing for rapid position updates');
+            SmartLogger.log('debug-tools','   4. Add coordinate consistency checks');
             
         } else {
-            console.log('\n✅ NO COORDINATE ISSUES DETECTED');
-            console.log('   Drag release behavior appears normal');
+            SmartLogger.log('debug-tools','\n✅ NO COORDINATE ISSUES DETECTED');
+            SmartLogger.log('debug-tools','   Drag release behavior appears normal');
         }
         
         // Show recent drag logs
         if (this.dragLogs.length > 0) {
-            console.log('\n📝 Recent Drag Events:');
+            SmartLogger.log('debug-tools','\n📝 Recent Drag Events:');
             const recentLogs = this.dragLogs.slice(-10);
             recentLogs.forEach(log => {
-                console.log(`   ${log.event} - Piece ${log.pieceIndex}: offset(${log.pieceOffset?.x?.toFixed(1) || 'N/A'}, ${log.pieceOffset?.y?.toFixed(1) || 'N/A'})`);
+                SmartLogger.log('debug-tools',`   ${log.event} - Piece ${log.pieceIndex}: offset(${log.pieceOffset?.x?.toFixed(1) || 'N/A'}, ${log.pieceOffset?.y?.toFixed(1) || 'N/A'})`);
             });
         }
         
@@ -309,7 +309,7 @@ class DragCoordinateDiagnostic {
     clearData() {
         this.dragLogs = [];
         this.coordinateIssues = [];
-        console.log('🗑️ Drag coordinate diagnostic data cleared');
+        SmartLogger.log('debug-tools','🗑️ Drag coordinate diagnostic data cleared');
     }
 }
 
@@ -361,9 +361,9 @@ if (typeof window !== 'undefined') {
     const originalShowDebug = window.showDebugCommands;
     window.showDebugCommands = function() {
         if (originalShowDebug) originalShowDebug();
-        console.log('  enableDragMonitoring() - Monitor drag coordinate issues');
-        console.log('  disableDragMonitoring() - Disable drag monitoring');
-        console.log('  analyzeDragIssues() - Analyze detected drag coordinate issues');
-        console.log('  clearDragData() - Clear drag diagnostic data');
+        SmartLogger.log('debug-tools','  enableDragMonitoring() - Monitor drag coordinate issues');
+        SmartLogger.log('debug-tools','  disableDragMonitoring() - Disable drag monitoring');
+        SmartLogger.log('debug-tools','  analyzeDragIssues() - Analyze detected drag coordinate issues');
+        SmartLogger.log('debug-tools','  clearDragData() - Clear drag diagnostic data');
     };
 }

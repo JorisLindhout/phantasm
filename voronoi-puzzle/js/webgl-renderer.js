@@ -9,15 +9,17 @@ function isWebGLSupported() {
         const canvas = document.createElement('canvas');
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         const supported = !!gl;
+        // KEEP: User-facing WebGL support check
         console.log('🔍 WebGL support check:', supported);
         if (gl) {
-            console.log('🔍 WebGL version:', gl.getParameter(gl.VERSION));
-            console.log('🔍 WebGL vendor:', gl.getParameter(gl.VENDOR));
-            console.log('🔍 WebGL renderer:', gl.getParameter(gl.RENDERER));
+            // REMOVE: Technical details - no user value
+            // SmartLogger.log('initialization', 'WebGL version:', gl.getParameter(gl.VERSION));
+            // SmartLogger.log('initialization', 'WebGL vendor:', gl.getParameter(gl.VENDOR));
+            // SmartLogger.log('initialization', 'WebGL renderer:', gl.getParameter(gl.RENDERER));
         }
         return supported;
     } catch (e) {
-        console.error('🔍 WebGL support check failed:', e);
+        console.error('🔍 WebGL support check failed:', e); // KEEP: Error messages always show
         return false;
     }
 }
@@ -132,7 +134,7 @@ class WebGLVoronoiRenderer {
         this.canvas.classList.add('webgl-canvas');
         
         if (this.debugLogging.initialization) {
-            console.log('🎨 WebGL canvas size:', this.canvas.width, 'x', this.canvas.height, 'display:', displayWidth, 'x', displayHeight);
+            SmartLogger.log('initialization', '🎨 WebGL canvas size:', this.canvas.width, 'x', this.canvas.height, 'display:', displayWidth, 'x', displayHeight);
         }
         
         // Insert the WebGL canvas as a sibling to the original canvas
@@ -152,10 +154,8 @@ class WebGLVoronoiRenderer {
         this.camera.position.z = 100;
         
         // Create WebGL renderer with error handling
-        if (this.debugLogging.initialization) {
-            console.log('🔍 Attempting to create Three.js WebGL renderer...');
-            console.log('🔍 Canvas dimensions:', this.canvas.width, 'x', this.canvas.height);
-        }
+        SmartLogger.log('initialization', '🔍 Attempting to create Three.js WebGL renderer...');
+        SmartLogger.log('initialization', '🔍 Canvas dimensions:', this.canvas.width, 'x', this.canvas.height);
         
         try {
             // Test if we can get a WebGL context directly first
@@ -163,9 +163,7 @@ class WebGLVoronoiRenderer {
             if (!testGL) {
                 throw new Error('Cannot get WebGL context from canvas');
             }
-            if (this.debugLogging.initialization) {
-                console.log('🔍 Direct WebGL context test: SUCCESS');
-            }
+            SmartLogger.log('initialization', '🔍 Direct WebGL context test: SUCCESS');
             
             this.renderer = new THREE.WebGLRenderer({
                 canvas: this.canvas,
@@ -175,9 +173,7 @@ class WebGLVoronoiRenderer {
                 powerPreference: "default", // Use default power preference for compatibility
                 failIfMajorPerformanceCaveat: false // Don't fail on performance issues
             });
-            if (this.debugLogging.initialization) {
-                console.log('🔍 Three.js WebGL renderer created successfully');
-            }
+            SmartLogger.log('initialization', '🔍 Three.js WebGL renderer created successfully');
         } catch (error) {
             console.error('❌ WebGL context creation failed:', error);
             console.error('❌ Error details:', error.message);
@@ -190,9 +186,8 @@ class WebGLVoronoiRenderer {
         this.renderer.sortObjects = true;
         this.renderer.setPixelRatio(1); // Force pixel ratio to 1 to avoid scaling issues
         
-        if (this.debugLogging.initialization) {
-            console.log('✅ WebGL renderer initialized');
-        }
+        // KEEP: User-facing success message
+        console.log('✅ WebGL renderer initialized');
     }
     
     // Initialize position manager when originalPoints are available
@@ -204,9 +199,8 @@ class WebGLVoronoiRenderer {
             this.positionManager.setDebugLogging(this.debugLogging.coordinates);
         }
         
-        if (this.debugLogging.initialization) {
-            console.log('✅ Position manager initialized with', originalPoints.length, 'points');
-        }
+        // KEEP: User-facing success message
+        console.log('✅ Position manager initialized with', originalPoints.length, 'points');
     }
     
     loadBackgroundTexture(imageUrl) {
@@ -220,9 +214,8 @@ class WebGLVoronoiRenderer {
                     texture.wrapT = THREE.ClampToEdgeWrapping;
                     texture.minFilter = THREE.LinearFilter;
                     texture.magFilter = THREE.LinearFilter;
-                    if (this.debugLogging.initialization) {
-                        console.log('✅ Background texture loaded');
-                    }
+                    // KEEP: User-facing success message
+                    console.log('✅ Background texture loaded');
                     resolve(texture);
                 },
                 undefined,
@@ -286,26 +279,28 @@ class WebGLVoronoiRenderer {
         
         
         if (this.debugLogging.initialization) {
-            console.log(`✅ Initialized connected Voronoi with ${polygons.length} pieces`);
-            console.log(`✅ Initialized object-based system with ${this.pieces.length} pieces and ${this.slots.length} slots`);
+            SmartLogger.log('initialization', `✅ Initialized connected Voronoi with ${polygons.length} pieces`);
+            SmartLogger.log('initialization', `✅ Initialized object-based system with ${this.pieces.length} pieces and ${this.slots.length} slots`);
         }
         
         // Initialize position manager if originalPoints are available
-        console.log('🔍 Checking position manager initialization:');
-        console.log('  - this.originalPoints:', this.originalPoints);
-        console.log('  - originalPoints length:', this.originalPoints ? this.originalPoints.length : 'undefined');
+        SmartLogger.log('initialization', '🔍 Checking position manager initialization:');
+        SmartLogger.log('initialization', '  - this.originalPoints:', this.originalPoints);
+        SmartLogger.log('initialization', '  - originalPoints length:', this.originalPoints ? this.originalPoints.length : 'undefined');
         
         if (this.originalPoints && this.originalPoints.length > 0) {
+            // KEEP: User-facing success message
             console.log('✅ Initializing position manager with', this.originalPoints.length, 'points');
             this.initPositionManager(this.originalPoints);
         } else {
+            // KEEP: User-facing warning message
             console.log('⚠️ Position manager not initialized - originalPoints not available');
         }
     }
     
     // NEW: Debug method to validate object-array sync
     validateObjectArraySync() {
-        console.log(`🔍 Validating object-array sync for ${this.pieces.length} pieces:`);
+        SmartLogger.log('debug-tools', `🔍 Validating object-array sync for ${this.pieces.length} pieces:`);
         
         for (let i = 0; i < this.pieces.length; i++) {
             const piece = this.pieces[i];
@@ -318,11 +313,11 @@ class WebGLVoronoiRenderer {
             
             // Check z-index sync
             if (piece.zIndex !== this.pieceZIndices[i]) {
-                console.warn(`⚠️ Piece ${i} z-index mismatch: object=${piece.zIndex}, array=${this.pieceZIndices[i]}`);
+                // REMOVED: Pure debug noise - no user value
             }
         }
         
-        console.log(`✅ Object-array sync validation complete`);
+        SmartLogger.log('debug-tools', `✅ Object-array sync validation complete`);
     }
     
     // NEW: Auto-recovery for unreachable pieces
@@ -357,8 +352,8 @@ class WebGLVoronoiRenderer {
             const isUnreachable = this.isPieceUnreachable(i);
             
             if (isUnreachable) {
-                console.log(`🔄 Auto-recovering unreachable piece ${i}...`);
-                console.log(`📊 Piece ${i} state before recovery:`, {
+                SmartLogger.log('debug-tools', `🔄 Auto-recovering unreachable piece ${i}...`);
+                SmartLogger.log('piece-states', `📊 Piece ${i} state before recovery:`, {
                     state: piece.state,
                     slotState: piece.slotState,
                     isInSlot: piece.isInSlot,
@@ -373,12 +368,12 @@ class WebGLVoronoiRenderer {
                 this.resetPieceToConnected(i);
                 recoveredCount++;
                 
-                console.log(`✅ Piece ${i} restored to default position`);
+                SmartLogger.log('debug-tools', `✅ Piece ${i} restored to default position`);
             }
         }
         
         if (recoveredCount > 0) {
-            console.log(`✅ Auto-recovered ${recoveredCount} unreachable pieces`);
+            SmartLogger.log('debug-tools', `✅ Auto-recovered ${recoveredCount} unreachable pieces`);
         }
         
         return recoveredCount;
@@ -397,14 +392,14 @@ class WebGLVoronoiRenderer {
                 // Test if this piece is actually detectable at its expected position
                 const isDetectable = this.testPieceDetectability(i);
                 if (!isDetectable) {
-                    console.log(`👻 Found ghost piece ${i} - solved but not detectable`);
+                    SmartLogger.log('debug-tools', `👻 Found ghost piece ${i} - solved but not detectable`);
                     ghostCount++;
                 }
             }
         }
         
         if (ghostCount > 0) {
-            console.log(`👻 Found ${ghostCount} ghost pieces`);
+            SmartLogger.log('debug-tools', `👻 Found ${ghostCount} ghost pieces`);
         }
         
         return ghostCount;
@@ -509,7 +504,7 @@ class WebGLVoronoiRenderer {
         const piece = this.pieces[pieceIndex];
         const slot = this.slots[pieceIndex];
         
-        console.log(`🔄 Resetting piece ${pieceIndex} to connected state...`);
+        SmartLogger.log('piece-states', `🔄 Resetting piece ${pieceIndex} to connected state...`);
         
         // Remove separate mesh if it exists
         if (piece.mesh) {
@@ -533,7 +528,7 @@ class WebGLVoronoiRenderer {
         // Update connected mesh visibility
         this.updateConnectedMeshVisibility();
         
-        console.log(`✅ Piece ${pieceIndex} reset to connected state`);
+        SmartLogger.log('piece-states', `✅ Piece ${pieceIndex} reset to connected state`);
     }
     
     // Create a single mesh that contains all connected Voronoi pieces
@@ -641,7 +636,7 @@ class WebGLVoronoiRenderer {
         // Create outline mesh
         this.createConnectedOutline(combinedGeometry);
         
-        console.log(`✅ Created connected mesh with ${vertices.length / 3} vertices`);
+        SmartLogger.log('initialization', `✅ Created connected mesh with ${vertices.length / 3} vertices`);
     }
     
     // Create outline for connected mesh using only piece boundaries
@@ -801,7 +796,7 @@ class WebGLVoronoiRenderer {
             // Add a small delay to prevent rapid cycling
             if (!this.pieces[index].autoSnapTimeout) {
                 this.pieces[index].autoSnapTimeout = setTimeout(() => {
-                    console.log(`🎯 Auto-snapping piece ${index} to slot (distance: ${distance.toFixed(1)}px)`);
+                    SmartLogger.log('piece-states', `🎯 Auto-snapping piece ${index} to slot (distance: ${distance.toFixed(1)}px)`);
                     this.autoSnapPieceToSlot(index);
                     this.pieces[index].autoSnapTimeout = null;
                 }, 100); // 100ms delay to prevent rapid cycling
@@ -865,7 +860,7 @@ class WebGLVoronoiRenderer {
             piece.mesh.position.y = position.y;
         } else {
             // Fallback to direct calculation if position manager not available
-            console.warn('⚠️ Position manager not available, using fallback calculation for piece', index);
+            // REMOVED: Pure debug noise - no user value
             const originalPoint = this.originalPoints ? this.originalPoints[index] : null;
             if (originalPoint) {
                 piece.mesh.position.x = originalPoint[0] + offset.x;
@@ -878,7 +873,7 @@ class WebGLVoronoiRenderer {
         
         // Debug logging for coordinate tracking
         if (this.debugLogging.coordinates) {
-            console.log(`🔍 updateSeparatePiecePosition ${index}: WebGL position(${piece.mesh.position.x.toFixed(1)}, ${piece.mesh.position.y.toFixed(1)})`);
+            SmartLogger.log('coordinate-transforms', `🔍 updateSeparatePiecePosition ${index}: WebGL position(${piece.mesh.position.x.toFixed(1)}, ${piece.mesh.position.y.toFixed(1)})`);
         }
         
         // Update outline position if it exists
@@ -902,7 +897,7 @@ class WebGLVoronoiRenderer {
         const piece = this.pieces[pieceIndex];
         const slot = this.slots[pieceIndex];
         
-        console.log(`🎯 Auto-snapping piece ${pieceIndex} to slot...`);
+        SmartLogger.log('piece-states', `🎯 Auto-snapping piece ${pieceIndex} to slot...`);
         
         // Remove any separate mesh if it exists
         if (piece.mesh) {
@@ -929,14 +924,14 @@ class WebGLVoronoiRenderer {
         // Trigger any snap animations or effects
         this.onPieceSnapped(pieceIndex);
         
-        console.log(`✅ Piece ${pieceIndex} auto-snapped to slot`);
+        SmartLogger.log('piece-states', `✅ Piece ${pieceIndex} auto-snapped to slot`);
     }
     
     // NEW: Callback for when a piece snaps to its slot
     onPieceSnapped(pieceIndex) {
         // This can be used for visual feedback, sound effects, etc.
         if (this.debugLogging.pieceStates) {
-            console.log(`🎯 Piece ${pieceIndex} snapped to slot`);
+            SmartLogger.log('piece-states', `🎯 Piece ${pieceIndex} snapped to slot`);
         }
     }
     
@@ -952,7 +947,7 @@ class WebGLVoronoiRenderer {
         const separatePiece = this.pieces[index].mesh;
         if (separatePiece) {
             separatePiece.position.z = zIndex * 10;
-            console.log(`🔄 Updated separate piece ${index} z-index to ${zIndex}`);
+            SmartLogger.log('piece-states', `🔄 Updated separate piece ${index} z-index to ${zIndex}`);
         }
         
         // Note: Connected pieces use render order for z-index, handled in render()
@@ -964,7 +959,7 @@ class WebGLVoronoiRenderer {
         this.draggedPieceIndex = pieceIndex;
         
         if (this.debugLogging.glow) {
-            console.log(`🎯 WebGL dragging state: ${isDragging ? 'START' : 'STOP'} piece ${pieceIndex}`);
+            SmartLogger.log('drag-events', `🎯 WebGL dragging state: ${isDragging ? 'START' : 'STOP'} piece ${pieceIndex}`);
         }
     }
     
@@ -981,10 +976,9 @@ class WebGLVoronoiRenderer {
         }
         
         if (separatePiece && separateOutline) {
-            console.log(`🔧 Updating separate piece ${index} materials`);
+            // REMOVED: Pure debug noise - no user value
             if (this.debugLogging.materialUpdates) {
-                console.log(`🎨 Before update - Material color:`, separatePiece.material.color.getHex().toString(16));
-                console.log(`🎨 Before update - Material opacity:`, separatePiece.material.opacity);
+                // REMOVED: Pure debug noise - no user value
             }
             
             this.updateMaterialState(separatePiece.material, state);
@@ -1000,14 +994,14 @@ class WebGLVoronoiRenderer {
             
             // Control neon glow visibility based on state (use object system)
             const neonGlow = pieceObj ? pieceObj.glowOutline : this.separateGlowOutlines[index];
-            console.log(`🔍 Checking neon glow for piece ${index}, state: ${state}, neonGlow exists: ${!!neonGlow}`);
+            // REMOVED: Pure debug noise - no user value
             if (neonGlow) {
                 const showGlow = state === 'dragging';
-                console.log(`🌟 Setting glow visibility to: ${showGlow} for ${neonGlow.length} layers`);
+                // REMOVED: Pure debug noise - no user value
                 neonGlow.forEach((glowLayer, layerIndex) => {
                     if (glowLayer) {
                         glowLayer.visible = showGlow;
-                        console.log(`   Layer ${layerIndex}: visible = ${glowLayer.visible}, position = ${glowLayer.position.x}, ${glowLayer.position.y}, ${glowLayer.position.z}`);
+                        // REMOVED: Pure debug noise - no user value
                     }
                 });
                 if (this.debugLogging.neonGlow) {
@@ -1018,20 +1012,19 @@ class WebGLVoronoiRenderer {
             }
             
             if (this.debugLogging.materialUpdates) {
-                console.log(`🎨 After update - Material color:`, separatePiece.material.color.getHex().toString(16));
-                console.log(`🎨 After update - Material opacity:`, separatePiece.material.opacity);
+                // REMOVED: Pure debug noise - no user value
             }
         } else {
-            console.log(`⚠️ No separate piece/outline found for index ${index}`);
-            console.log(`⚠️ separatePiece:`, !!separatePiece, 'separateOutline:', !!separateOutline);
+            SmartLogger.log('drag-events', `⚠️ No separate piece/outline found for index ${index}`);
+            SmartLogger.log('drag-events', `⚠️ separatePiece:`, !!separatePiece, 'separateOutline:', !!separateOutline);
         }
         
         // Also update connected pieces for hover effects
         if (state === 'hover' && !separatePiece) {
-            console.log(`🔗 Creating hover overlay for connected piece ${index}`);
+            SmartLogger.log('drag-events', `🔗 Creating hover overlay for connected piece ${index}`);
             this.updateConnectedPieceHover(index, true);
         } else if (state === 'normal' && !separatePiece) {
-            console.log(`🔗 Removing hover overlay for connected piece ${index}`);
+            SmartLogger.log('drag-events', `🔗 Removing hover overlay for connected piece ${index}`);
             this.updateConnectedPieceHover(index, false);
         }
         
@@ -1047,14 +1040,14 @@ class WebGLVoronoiRenderer {
             material.originalOpacity = material.opacity;
         }
         
-        console.log(`🎨 Material state update: ${state}, hasTexture: ${!!material.map}`);
+        // REMOVED: Pure debug noise - no user value
         
         switch (state) {
             case 'hover':
                 // Keep original material color for hover - only outline changes
                 material.color.copy(material.originalColor);
                 material.opacity = material.originalOpacity || 1.0;
-                console.log(`✨ Kept original material color for hover (outline-only effect)`);
+                // REMOVED: Pure debug noise - no user value
                 break;
             case 'dragging':
                 // Very bright tint for dragging - temporarily remove texture for pure glow
@@ -1064,7 +1057,7 @@ class WebGLVoronoiRenderer {
                 }
                 material.color.setHex(this.getThemeColor('pieceDragging')); // Theme dragging color
                 material.opacity = this.getThemeEffect('opacityDragging', 0.9);
-                console.log(`🔥 Applied dragging glow from theme (texture removed)`);
+                // REMOVED: Pure debug noise - no user value
                 break;
             case 'snapped':
                 // Green tint for snapped pieces
@@ -1084,7 +1077,7 @@ class WebGLVoronoiRenderer {
                     material.originalMap = null;
                 }
                 
-                console.log(`🔄 Restored original material state (including texture)`);
+                // REMOVED: Pure debug noise - no user value
                 break;
         }
     }
@@ -1352,7 +1345,7 @@ class WebGLVoronoiRenderer {
     
     // Update hover effect for connected pieces
     updateConnectedPieceHover(index, isHovered) {
-        console.log(`🖱️ Connected piece ${index} hover: ${isHovered}`);
+        SmartLogger.log('drag-events', `🖱️ Connected piece ${index} hover: ${isHovered}`);
         
         // Remove existing hover overlay
         if (this.hoverOverlay) {
@@ -1590,7 +1583,7 @@ class WebGLVoronoiRenderer {
             mesh.position.y = position.y;
         } else {
             // Fallback to direct calculation if position manager not available
-            console.warn('⚠️ Position manager not available, using fallback calculation for piece', index);
+            // REMOVED: Pure debug noise - no user value
             const originalPoint = this.originalPoints ? this.originalPoints[index] : null;
             if (originalPoint) {
                 mesh.position.x = originalPoint[0] + offset.x;
@@ -2078,15 +2071,11 @@ class WebGLVoronoiRenderer {
             (y / this.canvas.height) * 2 - 1  // No Y-flip needed - already in WebGL coordinates
         );
         
-        if (this.debugLogging.coordinates) {
-            console.log(`🎯 Canvas coords: (${x}, ${y}) → NDC: (${mouse.x.toFixed(3)}, ${mouse.y.toFixed(3)})`);
-        }
+        SmartLogger.log('coordinate-transforms', `🎯 Canvas coords: (${x}, ${y}) -> NDC: (${mouse.x.toFixed(3)}, ${mouse.y.toFixed(3)})`);
         
         // NEW: Interaction debugging
-        if (this.debugLogging.interactionDebug) {
-            console.log(`🖱️ INTERACTION DEBUG: Looking for piece at (${x}, ${y})`);
-            console.log(`🖱️ INTERACTION DEBUG: skipDraggedPiece: ${skipDraggedPiece}, draggedPieceIndex: ${this.draggedPieceIndex}`);
-        }
+        SmartLogger.log('hit-detection', `🖱️ INTERACTION DEBUG: Looking for piece at (${x}, ${y})`);
+        SmartLogger.log('hit-detection', `🖱️ INTERACTION DEBUG: skipDraggedPiece: ${skipDraggedPiece}, draggedPieceIndex: ${this.draggedPieceIndex}`);
         
         // Create raycaster with more generous settings
         const raycaster = new THREE.Raycaster();
@@ -2121,14 +2110,12 @@ class WebGLVoronoiRenderer {
             });
         
         // NEW: Interaction debugging for z-index sorting
-        if (this.debugLogging.interactionDebug) {
-            console.log(`🖱️ INTERACTION DEBUG: Found ${separatePieces.length} separate pieces`);
-            console.log(`🖱️ INTERACTION DEBUG: Object system has ${this.pieces.filter(p => p.mesh !== null).length} pieces with meshes`);
-            separatePieces.forEach(({ piece, index, pieceObj }) => {
-                const zIndex = pieceObj.zIndex || this.pieceZIndices[index] || 0;
-                console.log(`🖱️ INTERACTION DEBUG: Piece ${index} z-index: ${zIndex}, visible: ${piece.visible}, inScene: ${this.scene.children.includes(piece)}`);
-            });
-        }
+        SmartLogger.log('hit-detection', `🖱️ INTERACTION DEBUG: Found ${separatePieces.length} separate pieces`);
+        SmartLogger.log('hit-detection', `🖱️ INTERACTION DEBUG: Object system has ${this.pieces.filter(p => p.mesh !== null).length} pieces with meshes`);
+        separatePieces.forEach(({ piece, index, pieceObj }) => {
+            const zIndex = pieceObj.zIndex || this.pieceZIndices[index] || 0;
+            SmartLogger.log('hit-detection', `🖱️ INTERACTION DEBUG: Piece ${index} z-index: ${zIndex}, visible: ${piece.visible}, inScene: ${this.scene.children.includes(piece)}`);
+        });
         
         // Try raycaster first for all separate pieces
         for (const { piece, index } of separatePieces) {
@@ -2139,15 +2126,13 @@ class WebGLVoronoiRenderer {
             
             // Ensure piece is valid and has proper geometry
             if (!piece || !piece.geometry) {
-                if (this.debugLogging.interactionDebug) {
-                    console.log(`🖱️ INTERACTION DEBUG: Piece ${index} has invalid geometry`);
-                }
+                SmartLogger.log('hit-detection', `🖱️ INTERACTION DEBUG: Piece ${index} has invalid geometry`);
                 continue;
             }
             
         // CRITICAL FIX: Ensure piece is in the scene
         if (!this.scene.children.includes(piece)) {
-            console.warn(`⚠️ Piece ${index} mesh not in scene, adding it...`);
+            // REMOVED: Pure debug noise - no user value
             this.scene.add(piece);
         }
         
@@ -2173,24 +2158,18 @@ class WebGLVoronoiRenderer {
             try {
                 const intersects = raycaster.intersectObject(piece);
                 if (intersects.length > 0) {
-                    console.log(`🎯 WebGL hit: separate piece ${index} (z-index: ${this.pieceZIndices[index]})`);
-                    if (this.debugLogging.interactionDebug) {
-                        console.log(`🖱️ INTERACTION DEBUG: Found separate piece ${index} - returning`);
-                    }
+                    SmartLogger.log('hit-detection', `🎯 WebGL hit: separate piece ${index} (z-index: ${this.pieceZIndices[index]})`);
+                    SmartLogger.log('hit-detection', `🖱️ INTERACTION DEBUG: Found separate piece ${index} - returning`);
                     return index;
                 }
             } catch (error) {
-                console.warn(`⚠️ Raycaster error for piece ${index}:`, error);
-                if (this.debugLogging.interactionDebug) {
-                    console.log(`🖱️ INTERACTION DEBUG: Raycaster error for piece ${index}:`, error);
-                }
+                SmartLogger.log('piece-states',`⚠️ Raycaster error for piece ${index}:`, error);
+                SmartLogger.log('hit-detection', `🖱️ INTERACTION DEBUG: Raycaster error for piece ${index}:`, error);
             }
         }
         
         // If raycaster failed for all pieces, try expanded hit detection
-        if (this.debugLogging.coordinates) {
-            console.log(`🔍 Raycaster failed, trying expanded hit detection...`);
-        }
+        SmartLogger.log('hit-detection', `🔍 Raycaster failed, trying expanded hit detection...`);
         for (const { piece, index } of separatePieces) {
             // Skip the dragged piece if we're looking for slots during drag
             if (skipDraggedPiece && index === this.draggedPieceIndex) {
@@ -2237,7 +2216,7 @@ class WebGLVoronoiRenderer {
                 try {
                     const intersects = testRaycaster.intersectObject(piece);
                     if (intersects.length > 0) {
-                        console.log(`🎯 Expanded hit detection found piece ${index} at offset (${offset.x}, ${offset.y})`);
+                        SmartLogger.log('hit-detection', `🎯 Expanded hit detection found piece ${index} at offset (${offset.x}, ${offset.y})`);
                         return index;
                     }
                 } catch (error) {
@@ -2247,7 +2226,7 @@ class WebGLVoronoiRenderer {
             
             // Final fallback: try both bounds and polygon checks
             if (this.isPointInPieceBounds(x, y, index) || this.isPointInPiecePolygon(x, y, index)) {
-                console.log(`🎯 Fallback hit: piece ${index} (bounds/polygon check)`);
+                SmartLogger.log('hit-detection', `🎯 Fallback hit: piece ${index} (bounds/polygon check)`);
                 return index;
             }
         }
@@ -2266,10 +2245,10 @@ class WebGLVoronoiRenderer {
                     
                     // Return piece if visible, or slot if empty (for slot hover)
                     if (slot && slot.state === 'filled') {
-                        console.log(`🎯 WebGL hit: connected piece ${pieceIndex} (object system)`);
+                        SmartLogger.log('hit-detection', `🎯 WebGL hit: connected piece ${pieceIndex} (object system)`);
                         return pieceIndex;
                     } else {
-                        console.log(`🎯 WebGL hit: empty slot ${pieceIndex} (object system)`);
+                        SmartLogger.log('hit-detection', `🎯 WebGL hit: empty slot ${pieceIndex} (object system)`);
                         return { type: 'slot', index: pieceIndex }; // Return slot info
                     }
                 }
@@ -2278,7 +2257,7 @@ class WebGLVoronoiRenderer {
         
         // If no hit detected, check for lost pieces and try again
         if (this.debugLogging.hitDetection) {
-            console.log(`❌ No piece hit at (${x}, ${y})`);
+            SmartLogger.log('hit-detection', `❌ No piece hit at (${x}, ${y})`);
             this.logPieceStates();
         }
         
@@ -2299,38 +2278,36 @@ class WebGLVoronoiRenderer {
         }
         
         // CRITICAL FIX: Log when no piece is found to help debug interaction issues
-        if (this.debugLogging.interactionDebug) {
-            console.log(`🖱️ INTERACTION DEBUG: No piece found at (${x}, ${y})`);
-            console.log(`🖱️ INTERACTION DEBUG: Total separate pieces: ${this.pieces.filter(p => p.mesh !== null).length}`);
-            console.log(`🖱️ INTERACTION DEBUG: Scene children count: ${this.scene.children.length}`);
-            
-            // NEW: Check for state inconsistencies that could cause waterfall effect
-            const inconsistentPieces = this.pieces.filter((piece, index) => {
-                return piece.mesh !== null && !this.scene.children.includes(piece.mesh);
+        SmartLogger.log('hit-detection', `🖱️ INTERACTION DEBUG: No piece found at (${x}, ${y})`);
+        SmartLogger.log('hit-detection', `🖱️ INTERACTION DEBUG: Total separate pieces: ${this.pieces.filter(p => p.mesh !== null).length}`);
+        SmartLogger.log('hit-detection', `🖱️ INTERACTION DEBUG: Scene children count: ${this.scene.children.length}`);
+        
+        // NEW: Check for state inconsistencies that could cause waterfall effect
+        const inconsistentPieces = this.pieces.filter((piece, index) => {
+            return piece.mesh !== null && !this.scene.children.includes(piece.mesh);
+        });
+        
+        if (inconsistentPieces.length > 0) {
+            // REMOVED: Pure debug noise - no user value
+            inconsistentPieces.forEach((piece, index) => {
+                // REMOVED: Pure debug noise - no user value
             });
-            
-            if (inconsistentPieces.length > 0) {
-                console.warn(`🖱️ INTERACTION DEBUG: Found ${inconsistentPieces.length} pieces with inconsistent state!`);
-                inconsistentPieces.forEach((piece, index) => {
-                    console.warn(`🖱️ INTERACTION DEBUG: Piece ${index} has mesh but not in scene`);
-                });
+        }
+        
+        // NEW: Check for pieces that are in scene but not positioned correctly
+        const mispositionedPieces = this.pieces.filter((piece, index) => {
+            if (piece.mesh && this.scene.children.includes(piece.mesh)) {
+                // Check if piece is positioned at origin (0,0,0) when it should be elsewhere
+                const pos = piece.mesh.position;
+                return pos.x === 0 && pos.y === 0 && piece.offset && (piece.offset.x !== 0 || piece.offset.y !== 0);
             }
-            
-            // NEW: Check for pieces that are in scene but not positioned correctly
-            const mispositionedPieces = this.pieces.filter((piece, index) => {
-                if (piece.mesh && this.scene.children.includes(piece.mesh)) {
-                    // Check if piece is positioned at origin (0,0,0) when it should be elsewhere
-                    const pos = piece.mesh.position;
-                    return pos.x === 0 && pos.y === 0 && piece.offset && (piece.offset.x !== 0 || piece.offset.y !== 0);
-                }
-                return false;
+            return false;
+        });
+        if (mispositionedPieces.length > 0) {
+            // REMOVED: Pure debug noise - no user value
+            mispositionedPieces.forEach((piece, index) => {
+                // REMOVED: Pure debug noise - no user value
             });
-            if (mispositionedPieces.length > 0) {
-                console.warn(`🖱️ INTERACTION DEBUG: Found ${mispositionedPieces.length} pieces positioned at origin!`);
-                mispositionedPieces.forEach((piece, index) => {
-                    console.warn(`🖱️ INTERACTION DEBUG: Piece ${index} at (${piece.mesh.position.x}, ${piece.mesh.position.y}) but offset is (${piece.offset.x}, ${piece.offset.y})`);
-                });
-            }
         }
         
         return -1;
@@ -2423,7 +2400,7 @@ class WebGLVoronoiRenderer {
         // Array backup removed - using object system only
         const piece = pieceObj.mesh;
         if (!piece) {
-            console.warn(`⚠️ Piece ${pieceIndex} not found in separatePieces`);
+            SmartLogger.log('piece-states',`⚠️ Piece ${pieceIndex} not found in separatePieces`);
             return false;
         }
         
@@ -2452,7 +2429,7 @@ class WebGLVoronoiRenderer {
         
         // Ensure piece has proper geometry
         if (!piece.geometry || !piece.geometry.attributes.position) {
-            console.warn(`⚠️ Piece ${pieceIndex} has invalid geometry, recreating...`);
+            SmartLogger.log('piece-states',`⚠️ Piece ${pieceIndex} has invalid geometry, recreating...`);
             this.recreatePieceGeometry(pieceIndex);
         }
         
@@ -2526,27 +2503,7 @@ class WebGLVoronoiRenderer {
     logPieceStates() {
         if (!this.debugLogging.pieceStates) return;
 
-        console.log(`🔍 Piece States Debug (Object System):`);
-        console.log(`   Total pieces: ${this.pieces.length}`);
-        console.log(`   Separate pieces: ${this.pieces.filter(p => p.mesh !== null).length}`);
-        console.log(`   Connected pieces: ${this.pieces.filter(p => p.mesh === null).length}`);
-        
-        // Log piece states from object system
-        const pieceStates = this.pieces.map(p => p.state);
-        const slotStates = this.slots.map(s => s.state);
-        const zIndices = this.pieces.map(p => p.zIndex);
-        
-        console.log(`   Piece states: [${pieceStates.join(', ')}]`);
-        console.log(`   Slot states: [${slotStates.join(', ')}]`);
-        console.log(`   Z-indices: [${zIndices.join(', ')}]`);
-
-        // Log details for each separate piece (using object system)
-        this.pieces.forEach((pieceObj, index) => {
-            if (pieceObj && pieceObj.mesh) {
-                const piece = pieceObj.mesh;
-                console.log(`   Piece ${index}: pos(${piece.position.x.toFixed(1)}, ${piece.position.y.toFixed(1)}, ${piece.position.z.toFixed(1)}) z-index:${pieceObj.zIndex} visible:${piece.visible} state:${pieceObj.state}`);
-            }
-        });
+        // REMOVED: Massive debug dump - no user value
     }
     
     // Method to check and fix any lost pieces (using object system)
@@ -2571,7 +2528,7 @@ class WebGLVoronoiRenderer {
                     fixedCount++;
                     console.log(`✅ Fixed lost piece ${i}`);
                 } else {
-                    console.warn(`❌ Failed to fix lost piece ${i}`);
+                    SmartLogger.log('piece-states',`❌ Failed to fix lost piece ${i}`);
                 }
             }
         }
@@ -2685,21 +2642,21 @@ class WebGLVoronoiRenderer {
                 }
             };
             
-            console.log('🔧 Global debug functions available:');
-            console.log('  - toggleQuietMode() - Toggle quiet mode (reduce logging noise)');
-            console.log('  - enableQuietMode() - Enable quiet mode');
-            console.log('  - disableQuietMode() - Disable quiet mode');
-            console.log('  - toggleHitDetection() - Toggle hit detection logs');
-            console.log('  - togglePieceStates() - Toggle piece state logs');
-            console.log('  - toggleGlowEffects() - Toggle glow effect logs');
-            console.log('  - toggleAnimation() - Toggle animation logs');
-            console.log('  - toggleVisualStates() - Toggle visual state logs');
-            console.log('  - toggleCreation() - Toggle creation logs');
-            console.log('  - enableAllDebug() - Enable all debug logs');
-            console.log('  - disableAllDebug() - Disable all debug logs');
-            console.log('  - validateObjectArraySync() - Validate object-array synchronization');
-            console.log('  - autoRecoverPieces() - Manually recover unreachable pieces');
-            console.log('  - runObjectSystemTests() - Run comprehensive test suite');
+            SmartLogger.log('debug-tools', '🔧 Global debug functions available:');
+            SmartLogger.log('debug-tools', '  - toggleQuietMode() - Toggle quiet mode (reduce logging noise)');
+            SmartLogger.log('debug-tools', '  - enableQuietMode() - Enable quiet mode');
+            SmartLogger.log('debug-tools', '  - disableQuietMode() - Disable quiet mode');
+            SmartLogger.log('debug-tools', '  - toggleHitDetection() - Toggle hit detection logs');
+            SmartLogger.log('debug-tools', '  - togglePieceStates() - Toggle piece state logs');
+            SmartLogger.log('debug-tools', '  - toggleGlowEffects() - Toggle glow effect logs');
+            SmartLogger.log('debug-tools', '  - toggleAnimation() - Toggle animation logs');
+            SmartLogger.log('debug-tools', '  - toggleVisualStates() - Toggle visual state logs');
+            SmartLogger.log('debug-tools', '  - toggleCreation() - Toggle creation logs');
+            SmartLogger.log('debug-tools', '  - enableAllDebug() - Enable all debug logs');
+            SmartLogger.log('debug-tools', '  - disableAllDebug() - Disable all debug logs');
+            SmartLogger.log('debug-tools', '  - validateObjectArraySync() - Validate object-array synchronization');
+            SmartLogger.log('debug-tools', '  - autoRecoverPieces() - Manually recover unreachable pieces');
+            SmartLogger.log('debug-tools', '  - runObjectSystemTests() - Run comprehensive test suite');
         }
     }
     
@@ -2770,7 +2727,7 @@ window.validateObjectArraySync = function() {
     if (window.webglRenderer && window.webglRenderer.validateObjectArraySync) {
         window.webglRenderer.validateObjectArraySync();
     } else {
-        console.warn('⚠️ WebGL renderer not available for validation');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for validation');
     }
 };
 
@@ -2781,7 +2738,7 @@ window.autoRecoverPieces = function() {
         console.log(`🔄 Manually recovered ${recoveredCount} unreachable pieces`);
         return recoveredCount;
     } else {
-        console.warn('⚠️ WebGL renderer not available for auto-recovery');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for auto-recovery');
         return 0;
     }
 };
@@ -2793,7 +2750,7 @@ window.toggleInteractionDebug = function() {
         console.log(`🖱️ Interaction debug: ${window.webglRenderer.debugLogging.interactionDebug ? 'ON' : 'OFF'}`);
         return window.webglRenderer.debugLogging.interactionDebug;
     } else {
-        console.warn('⚠️ WebGL renderer not available for interaction debug toggle');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for interaction debug toggle');
         return false;
     }
 };
@@ -2805,7 +2762,7 @@ window.toggleMaterialUpdates = function() {
         console.log(`🎨 Material updates: ${window.webglRenderer.debugLogging.materialUpdates ? 'ON' : 'OFF'}`);
         return window.webglRenderer.debugLogging.materialUpdates;
     } else {
-        console.warn('⚠️ WebGL renderer not available for material updates toggle');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for material updates toggle');
         return false;
     }
 };
@@ -2817,7 +2774,7 @@ window.toggleHoverEffects = function() {
         console.log(`✨ Hover effects: ${window.webglRenderer.debugLogging.hoverEffects ? 'ON' : 'OFF'}`);
         return window.webglRenderer.debugLogging.hoverEffects;
     } else {
-        console.warn('⚠️ WebGL renderer not available for hover effects toggle');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for hover effects toggle');
         return false;
     }
 };
@@ -2829,7 +2786,7 @@ window.toggleNeonGlow = function() {
         console.log(`🌟 Neon glow: ${window.webglRenderer.debugLogging.neonGlow ? 'ON' : 'OFF'}`);
         return window.webglRenderer.debugLogging.neonGlow;
     } else {
-        console.warn('⚠️ WebGL renderer not available for neon glow toggle');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for neon glow toggle');
         return false;
     }
 };
@@ -2841,7 +2798,7 @@ window.toggleInitialization = function() {
         console.log(`🔍 Initialization: ${window.webglRenderer.debugLogging.initialization ? 'ON' : 'OFF'}`);
         return window.webglRenderer.debugLogging.initialization;
     } else {
-        console.warn('⚠️ WebGL renderer not available for initialization toggle');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for initialization toggle');
         return false;
     }
 };
@@ -2853,7 +2810,7 @@ window.toggleCoordinates = function() {
         console.log(`🎯 Coordinates: ${window.webglRenderer.debugLogging.coordinates ? 'ON' : 'OFF'}`);
         return window.webglRenderer.debugLogging.coordinates;
     } else {
-        console.warn('⚠️ WebGL renderer not available for coordinates toggle');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for coordinates toggle');
         return false;
     }
 };
@@ -2865,7 +2822,7 @@ window.toggleRendererSwitching = function() {
         console.log(`🔄 Renderer switching: ${window.webglRenderer.debugLogging.rendererSwitching ? 'ON' : 'OFF'}`);
         return window.webglRenderer.debugLogging.rendererSwitching;
     } else {
-        console.warn('⚠️ WebGL renderer not available for renderer switching toggle');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for renderer switching toggle');
         return false;
     }
 };
@@ -2877,7 +2834,7 @@ window.toggleCanvasSetup = function() {
         console.log(`🎨 Canvas setup: ${window.webglRenderer.debugLogging.canvasSetup ? 'ON' : 'OFF'}`);
         return window.webglRenderer.debugLogging.canvasSetup;
     } else {
-        console.warn('⚠️ WebGL renderer not available for canvas setup toggle');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for canvas setup toggle');
         return false;
     }
 };
@@ -2889,7 +2846,7 @@ window.checkGhostPieces = function() {
         console.log(`👻 Found ${ghostCount} ghost pieces`);
         return ghostCount;
     } else {
-        console.warn('⚠️ WebGL renderer not available for ghost piece detection');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for ghost piece detection');
         return 0;
     }
 };
@@ -2901,7 +2858,7 @@ window.autoSnapPiece = function(pieceIndex) {
         window.webglRenderer.autoSnapPieceToSlot(pieceIndex);
         return true;
     } else {
-        console.warn('⚠️ WebGL renderer not available for auto-snap');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for auto-snap');
         return false;
     }
 };
@@ -2939,7 +2896,7 @@ window.debugLostPieces = function() {
             return [];
         }
     } else {
-        console.warn('⚠️ WebGL renderer not available');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available');
         return [];
     }
 };
@@ -2987,7 +2944,7 @@ window.fixMispositionedPieces = function() {
         console.log(`✅ Fixed ${fixedCount} mispositioned pieces`);
         return fixedCount;
     } else {
-        console.warn('⚠️ WebGL renderer not available');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available');
         return 0;
     }
 };
@@ -3005,7 +2962,7 @@ window.testInteractionSystem = function() {
         console.log(`🧪 Test 1 - Scene Sync: ${piecesInScene.length}/${piecesWithMeshes.length} pieces in scene`);
         
         if (piecesInScene.length !== piecesWithMeshes.length) {
-            console.warn(`🧪 Test 1 FAILED: ${piecesWithMeshes.length - piecesInScene.length} pieces not in scene!`);
+            SmartLogger.log('piece-states',`🧪 Test 1 FAILED: ${piecesWithMeshes.length - piecesInScene.length} pieces not in scene!`);
             return false;
         }
         
@@ -3019,7 +2976,7 @@ window.testInteractionSystem = function() {
         console.log(`🧪 Test 2 - Z-Index Sync: ${zIndexIssues.length} inconsistencies found`);
         
         if (zIndexIssues.length > 0) {
-            console.warn(`🧪 Test 2 FAILED: ${zIndexIssues.length} z-index inconsistencies!`);
+            SmartLogger.log('piece-states',`🧪 Test 2 FAILED: ${zIndexIssues.length} z-index inconsistencies!`);
             return false;
         }
         
@@ -3031,14 +2988,14 @@ window.testInteractionSystem = function() {
         console.log(`🧪 Test 3 - State Validity: ${invalidStates.length} invalid states found`);
         
         if (invalidStates.length > 0) {
-            console.warn(`🧪 Test 3 FAILED: ${invalidStates.length} pieces with invalid states!`);
+            SmartLogger.log('piece-states',`🧪 Test 3 FAILED: ${invalidStates.length} pieces with invalid states!`);
             return false;
         }
         
         console.log('✅ All interaction system tests PASSED!');
         return true;
     } else {
-        console.warn('⚠️ WebGL renderer not available for testing');
+        SmartLogger.log('piece-states','⚠️ WebGL renderer not available for testing');
         return false;
     }
 };

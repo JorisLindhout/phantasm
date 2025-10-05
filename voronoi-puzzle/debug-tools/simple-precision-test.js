@@ -10,7 +10,7 @@ window.testRaycasterPrecision = function() {
         return;
     }
 
-    console.log('🧪 Testing Raycaster Precision with Large Coordinates...');
+    SmartLogger.log('debug-tools','🧪 Testing Raycaster Precision with Large Coordinates...');
     
     const renderer = window.webglRenderer;
     const results = [];
@@ -19,7 +19,7 @@ window.testRaycasterPrecision = function() {
     const testDistances = [10, 100, 1000, 5000, 10000, 50000, 100000];
     
     testDistances.forEach(distance => {
-        console.log(`\n📏 Testing distance: ${distance}`);
+        SmartLogger.log('debug-tools',`\n📏 Testing distance: ${distance}`);
         
         // Create a test mesh at this distance
         const geometry = new THREE.BoxGeometry(20, 20, 20);
@@ -41,14 +41,14 @@ window.testRaycasterPrecision = function() {
         const screenX = (worldPosition.x * 0.5 + 0.5) * renderer.canvas.width;
         const screenY = (worldPosition.y * -0.5 + 0.5) * renderer.canvas.height;
         
-        console.log(`   World position: (${distance}, 0, 0)`);
-        console.log(`   Screen position: (${screenX.toFixed(1)}, ${screenY.toFixed(1)})`);
+        SmartLogger.log('debug-tools',`   World position: (${distance}, 0, 0)`);
+        SmartLogger.log('debug-tools',`   Screen position: (${screenX.toFixed(1)}, ${screenY.toFixed(1)})`);
         
         // Test if raycaster can detect the mesh
         const hitResult = renderer.findPieceAtPosition(screenX, screenY);
         const isDetectable = hitResult !== null;
         
-        console.log(`   Raycaster result: ${isDetectable ? '✅ DETECTED' : '❌ NOT DETECTED'}`);
+        SmartLogger.log('debug-tools',`   Raycaster result: ${isDetectable ? '✅ DETECTED' : '❌ NOT DETECTED'}`);
         
         results.push({
             distance,
@@ -64,19 +64,19 @@ window.testRaycasterPrecision = function() {
     });
     
     // Analyze results
-    console.log('\n📊 RESULTS ANALYSIS:');
-    console.log('==================');
+    SmartLogger.log('debug-tools','\n📊 RESULTS ANALYSIS:');
+    SmartLogger.log('debug-tools','==================');
     
     const detectableCount = results.filter(r => r.isDetectable).length;
     const totalCount = results.length;
     
-    console.log(`Detectable at ${detectableCount}/${totalCount} distances`);
+    SmartLogger.log('debug-tools',`Detectable at ${detectableCount}/${totalCount} distances`);
     
     // Find precision threshold
     const firstUndetectable = results.find(r => !r.isDetectable);
     if (firstUndetectable) {
-        console.log(`🎯 First undetectable distance: ${firstUndetectable.distance}`);
-        console.log('   This suggests raycaster precision threshold');
+        SmartLogger.log('debug-tools',`🎯 First undetectable distance: ${firstUndetectable.distance}`);
+        SmartLogger.log('debug-tools','   This suggests raycaster precision threshold');
     }
     
     // Check if precision degrades with distance
@@ -88,11 +88,11 @@ window.testRaycasterPrecision = function() {
         }
     }
     
-    console.log(`\n🎯 CONCLUSION:`);
+    SmartLogger.log('debug-tools',`\n🎯 CONCLUSION:`);
     if (precisionDegrades) {
-        console.log('✅ HYPOTHESIS CONFIRMED: Raycaster precision degrades with large coordinates');
+        SmartLogger.log('debug-tools','✅ HYPOTHESIS CONFIRMED: Raycaster precision degrades with large coordinates');
     } else {
-        console.log('❌ HYPOTHESIS REJECTED: No clear precision degradation detected');
+        SmartLogger.log('debug-tools','❌ HYPOTHESIS REJECTED: No clear precision degradation detected');
     }
     
     return results;
@@ -105,7 +105,7 @@ window.testUnresponsivePieces = function() {
         return;
     }
 
-    console.log('🧩 Testing Actual Unresponsive Pieces...');
+    SmartLogger.log('debug-tools','🧩 Testing Actual Unresponsive Pieces...');
     
     const renderer = window.webglRenderer;
     const unresponsivePieces = [];
@@ -141,30 +141,30 @@ window.testUnresponsivePieces = function() {
                     isResponsive
                 });
                 
-                console.log(`❌ Piece ${i}: Distance=${distance.toFixed(1)}, Not responsive`);
+                SmartLogger.log('debug-tools',`❌ Piece ${i}: Distance=${distance.toFixed(1)}, Not responsive`);
             }
         }
     }
     
     if (unresponsivePieces.length > 0) {
-        console.log(`\n📊 Found ${unresponsivePieces.length} unresponsive pieces:`);
+        SmartLogger.log('debug-tools',`\n📊 Found ${unresponsivePieces.length} unresponsive pieces:`);
         
         // Sort by distance
         unresponsivePieces.sort((a, b) => b.distance - a.distance);
         
         unresponsivePieces.forEach(piece => {
-            console.log(`   Piece ${piece.index}: Distance=${piece.distance.toFixed(1)}`);
+            SmartLogger.log('debug-tools',`   Piece ${piece.index}: Distance=${piece.distance.toFixed(1)}`);
         });
         
         // Check if distance correlates with unresponsiveness
         const avgDistance = unresponsivePieces.reduce((sum, p) => sum + p.distance, 0) / unresponsivePieces.length;
-        console.log(`\n🎯 Average distance of unresponsive pieces: ${avgDistance.toFixed(1)}`);
+        SmartLogger.log('debug-tools',`\n🎯 Average distance of unresponsive pieces: ${avgDistance.toFixed(1)}`);
         
         if (avgDistance > 1000) {
-            console.log('✅ SUPPORTS HYPOTHESIS: Unresponsive pieces are far from origin');
+            SmartLogger.log('debug-tools','✅ SUPPORTS HYPOTHESIS: Unresponsive pieces are far from origin');
         }
     } else {
-        console.log('✅ All pieces are responsive');
+        SmartLogger.log('debug-tools','✅ All pieces are responsive');
     }
     
     return unresponsivePieces;
@@ -172,8 +172,8 @@ window.testUnresponsivePieces = function() {
 
 // Combined test function
 window.runPrecisionTests = function() {
-    console.log('🚀 Running Complete Precision Test Suite...');
-    console.log('==========================================');
+    SmartLogger.log('debug-tools','🚀 Running Complete Precision Test Suite...');
+    SmartLogger.log('debug-tools','==========================================');
     
     // Test 1: Synthetic precision test
     const syntheticResults = window.testRaycasterPrecision();
@@ -182,29 +182,29 @@ window.runPrecisionTests = function() {
     const unresponsivePieces = window.testUnresponsivePieces();
     
     // Final analysis
-    console.log('\n🎯 FINAL ANALYSIS:');
-    console.log('==================');
+    SmartLogger.log('debug-tools','\n🎯 FINAL ANALYSIS:');
+    SmartLogger.log('debug-tools','==================');
     
     if (syntheticResults && unresponsivePieces) {
         const hasPrecisionIssues = syntheticResults.some(r => !r.isDetectable);
         const hasUnresponsivePieces = unresponsivePieces.length > 0;
         
         if (hasPrecisionIssues && hasUnresponsivePieces) {
-            console.log('✅ HYPOTHESIS STRONGLY SUPPORTED:');
-            console.log('   - Raycaster precision degrades with large coordinates');
-            console.log('   - Actual pieces become unresponsive when far from origin');
-            console.log('   - Distance-based auto-recovery needed');
+            SmartLogger.log('debug-tools','✅ HYPOTHESIS STRONGLY SUPPORTED:');
+            SmartLogger.log('debug-tools','   - Raycaster precision degrades with large coordinates');
+            SmartLogger.log('debug-tools','   - Actual pieces become unresponsive when far from origin');
+            SmartLogger.log('debug-tools','   - Distance-based auto-recovery needed');
         } else if (hasPrecisionIssues) {
-            console.log('⚠️ HYPOTHESIS PARTIALLY SUPPORTED:');
-            console.log('   - Raycaster precision issues detected');
-            console.log('   - But no unresponsive pieces found');
+            SmartLogger.log('debug-tools','⚠️ HYPOTHESIS PARTIALLY SUPPORTED:');
+            SmartLogger.log('debug-tools','   - Raycaster precision issues detected');
+            SmartLogger.log('debug-tools','   - But no unresponsive pieces found');
         } else if (hasUnresponsivePieces) {
-            console.log('❌ HYPOTHESIS NOT SUPPORTED:');
-            console.log('   - No raycaster precision issues detected');
-            console.log('   - But unresponsive pieces exist');
-            console.log('   - Issue may be different than coordinate precision');
+            SmartLogger.log('debug-tools','❌ HYPOTHESIS NOT SUPPORTED:');
+            SmartLogger.log('debug-tools','   - No raycaster precision issues detected');
+            SmartLogger.log('debug-tools','   - But unresponsive pieces exist');
+            SmartLogger.log('debug-tools','   - Issue may be different than coordinate precision');
         } else {
-            console.log('✅ NO ISSUES DETECTED: All systems working normally');
+            SmartLogger.log('debug-tools','✅ NO ISSUES DETECTED: All systems working normally');
         }
     }
     
@@ -219,8 +219,8 @@ if (typeof window !== 'undefined') {
     const originalShowDebug = window.showDebugCommands;
     window.showDebugCommands = function() {
         if (originalShowDebug) originalShowDebug();
-        console.log('  testRaycasterPrecision() - Test raycaster precision with large coordinates');
-        console.log('  testUnresponsivePieces() - Test actual piece responsiveness');
-        console.log('  runPrecisionTests() - Run complete precision test suite');
+        SmartLogger.log('debug-tools','  testRaycasterPrecision() - Test raycaster precision with large coordinates');
+        SmartLogger.log('debug-tools','  testUnresponsivePieces() - Test actual piece responsiveness');
+        SmartLogger.log('debug-tools','  runPrecisionTests() - Run complete precision test suite');
     };
 }

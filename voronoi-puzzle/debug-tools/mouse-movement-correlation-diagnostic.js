@@ -25,10 +25,10 @@ class MouseMovementCorrelationDiagnostic {
      * Enable mouse movement correlation monitoring
      */
     enableMouseMovementMonitoring() {
-        console.log('🔍 Enabling mouse movement correlation monitoring...');
+        SmartLogger.log('debug-tools','🔍 Enabling mouse movement correlation monitoring...');
         
         if (this.isMonitoring) {
-            console.log('⚠️ Mouse movement monitoring already enabled');
+            SmartLogger.log('debug-tools','⚠️ Mouse movement monitoring already enabled');
             return;
         }
         
@@ -46,18 +46,18 @@ class MouseMovementCorrelationDiagnostic {
         this.canvas = this.renderer.canvas;
         this.canvas.addEventListener('mousemove', this.trackMouseMovement.bind(this));
         
-        console.log('✅ Mouse movement correlation monitoring enabled');
-        console.log('📝 Now drag and release pieces, then move mouse to capture correlations');
+        SmartLogger.log('debug-tools','✅ Mouse movement correlation monitoring enabled');
+        SmartLogger.log('debug-tools','📝 Now drag and release pieces, then move mouse to capture correlations');
     }
 
     /**
      * Disable mouse movement correlation monitoring
      */
     disableMouseMovementMonitoring() {
-        console.log('🔍 Disabling mouse movement correlation monitoring...');
+        SmartLogger.log('debug-tools','🔍 Disabling mouse movement correlation monitoring...');
         
         if (!this.isMonitoring) {
-            console.log('⚠️ Mouse movement monitoring not enabled');
+            SmartLogger.log('debug-tools','⚠️ Mouse movement monitoring not enabled');
             return;
         }
         
@@ -76,7 +76,7 @@ class MouseMovementCorrelationDiagnostic {
             this.canvas.removeEventListener('mousemove', this.trackMouseMovement.bind(this));
         }
         
-        console.log('✅ Mouse movement correlation monitoring disabled');
+        SmartLogger.log('debug-tools','✅ Mouse movement correlation monitoring disabled');
     }
 
     /**
@@ -133,7 +133,7 @@ class MouseMovementCorrelationDiagnostic {
                             correlation: this.calculateCorrelation(mouseDelta, pieceDelta)
                         });
                         
-                        console.log(`🔄 CORRELATION DETECTED - Piece ${this.lastReleasePiece}:`, {
+                        SmartLogger.log('debug-tools',`🔄 CORRELATION DETECTED - Piece ${this.lastReleasePiece}:`, {
                             timeSinceRelease: timeSinceRelease + 'ms',
                             mouseDistance: mouseDistance.toFixed(2) + 'px',
                             pieceDistance: pieceDistance.toFixed(2) + 'px',
@@ -178,7 +178,7 @@ class MouseMovementCorrelationDiagnostic {
             this.lastReleasePiece = this.puzzle.draggedCellIndex;
             this.lastMousePosition = coords;
             
-            console.log(`🎯 RELEASE TRACKED - Piece ${this.lastReleasePiece}:`, {
+            SmartLogger.log('debug-tools',`🎯 RELEASE TRACKED - Piece ${this.lastReleasePiece}:`, {
                 releasePosition: `(${coords.x.toFixed(1)}, ${coords.y.toFixed(1)})`,
                 pieceOffset: this.renderer.pieces[this.lastReleasePiece]?.offset || { x: 0, y: 0 }
             });
@@ -212,19 +212,19 @@ class MouseMovementCorrelationDiagnostic {
      * Generate correlation analysis report
      */
     generateCorrelationReport() {
-        console.log('\n📋 MOUSE MOVEMENT CORRELATION REPORT');
-        console.log('=====================================');
+        SmartLogger.log('debug-tools','\n📋 MOUSE MOVEMENT CORRELATION REPORT');
+        SmartLogger.log('debug-tools','=====================================');
         
-        console.log(`\n📊 Statistics:`);
-        console.log(`   Total mouse movements tracked: ${this.movementLogs.length}`);
-        console.log(`   Correlation events detected: ${this.correlationData.length}`);
+        SmartLogger.log('debug-tools',`\n📊 Statistics:`);
+        SmartLogger.log('debug-tools',`   Total mouse movements tracked: ${this.movementLogs.length}`);
+        SmartLogger.log('debug-tools',`   Correlation events detected: ${this.correlationData.length}`);
         
         if (this.correlationData.length > 0) {
-            console.log('\n🔄 CORRELATION ANALYSIS:');
+            SmartLogger.log('debug-tools','\n🔄 CORRELATION ANALYSIS:');
             
             // Calculate average correlation
             const avgCorrelation = this.correlationData.reduce((sum, data) => sum + data.correlation, 0) / this.correlationData.length;
-            console.log(`   Average correlation: ${avgCorrelation.toFixed(3)}`);
+            SmartLogger.log('debug-tools',`   Average correlation: ${avgCorrelation.toFixed(3)}`);
             
             // Analyze inverse relationship (small mouse = large piece, large mouse = small piece)
             const smallMouseMovements = this.correlationData.filter(d => d.mouseDistance < 10);
@@ -232,40 +232,40 @@ class MouseMovementCorrelationDiagnostic {
             
             if (smallMouseMovements.length > 0) {
                 const avgPieceMovementSmall = smallMouseMovements.reduce((sum, d) => sum + d.pieceDistance, 0) / smallMouseMovements.length;
-                console.log(`   Small mouse movements (avg piece response): ${avgPieceMovementSmall.toFixed(2)}px`);
+                SmartLogger.log('debug-tools',`   Small mouse movements (avg piece response): ${avgPieceMovementSmall.toFixed(2)}px`);
             }
             
             if (largeMouseMovements.length > 0) {
                 const avgPieceMovementLarge = largeMouseMovements.reduce((sum, d) => sum + d.pieceDistance, 0) / largeMouseMovements.length;
-                console.log(`   Large mouse movements (avg piece response): ${avgPieceMovementLarge.toFixed(2)}px`);
+                SmartLogger.log('debug-tools',`   Large mouse movements (avg piece response): ${avgPieceMovementLarge.toFixed(2)}px`);
             }
             
-            console.log('\n🎯 DETAILED CORRELATIONS:');
+            SmartLogger.log('debug-tools','\n🎯 DETAILED CORRELATIONS:');
             this.correlationData.forEach((correlation, index) => {
-                console.log(`   ${index + 1}. Time: ${correlation.timeSinceRelease}ms, Mouse: ${correlation.mouseDistance.toFixed(1)}px, Piece: ${correlation.pieceDistance.toFixed(1)}px, Corr: ${correlation.correlation.toFixed(3)}`);
+                SmartLogger.log('debug-tools',`   ${index + 1}. Time: ${correlation.timeSinceRelease}ms, Mouse: ${correlation.mouseDistance.toFixed(1)}px, Piece: ${correlation.pieceDistance.toFixed(1)}px, Corr: ${correlation.correlation.toFixed(3)}`);
             });
             
-            console.log('\n🔍 LIKELY CAUSES:');
+            SmartLogger.log('debug-tools','\n🔍 LIKELY CAUSES:');
             if (avgCorrelation > 0.7) {
-                console.log('   ✅ Strong positive correlation - Mouse movement directly causes piece movement');
-                console.log('   🎯 Possible cause: Coordinate system mismatch or event handling issue');
+                SmartLogger.log('debug-tools','   ✅ Strong positive correlation - Mouse movement directly causes piece movement');
+                SmartLogger.log('debug-tools','   🎯 Possible cause: Coordinate system mismatch or event handling issue');
             } else if (avgCorrelation < -0.7) {
-                console.log('   ❌ Strong negative correlation - Mouse movement causes opposite piece movement');
-                console.log('   🎯 Possible cause: Inverted coordinate system or sign error');
+                SmartLogger.log('debug-tools','   ❌ Strong negative correlation - Mouse movement causes opposite piece movement');
+                SmartLogger.log('debug-tools','   🎯 Possible cause: Inverted coordinate system or sign error');
             } else {
-                console.log('   ⚠️ Weak correlation - Relationship is not straightforward');
-                console.log('   🎯 Possible cause: Complex interaction or multiple factors');
+                SmartLogger.log('debug-tools','   ⚠️ Weak correlation - Relationship is not straightforward');
+                SmartLogger.log('debug-tools','   🎯 Possible cause: Complex interaction or multiple factors');
             }
             
-            console.log('\n🔧 RECOMMENDED INVESTIGATIONS:');
-            console.log('   1. Check coordinate system consistency between mouse and piece positioning');
-            console.log('   2. Investigate event handling timing and order');
-            console.log('   3. Look for coordinate transformation errors');
-            console.log('   4. Check for event listener conflicts or multiple handlers');
+            SmartLogger.log('debug-tools','\n🔧 RECOMMENDED INVESTIGATIONS:');
+            SmartLogger.log('debug-tools','   1. Check coordinate system consistency between mouse and piece positioning');
+            SmartLogger.log('debug-tools','   2. Investigate event handling timing and order');
+            SmartLogger.log('debug-tools','   3. Look for coordinate transformation errors');
+            SmartLogger.log('debug-tools','   4. Check for event listener conflicts or multiple handlers');
             
         } else {
-            console.log('\n✅ NO CORRELATIONS DETECTED');
-            console.log('   Mouse movement does not appear to affect piece positions');
+            SmartLogger.log('debug-tools','\n✅ NO CORRELATIONS DETECTED');
+            SmartLogger.log('debug-tools','   Mouse movement does not appear to affect piece positions');
         }
         
         return {
@@ -284,7 +284,7 @@ class MouseMovementCorrelationDiagnostic {
         this.lastMousePosition = null;
         this.lastReleaseTime = null;
         this.lastReleasePiece = null;
-        console.log('🗑️ Mouse movement correlation data cleared');
+        SmartLogger.log('debug-tools','🗑️ Mouse movement correlation data cleared');
     }
 }
 
@@ -336,9 +336,9 @@ if (typeof window !== 'undefined') {
     const originalShowDebug = window.showDebugCommands;
     window.showDebugCommands = function() {
         if (originalShowDebug) originalShowDebug();
-        console.log('  enableMouseMovementMonitoring() - Monitor mouse movement correlations');
-        console.log('  disableMouseMovementMonitoring() - Disable mouse movement monitoring');
-        console.log('  analyzeMouseCorrelations() - Analyze mouse movement correlations');
-        console.log('  clearMouseCorrelationData() - Clear mouse correlation data');
+        SmartLogger.log('debug-tools','  enableMouseMovementMonitoring() - Monitor mouse movement correlations');
+        SmartLogger.log('debug-tools','  disableMouseMovementMonitoring() - Disable mouse movement monitoring');
+        SmartLogger.log('debug-tools','  analyzeMouseCorrelations() - Analyze mouse movement correlations');
+        SmartLogger.log('debug-tools','  clearMouseCorrelationData() - Clear mouse correlation data');
     };
 }

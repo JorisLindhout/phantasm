@@ -129,7 +129,7 @@ class CoordinateUtils {
      * @param {string} toSystem - Target coordinate system name
      */
     static logTransformation(label, from, to, fromSystem, toSystem) {
-        console.log(`🔄 ${label}: ${fromSystem}(${from.x.toFixed(1)}, ${from.y.toFixed(1)}) → ${toSystem}(${to.x.toFixed(1)}, ${to.y.toFixed(1)})`);
+        SmartLogger.log('coordinate-transforms', `🔄 ${label}: ${fromSystem}(${from.x.toFixed(1)}, ${from.y.toFixed(1)}) -> ${toSystem}(${to.x.toFixed(1)}, ${to.y.toFixed(1)})`);
     }
 }
 
