@@ -6,35 +6,21 @@ A high-performance web-based puzzle prototype featuring animated Voronoi cells w
 - [] **Fix unreachable pieces issue** - Some pieces become unresponsive to interaction - this seems fixed, but leaving here since we might need to do some more rigorous testing
 - [] **Clean up SmartLogger calls** - Remove 219+ SmartLogger.log() calls using regex pattern `SmartLogger\.log\([^;]*\);` (low priority - no-ops are harmless)
 
-## 🐛 Centralized Debug System
+## 🐛 Debugging & Error Reporting
 
-The project now includes a comprehensive centralized debugging system that replaces fragmented logging with intelligent, context-aware debugging capabilities.
+The project uses a simple, reliable debugging approach based on standard JavaScript console logging.
 
-### 📚 Documentation
-- **[Complete Usage Guide](docs/debug/DEBUG_SYSTEM_GUIDE.md)** - Comprehensive documentation with examples and best practices
-- **[Quick Reference Card](docs/debug/DEBUG_QUICK_REFERENCE.md)** - Essential commands and workflows for quick access
-- **[Debug Tools Guide](docs/debug/debug-tools.md)** - Detailed documentation for all debug tools
+### 🚀 Debugging Approach
+- **Console.log** - Standard JavaScript debugging with simple prefixes
+- **Error Handling** - Critical errors are logged to console.error()
+- **Production Safe** - Debug statements can be easily added/removed as needed
+- **No Dependencies** - No complex debug infrastructure to maintain
 
-### 🚀 Quick Start
-```javascript
-// Check system status
-DebugCommands.info.status()
-
-// Start quick debugging
-DebugCommands.workflow.quickDebug()
-
-// Run integration tests
-IntegrationTester.runAllTests()
-```
-
-### 🎯 Key Features
-- **SmartLogger** - Category-based filtered logging (reduces 798 logs to ~150 relevant logs)
-- **DebugHub** - Mode switching and category management
-- **ContextManager** - Intelligent debugging scenarios
-- **ResultsAggregator** - Comprehensive diagnostic analysis
-- **ExportSystem** - Data export in multiple formats
-- **Integration Testing** - Quality assurance and backward compatibility
-- **Production Safety** - Zero performance impact in production
+### 🎯 Current Status
+- **Debug System** - Disabled (was causing game initialization issues)
+- **SmartLogger** - Fallback mode (no-ops for compatibility)
+- **Error Reporting** - Standard console.error() for critical issues
+- **Performance** - Zero overhead from debug infrastructure
 
 
 ## Table of Contents
@@ -161,13 +147,13 @@ voronoi-puzzle/
 │   ├── position-manager.js       # Centralized position management
 │   ├── webgl-renderer.js         # WebGL 3D renderer (Three.js)
 │   └── main.js                   # Main application controller
-├── debug-tools/                  # Debug and diagnostic tools
+├── debug-tools/                  # Debug tools (disabled - kept for reference)
 │   ├── index.js                  # Central debug tools loader
 │   ├── simple-precision-test.js  # Raycaster precision testing
 │   ├── scene-state-diagnostic.js # Scene management diagnostics
 │   └── [other debug tools...]    # Additional diagnostic tools
 ├── docs/                         # Project documentation
-│   └── debug/                    # Debug system documentation
+│   └── debug/                    # Debug system documentation (legacy)
 │       ├── DEBUG_SYSTEM_GUIDE.md # Complete debug system guide
 │       ├── DEBUG_QUICK_REFERENCE.md # Quick reference card
 │       └── debug-tools.md        # Debug tools documentation
@@ -208,45 +194,24 @@ themeManager.currentTheme.colors     // Access all color definitions
 
 ### 🛠️ Development Tools
 - **Theme System**: Use browser console for theme switching
-- **Debug Logging**: Configurable console output for different components
+- **Debug Logging**: Standard console.log() statements for debugging
 - **Hot Reload**: No build step - just refresh browser after changes
 - **Modular Architecture**: Easy to modify individual components
 
 ### 🔧 Debug System (Console Commands)
 ```javascript
-// Show all available debug commands
-showDebugCommands()
+// Note: Debug system has been disabled. Use standard console.log() for debugging.
 
-// Auto-recovery system
-autoRecoverPieces()                  // Manually recover unreachable pieces
-fixMispositionedPieces()             // Fix pieces not properly positioned in scene
+// Basic debugging
+console.log('[DEBUG]', 'Your debug message here');
+console.log('Game state:', window.voronoiPuzzle);
 
-// Interaction debugging
-toggleInteractionDebug()           // Toggle detailed interaction logging
-testInteractionSystem()            // Test interaction system health
+// Check for errors
+console.error('Error message here');
 
-// State validation
-validateObjectArraySync()          // Validate object system integrity
-
-// Debug logging controls
-toggleHitDetection()                // Toggle hit detection logs
-togglePieceStates()                 // Toggle piece state logs
-toggleAnimation()                   // Toggle animation logs
-toggleVisualStates()                // Toggle visual state logs
-toggleCreation()                    // Toggle creation/removal logs
-toggleMaterialUpdates()            // Toggle material update logs
-toggleHoverEffects()               // Toggle hover effect logs
-toggleNeonGlow()                   // Toggle neon glow logs
-toggleStyling()                    // Toggle styling logs
-toggleInitialization()             // Toggle initialization logs
-toggleCoordinates()                // Toggle coordinate transformation logs
-toggleRendererSwitching()          // Toggle renderer switching logs
-toggleCanvasSetup()                // Toggle canvas setup logs
-
-// Logging control
-enableAllDebug()                    // Enable all debug logs
-disableAllDebug()                   // Disable all debug logs
-toggleQuietMode()                   // Toggle quiet mode (reduce noise)
+// Theme system (still available)
+themeManager.setTheme('fluidlock');
+themeManager.getCurrentTheme();
 ```
 
 ### 🏗️ Object-Based Architecture
@@ -282,7 +247,7 @@ All project documentation is organized in the `docs/` folder:
 
 ```
 docs/
-└── debug/                          # Debug system documentation
+└── debug/                          # Debug system documentation (legacy)
     ├── DEBUG_SYSTEM_GUIDE.md       # Complete debug system usage guide
     ├── DEBUG_QUICK_REFERENCE.md    # Quick reference for debug commands
     └── debug-tools.md              # Debug tools documentation
@@ -290,22 +255,24 @@ docs/
 
 ### 📚 Available Documentation
 
-- **[Debug System Guide](docs/debug/DEBUG_SYSTEM_GUIDE.md)** - Comprehensive guide to the centralized debug system
-- **[Debug Quick Reference](docs/debug/DEBUG_QUICK_REFERENCE.md)** - Essential commands and workflows
-- **[Debug Tools Documentation](docs/debug/debug-tools.md)** - Detailed documentation for all debug tools
+- **[Debug System Guide](docs/debug/DEBUG_SYSTEM_GUIDE.md)** - Legacy debug system documentation (system disabled)
+- **[Debug Quick Reference](docs/debug/DEBUG_QUICK_REFERENCE.md)** - Legacy debug commands (system disabled)
+- **[Debug Tools Documentation](docs/debug/debug-tools.md)** - Legacy debug tools documentation (system disabled)
+
+**Note:** The debug system has been disabled due to initialization issues. Current debugging uses standard `console.log()` statements.
 
 ### 🎯 Quick Access
 
 For immediate debugging needs:
 ```javascript
-// Quick health check
-DebugCommands.info.status()
+// Check browser console for errors
+console.log('Debug info here');
 
-// Start debugging session
-DebugCommands.workflow.quickDebug()
+// Add temporary debug statements
+console.log('[DEBUG]', variableName);
 
-// Show all available commands
-DebugCommands.info.commands()
+// Check game state
+console.log('Game state:', window.voronoiPuzzle);
 ```
 
 ## Known Issues
@@ -377,59 +344,18 @@ The puzzle can experience pieces that become **visually present and animating** 
 
 ## 🔍 Diagnostic Tools
 
-Comprehensive diagnostic and testing tools are available in the `debug-tools/` folder. See **[Debug Tools Guide](docs/debug/debug-tools.md)** for complete documentation.
+**Note:** The diagnostic tools system has been disabled due to initialization issues. For debugging, use standard browser console tools.
 
 ### Quick Start
 ```javascript
-// Quick health check
-quickDiagnostic()
+// Basic debugging
+console.log('[DEBUG]', 'Your debug message here');
+console.log('Game state:', window.voronoiPuzzle);
 
-// Run comprehensive test suite
-runAllTests()
-
-// Show all available commands
-showDebugCommands()
+// Check for errors
+console.error('Error message here');
 ```
 
-### Raycaster Precision Testing
-Tests whether raycaster precision degrades with large coordinates (hypothesis testing):
-
-```javascript
-// Run complete precision test suite
-runPrecisionTests()
-
-// Test synthetic meshes at various distances
-testRaycasterPrecision()
-
-// Test actual puzzle pieces
-testUnresponsivePieces()
-```
-
-**Results**: Confirmed that raycaster precision is NOT the issue - all test meshes are detectable even at extreme distances (100,000+ units).
-
-### Scene State Diagnostics
-Comprehensive analysis of scene management and object state issues:
-
-```javascript
-// Run full scene state diagnostics
-diagnoseSceneState()
-
-// Auto-fix detected issues
-autoFixSceneIssues()
-```
-
-**Tests performed**:
-1. **Scene Membership**: Checks if pieces are properly in the Three.js scene
-2. **Geometry Validity**: Validates piece geometry and materials
-3. **Raycaster Targets**: Analyzes pieces that raycaster checks for hit detection
-4. **State Validation**: Verifies piece and slot states are valid
-5. **Z-Index Layering**: Identifies layering conflicts and negative z-indices
-
-**Auto-fix capabilities**:
-- Re-adds missing pieces to scene
-- Recreates corrupted geometries
-- Fixes visibility issues
-- Resolves state validation problems
 
 ## Future Development
 
