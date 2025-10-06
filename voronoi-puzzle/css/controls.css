@@ -41,7 +41,7 @@
 
 .drawer-toggle:hover {
     background: var(--canvas-background);
-    border-color: var(--primary-color);
+    border-color: var(--controls-primary-color);
 }
 
 .drawer-toggle:active {
@@ -56,7 +56,7 @@
 }
 
 .drawer-toggle:hover .caret-icon {
-    color: var(--primary-color);
+    color: var(--controls-primary-color);
     opacity: 1;
 }
 
@@ -101,7 +101,7 @@
     appearance: none;
     width: 16px;
     height: 16px;
-    background: var(--primary-color);
+    background: var(--controls-primary-color);
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid var(--background-color);
@@ -110,14 +110,14 @@
 .control-group input[type="range"]::-moz-range-thumb {
     width: 16px;
     height: 16px;
-    background: var(--primary-color);
+    background: var(--controls-primary-color);
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid var(--background-color);
 }
 
 .control-group span {
-    color: var(--primary-color);
+    color: var(--controls-primary-color);
     font-size: 0.9rem;
     font-weight: 500;
     min-width: 30px;
@@ -125,7 +125,7 @@
 }
 
 .control-group button {
-    background: var(--primary-color);
+    background: var(--controls-primary-color);
     color: var(--background-color);
     border: none;
     padding: 8px 16px;
@@ -137,9 +137,9 @@
 }
 
 .control-group button:hover {
-    background: var(--control-hover);
+    background: var(--controls-piece-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px var(--piece-border-hover);
+    box-shadow: 0 4px 8px var(--controls-piece-border-hover);
 }
 
 .control-group button:active {

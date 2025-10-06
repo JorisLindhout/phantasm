@@ -83,6 +83,12 @@ class ThemeManager {
         // Control colors (consistent across all themes)
         root.style.setProperty('--control-hover', '#00B8E6');
         root.style.setProperty('--control-bg', 'rgba(17, 17, 17, 0.95)');
+        
+        // Controls-drawer specific colors (always use phantasm theme)
+        const phantasmTheme = THEMES.phantasm;
+        root.style.setProperty('--controls-primary-color', phantasmTheme.colors.primary.css);
+        root.style.setProperty('--controls-piece-hover', phantasmTheme.colors.pieceHover.css);
+        root.style.setProperty('--controls-piece-border-hover', ThemeUtils.getColorWithAlpha(phantasmTheme.colors.pieceHover, 0.6));
 
         // Piece colors
         root.style.setProperty('--piece-border', ThemeUtils.getColorWithAlpha(colors.pieceNormal, 0.3));

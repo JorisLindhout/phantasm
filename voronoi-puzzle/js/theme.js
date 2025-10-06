@@ -63,7 +63,7 @@ export const THEMES = {
     // Base Phantasm theme
     phantasm: {
         name: 'Phantasm',
-        baseImage: './assets/base-image-cube.svg',
+        baseImage: './assets/Phantasm.svg',
         colors: {
             // Functional colors
             primary: COLORS.fluidBlue,
