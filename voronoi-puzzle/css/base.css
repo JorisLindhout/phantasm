@@ -54,8 +54,10 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--background-color);
-    color: var(--text-color);
+    background: #111111; /* Fallback */
+    background: var(--background-color); /* Theme override */
+    color: #ffffff; /* Fallback */
+    color: var(--text-color); /* Theme override */
     height: 100vh;
     margin: 0;
     padding: 0;
@@ -75,7 +77,8 @@ body {
 h1 {
     text-align: center;
     margin: 0 0 10px 0;
-    color: var(--primary-color);
+    color: #00DDFF; /* Fallback */
+    color: var(--primary-color); /* Theme override */
     font-size: 1.8rem;
     font-weight: 300;
     flex-shrink: 0;
@@ -85,7 +88,8 @@ h1 {
 .puzzle-container {
     position: relative;
     flex: 1;
-    background: var(--canvas-background);
+    background: #1a1a1a; /* Fallback */
+    background: var(--canvas-background); /* Theme override */
     overflow: auto; /* Allow scrollbars when canvas is larger than container */
     min-height: 400px; /* Ensure minimum height */
     box-shadow: 0 20px 40px var(--piece-border);
@@ -113,7 +117,8 @@ h1 {
 /* Info Text */
 .info {
     text-align: center;
-    color: var(--text-muted);
+    color: #888888; /* Fallback */
+    color: var(--text-muted); /* Theme override */
     font-size: 0.8rem;
     flex-shrink: 0;
     margin: 5px 0;
@@ -125,6 +130,7 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: var(--primary-color);
+    color: #00DDFF; /* Fallback */
+    color: var(--primary-color); /* Theme override */
     font-size: 1.1rem;
 }
