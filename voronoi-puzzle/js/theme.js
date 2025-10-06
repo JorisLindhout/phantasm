@@ -6,7 +6,7 @@
 
 // Base color palette
 const COLORS = {
-    // Primary FluidLock colors
+    // Primary Phantasm colors
     fluidBlue: { hex: 0x00DDFF, css: '#00DDFF', rgba: 'rgba(0, 221, 255, 1)' },
     fluidGreen: { hex: 0x00FF64, css: '#00FF64', rgba: 'rgba(0, 255, 100, 1)' },
     fluidOrange: { hex: 0xFF6600, css: '#FF6600', rgba: 'rgba(255, 102, 0, 1)' },
@@ -41,28 +41,73 @@ const LEVEL1_COLORS = {
     oldGoldLight: { hex: 0xe6d166, css: '#e6d166', rgba: 'rgba(230, 209, 102, 1)' },
 };
 
-/*
-Level 2 colors:
---old-gold: #c2b34fff;
---persian-indigo: #431b75ff;
---cornflower-blue: #659be9ff;
---majorelle-blue: #7a4edfff;
---marian-blue: #334395ff;
---dark-purple: #180a29ff;
-*/
+// Level 2 color palette
+const LEVEL2_COLORS = {
+    oldGold: { hex: 0xc2b34f, css: '#c2b34f', rgba: 'rgba(194, 179, 79, 1)' },
+    persianIndigo: { hex: 0x431b75, css: '#431b75', rgba: 'rgba(67, 27, 117, 1)' },
+    cornflowerBlue: { hex: 0x659be9, css: '#659be9', rgba: 'rgba(101, 155, 233, 1)' },
+    majorelleBlue: { hex: 0x7a4edf, css: '#7a4edf', rgba: 'rgba(122, 78, 223, 1)' },
+    marianBlue: { hex: 0x334395, css: '#334395', rgba: 'rgba(51, 67, 149, 1)' },
+    darkPurple: { hex: 0x180a29, css: '#180a29', rgba: 'rgba(24, 10, 41, 1)' },
+    
+    // Light variations for effects
+    oldGoldLight: { hex: 0xd4c766, css: '#d4c766', rgba: 'rgba(212, 199, 102, 1)' },
+    persianIndigoLight: { hex: 0x5d2a9e, css: '#5d2a9e', rgba: 'rgba(93, 42, 158, 1)' },
+    cornflowerBlueLight: { hex: 0x7fb0ed, css: '#7fb0ed', rgba: 'rgba(127, 176, 237, 1)' },
+    majorelleBlueLight: { hex: 0x8f5ef0, css: '#8f5ef0', rgba: 'rgba(143, 94, 240, 1)' },
+    marianBlueLight: { hex: 0x4a5ba8, css: '#4a5ba8', rgba: 'rgba(74, 91, 168, 1)' },
+};
 
 // Theme definitions
 export const THEMES = {
-    // Default Level One theme
+    // Base Phantasm theme
+    phantasm: {
+        name: 'Phantasm',
+        baseImage: './assets/base-image-cube.svg',
+        colors: {
+            // Functional colors
+            primary: COLORS.fluidBlue,
+            
+            // Piece states
+            pieceNormal: COLORS.fluidBlue,
+            pieceHover: COLORS.fluidBlueLight,
+            pieceDragging: COLORS.fluidBlueLight, // Brighter blue for better glow visibility
+            pieceSnapped: COLORS.fluidGreen,
+            
+            // Slot states
+            slotHover: COLORS.fluidBlueLightTransparent,
+            slotOutline: COLORS.fluidOrangeLight,
+            
+            // Outline states
+            outlineNormal: COLORS.fluidBlue,
+            outlineHover: COLORS.fluidBlueLight, // Brighter blue for hover outline
+            outlineDragging: COLORS.fluidBlueLight, // Brighter blue for dragging outline
+            outlineSnapped: COLORS.fluidGreen,
+            
+            // Game state colors
+            solved: COLORS.fluidGreenLight, // Use fluidGreenLight for solved state
+            solvedGlow: COLORS.solvedGlow
+        },
+        effects: {
+            glowIntensity: 0.8,
+            animationSpeed: 0.2,
+            pulseSpeed: 1.0,
+            scaleHover: 1.02,
+            scaleDragging: 1.1,
+            opacityNormal: 1.0,
+            opacityHover: 0.8,
+            opacityDragging: 0.9,
+            opacitySnapped: 1.0
+        }
+    },
+
+    // Level One theme
     levelOne: {
         name: 'Level 1',
         baseImage: './assets/Level-1.svg',
         colors: {
             // Functional colors
             primary: LEVEL1_COLORS.pennBlue,
-            //secondary: COLORS.fluidGreen,
-            //accent: COLORS.fluidOrange,
-            //danger: COLORS.fluidRed,
             
             // Piece states
             pieceNormal: LEVEL1_COLORS.neonBlue,
@@ -83,6 +128,47 @@ export const THEMES = {
             // Game state colors
             solved: LEVEL1_COLORS.midnightGreen, // Use midnightGreen for solved state
             solvedGlow: LEVEL1_COLORS.forestGreen
+        },
+        effects: {
+            glowIntensity: 0.8,
+            animationSpeed: 0.2,
+            pulseSpeed: 1.0,
+            scaleHover: 1.02,
+            scaleDragging: 1.1,
+            opacityNormal: 1.0,
+            opacityHover: 0.8,
+            opacityDragging: 0.9,
+            opacitySnapped: 1.0
+        }
+    },
+
+    // Level Two theme
+    levelTwo: {
+        name: 'Level 2',
+        baseImage: './assets/Level-2.svg',
+        colors: {
+            // Functional colors
+            primary: LEVEL2_COLORS.darkPurple,
+            
+            // Piece states
+            pieceNormal: LEVEL2_COLORS.majorelleBlue,
+            pieceHover: LEVEL2_COLORS.majorelleBlueLight,
+            pieceDragging: LEVEL2_COLORS.majorelleBlueLight, // Brighter blue for better glow visibility
+            pieceSnapped: LEVEL2_COLORS.cornflowerBlue,
+            
+            // Slot states
+            slotHover: LEVEL2_COLORS.persianIndigo,
+            slotOutline: LEVEL2_COLORS.oldGold,
+            
+            // Outline states
+            outlineNormal: LEVEL2_COLORS.majorelleBlue,
+            outlineHover: LEVEL2_COLORS.majorelleBlueLight, // Brighter blue for hover outline
+            outlineDragging: LEVEL2_COLORS.majorelleBlueLight, // Brighter blue for dragging outline
+            outlineSnapped: LEVEL2_COLORS.cornflowerBlue,
+            
+            // Game state colors
+            solved: LEVEL2_COLORS.marianBlue, // Use marianBlue for solved state
+            solvedGlow: LEVEL2_COLORS.cornflowerBlue
         },
         effects: {
             glowIntensity: 0.8,
