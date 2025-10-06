@@ -194,13 +194,13 @@ class ResponsiveCanvas {
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: rgba(0, 221, 255, 0.9);
-                color: #000;
+                background: var(--primary-color);
+                color: var(--text-color);
                 padding: 12px 20px;
                 border-radius: 8px;
                 font-size: 14px;
                 z-index: 1000;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                box-shadow: 0 4px 12px var(--background-color);
                 cursor: pointer;
                 transition: opacity 0.3s ease;
             ">

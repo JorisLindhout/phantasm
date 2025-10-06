@@ -184,7 +184,7 @@ class WebGLVoronoiRenderer {
             throw new Error('WebGL not supported or context creation failed: ' + error.message);
         }
         this.renderer.setSize(width, height, false); // false = don't update CSS size
-        this.renderer.setClearColor(0x111111, 1.0); // Dark background matching 2D version
+        this.renderer.setClearColor(0x111111, 1.0); // Consistent background across all themes
         
         // Enable depth testing for proper z-layering
         this.renderer.sortObjects = true;
@@ -1086,7 +1086,7 @@ class WebGLVoronoiRenderer {
                 // Green tint for snapped pieces
                 material.color.setHex(this.getThemeColor('pieceSnapped'));
                 material.opacity = 1.0;
-                console.log(`✅ Applied snapped tint: #44FF88`);
+                console.log(`✅ Applied snapped tint: ${this.getThemeColor('pieceSnapped')}`);
                 break;
             case 'normal':
             default:
@@ -1326,7 +1326,7 @@ class WebGLVoronoiRenderer {
     updateOutlineState(material, state) {
         switch (state) {
             case 'hover':
-                // FluidLock hover color: rgba(0, 221, 255, 0.6)
+                // Theme hover color
                 material.color.setHex(this.getThemeColor('outlineHover'));
                 material.opacity = 0.6;
                 material.linewidth = 2;
@@ -1591,7 +1591,7 @@ class WebGLVoronoiRenderer {
         const showBackground = this.pieces[index].state === 'unsolved';
         const material = new THREE.MeshBasicMaterial({
             map: showBackground ? this.backgroundTexture : null,
-            color: 0xffffff, // Always start with white for proper color tinting
+            color: 0xffffff, // Consistent white for proper color tinting
             transparent: true,
             opacity: showBackground ? 1.0 : 0.3, // Make pieces without texture semi-transparent
             side: THREE.DoubleSide
@@ -1722,20 +1722,20 @@ class WebGLVoronoiRenderer {
     updateOutlineState(material, state) {
         switch (state) {
             case 'hover':
-                material.color.setHex(0x00ddff); // Blue for hover
+                material.color.setHex(this.getThemeColor('outlineHover')); // Theme hover color
                 material.opacity = 1.0;
                 break;
             case 'dragging':
-                material.color.setHex(0xff4444); // Red for dragging
+                material.color.setHex(this.getThemeColor('outlineDragging')); // Theme dragging color
                 material.opacity = 1.0;
                 break;
             case 'snapped':
-                material.color.setHex(0x44ff44); // Green for snapped
+                material.color.setHex(this.getThemeColor('outlineSnapped')); // Theme snapped color
                 material.opacity = 1.0;
                 break;
             case 'normal':
             default:
-                material.color.setHex(0x00ddff); // Default blue
+                material.color.setHex(this.getThemeColor('outlineNormal')); // Theme normal color
                 material.opacity = 0.8;
                 break;
         }
@@ -2084,7 +2084,7 @@ class WebGLVoronoiRenderer {
      */
     updateBackgroundColors() {
         // Update WebGL clear color to match theme
-        const bgColor = this.getThemeColor('background', 0x111111);
+        const bgColor = 0x111111; // Consistent background color
         this.renderer.setClearColor(bgColor, 1.0);
     }
     
@@ -2738,10 +2738,10 @@ class WebGLVoronoiRenderer {
     // Update canvas outline based on solved state
     updateCanvasOutline(isSolved) {
         if (isSolved) {
-            this.canvas.style.border = '1px solid #00ff00'; // Green outline - same width as default
-            this.canvas.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.5)'; // Green glow
+            //this.canvas.style.border = '1px solid var(--solved-color, #00ff00)'; // Theme solved color
+            this.canvas.style.boxShadow = '0 20 40px var(--solved-glow)'; // Theme solved glow
         } else {
-            this.canvas.style.border = 'none';
+            //this.canvas.style.border = 'none';
             this.canvas.style.boxShadow = 'none';
         }
     }

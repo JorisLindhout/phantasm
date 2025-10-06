@@ -12,74 +12,77 @@ const COLORS = {
     fluidOrange: { hex: 0xFF6600, css: '#FF6600', rgba: 'rgba(255, 102, 0, 1)' },
     fluidRed: { hex: 0xFF4444, css: '#FF4444', rgba: 'rgba(255, 68, 68, 1)' },
     
-    // Neutral colors
-    darkBg: { hex: 0x000000, css: '#000000', rgba: 'rgba(0, 0, 0, 1)' },
-    mediumBg: { hex: 0x1a1a1a, css: '#1a1a1a', rgba: 'rgba(26, 26, 26, 1)' },
-    lightBg: { hex: 0x2a2a2a, css: '#2a2a2a', rgba: 'rgba(42, 42, 42, 1)' },
-    white: { hex: 0xffffff, css: '#ffffff', rgba: 'rgba(255, 255, 255, 1)' },
-    gray: { hex: 0x888888, css: '#888888', rgba: 'rgba(136, 136, 136, 1)' },
     
     // Tinted variations for effects
     fluidBlueLight: { hex: 0x88DDFF, css: '#88DDFF', rgba: 'rgba(136, 221, 255, 1)' },
     fluidBlueLightTransparent: { hex: 0x2A7A9F, css: '#2A7A9F', rgba: 'rgb(42, 122, 159)' },
-    fluidBlueDark: { hex: 0x0099BB, css: '#0099BB', rgba: 'rgba(0, 153, 187, 1)' },
     fluidGreenLight: { hex: 0x44FF88, css: '#44FF88', rgba: 'rgba(68, 255, 136, 1)' },
     fluidOrangeLight: { hex: 0xFFCC80, css: '#FFCC80', rgba: 'rgba(255, 204, 128, 1)' },
+    
+    // Game state colors
+    solvedGreen: { hex: 0x00FF00, css: '#00FF00', rgba: 'rgba(0, 255, 0, 1)' },
+    solvedGlow: { hex: 0x00FF00, css: '#00FF00', rgba: 'rgba(0, 255, 0, 0.6)' },
 };
 
-// Debug settings
-export const DEBUG_SETTINGS = {
-    showHitDetection: false, // Show hit detection debug logs (reduced noise)
-    showPieceStates: false,  // Show piece state debug logs (reduced noise)
-    showGlowEffects: false, // Show glow effect creation/updates
-    showAnimation: false,   // Show animation updates
-    showVisualStates: false, // Show visual state changes
-    showCreation: false,    // Show piece creation/removal logs
-    quietMode: true,        // Reduce general logging noise
-    showInteractionDebug: true,  // Show interaction system debugging
-    showMaterialUpdates: false,  // Show material color/opacity updates
-    showHoverEffects: false,     // Show hover effect logs
-    showNeonGlow: false,         // Show neon glow visibility logs
-    showStyling: false,          // Show all styling-related logs
-    showInitialization: false,   // Show WebGL initialization logs
-    showCoordinates: false,      // Show coordinate transformation logs
-    showRendererSwitching: false, // Show renderer switching logs
-    showCanvasSetup: false       // Show canvas setup logs
+// Level 1 color palette
+const LEVEL1_COLORS = {
+    pennBlue: { hex: 0x081546, css: '#081546', rgba: 'rgba(8, 21, 70, 1)' },
+    forestGreen: { hex: 0x4d983c, css: '#4d983c', rgba: 'rgba(77, 152, 60, 1)' },
+    midnightGreen: { hex: 0x1e546a, css: '#1e546a', rgba: 'rgba(30, 84, 106, 1)' },
+    neonBlue: { hex: 0x3768fe, css: '#3768fe', rgba: 'rgba(55, 104, 254, 1)' },
+    keppel: { hex: 0x0dad9e, css: '#0dad9e', rgba: 'rgba(13, 173, 158, 1)' },
+    oldGold: { hex: 0xcfb73e, css: '#cfb73e', rgba: 'rgba(207, 183, 62, 1)' },
+    
+    // Light variations for effects
+    pennBlueLight: { hex: 0x2a3a6b, css: '#2a3a6b', rgba: 'rgba(42, 58, 107, 1)' },
+    forestGreenLight: { hex: 0x6bb85a, css: '#6bb85a', rgba: 'rgba(107, 184, 90, 1)' },
+    neonBlueLight: { hex: 0x5a7cfe, css: '#5a7cfe', rgba: 'rgba(90, 124, 254, 1)' },
+    keppelLight: { hex: 0x2dd1c1, css: '#2dd1c1', rgba: 'rgba(45, 209, 193, 1)' },
+    oldGoldLight: { hex: 0xe6d166, css: '#e6d166', rgba: 'rgba(230, 209, 102, 1)' },
 };
+
+/*
+Level 2 colors:
+--old-gold: #c2b34fff;
+--persian-indigo: #431b75ff;
+--cornflower-blue: #659be9ff;
+--majorelle-blue: #7a4edfff;
+--marian-blue: #334395ff;
+--dark-purple: #180a29ff;
+*/
 
 // Theme definitions
 export const THEMES = {
-    // Default FluidLock theme
-    fluidlock: {
-        name: 'FluidLock',
+    // Default Level One theme
+    levelOne: {
+        name: 'Level 1',
+        baseImage: './assets/Level-1.svg',
         colors: {
             // Functional colors
-            primary: COLORS.fluidBlue,
-            secondary: COLORS.fluidGreen,
-            accent: COLORS.fluidOrange,
-            danger: COLORS.fluidRed,
-            
-            // UI colors
-            background: COLORS.darkBg,
-            surface: COLORS.mediumBg,
-            text: COLORS.white,
-            textMuted: COLORS.gray,
+            primary: LEVEL1_COLORS.pennBlue,
+            //secondary: COLORS.fluidGreen,
+            //accent: COLORS.fluidOrange,
+            //danger: COLORS.fluidRed,
             
             // Piece states
-            pieceNormal: COLORS.fluidBlue,
-            pieceHover: COLORS.fluidBlueLight,
-            pieceDragging: COLORS.fluidBlueLight, // Brighter blue for better glow visibility
-            pieceSnapped: COLORS.fluidGreen,
+            pieceNormal: LEVEL1_COLORS.neonBlue,
+            pieceHover: LEVEL1_COLORS.neonBlueLight,
+            pieceDragging: LEVEL1_COLORS.neonBlueLight, // Brighter blue for better glow visibility
+            pieceSnapped: LEVEL1_COLORS.forestGreen,
             
             // Slot states
-            slotHover: COLORS.fluidBlueLightTransparent,
-            slotOutline: COLORS.fluidOrangeLight,
+            slotHover: LEVEL1_COLORS.keppel,
+            slotOutline: LEVEL1_COLORS.oldGold,
             
             // Outline states
-            outlineNormal: COLORS.fluidBlue,
-            outlineHover: COLORS.fluidBlueLight, // Brighter blue for hover outline
-            outlineDragging: COLORS.fluidBlueLight, // Brighter blue for dragging outline
-            outlineSnapped: COLORS.fluidGreen
+            outlineNormal: LEVEL1_COLORS.neonBlue,
+            outlineHover: LEVEL1_COLORS.neonBlueLight, // Brighter blue for hover outline
+            outlineDragging: LEVEL1_COLORS.neonBlueLight, // Brighter blue for dragging outline
+            outlineSnapped: LEVEL1_COLORS.forestGreen,
+            
+            // Game state colors
+            solved: LEVEL1_COLORS.midnightGreen, // Use midnightGreen for solved state
+            solvedGlow: LEVEL1_COLORS.forestGreen
         },
         effects: {
             glowIntensity: 0.8,
@@ -96,7 +99,7 @@ export const THEMES = {
 };
 
 // Default theme
-export const DEFAULT_THEME = THEMES.fluidlock;
+export const DEFAULT_THEME = THEMES.levelOne;
 
 // Visual state definitions
 export const VISUAL_STATES = {
@@ -139,213 +142,5 @@ export const ThemeUtils = {
     getTheme(name) {
         return THEMES[name] || DEFAULT_THEME;
     },
-    
-    /**
-     * Debug settings management
-     */
-    debug: {
-        /**
-         * Get current debug settings
-         */
-        getSettings() {
-            return { ...DEBUG_SETTINGS };
-        },
-        
-        /**
-         * Update debug settings
-         */
-        updateSettings(newSettings) {
-            Object.assign(DEBUG_SETTINGS, newSettings);
-            SmartLogger.log('debug-tools', '🔧 Debug settings updated:', DEBUG_SETTINGS);
-        },
-        
-        
-        /**
-         * Toggle hit detection logs
-         */
-        toggleHitDetection() {
-            DEBUG_SETTINGS.showHitDetection = !DEBUG_SETTINGS.showHitDetection;
-            SmartLogger.log('debug-tools', `🎯 Hit detection logs ${DEBUG_SETTINGS.showHitDetection ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showHitDetection;
-        },
-        
-        /**
-         * Toggle piece state logs
-         */
-        togglePieceStates() {
-            DEBUG_SETTINGS.showPieceStates = !DEBUG_SETTINGS.showPieceStates;
-            SmartLogger.log('debug-tools', `📊 Piece state logs ${DEBUG_SETTINGS.showPieceStates ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showPieceStates;
-        },
-        
-        /**
-         * Toggle interaction debug logs
-         */
-        toggleInteractionDebug() {
-            DEBUG_SETTINGS.showInteractionDebug = !DEBUG_SETTINGS.showInteractionDebug;
-            SmartLogger.log('debug-tools', `🖱️ Interaction debug logs ${DEBUG_SETTINGS.showInteractionDebug ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showInteractionDebug;
-        },
-        
-        /**
-         * Toggle material update logs
-         */
-        toggleMaterialUpdates() {
-            DEBUG_SETTINGS.showMaterialUpdates = !DEBUG_SETTINGS.showMaterialUpdates;
-            SmartLogger.log('debug-tools', `🎨 Material update logs ${DEBUG_SETTINGS.showMaterialUpdates ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showMaterialUpdates;
-        },
-        
-        /**
-         * Toggle hover effect logs
-         */
-        toggleHoverEffects() {
-            DEBUG_SETTINGS.showHoverEffects = !DEBUG_SETTINGS.showHoverEffects;
-            SmartLogger.log('debug-tools', `✨ Hover effect logs ${DEBUG_SETTINGS.showHoverEffects ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showHoverEffects;
-        },
-        
-        /**
-         * Toggle neon glow logs
-         */
-        toggleNeonGlow() {
-            DEBUG_SETTINGS.showNeonGlow = !DEBUG_SETTINGS.showNeonGlow;
-            SmartLogger.log('debug-tools', `🌟 Neon glow logs ${DEBUG_SETTINGS.showNeonGlow ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showNeonGlow;
-        },
-        
-        /**
-         * Toggle all styling logs
-         */
-        toggleStyling() {
-            DEBUG_SETTINGS.showStyling = !DEBUG_SETTINGS.showStyling;
-            SmartLogger.log('debug-tools', `🎨 Styling logs ${DEBUG_SETTINGS.showStyling ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showStyling;
-        },
-        
-        /**
-         * Toggle initialization logs
-         */
-        toggleInitialization() {
-            DEBUG_SETTINGS.showInitialization = !DEBUG_SETTINGS.showInitialization;
-            SmartLogger.log('debug-tools', `🔍 Initialization logs ${DEBUG_SETTINGS.showInitialization ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showInitialization;
-        },
-        
-        /**
-         * Toggle coordinate transformation logs
-         */
-        toggleCoordinates() {
-            DEBUG_SETTINGS.showCoordinates = !DEBUG_SETTINGS.showCoordinates;
-            SmartLogger.log('debug-tools', `🎯 Coordinate logs ${DEBUG_SETTINGS.showCoordinates ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showCoordinates;
-        },
-        
-        /**
-         * Toggle renderer switching logs
-         */
-        toggleRendererSwitching() {
-            DEBUG_SETTINGS.showRendererSwitching = !DEBUG_SETTINGS.showRendererSwitching;
-            SmartLogger.log('debug-tools', `🔄 Renderer switching logs ${DEBUG_SETTINGS.showRendererSwitching ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showRendererSwitching;
-        },
-        
-        /**
-         * Toggle canvas setup logs
-         */
-        toggleCanvasSetup() {
-            DEBUG_SETTINGS.showCanvasSetup = !DEBUG_SETTINGS.showCanvasSetup;
-            SmartLogger.log('debug-tools', `🎨 Canvas setup logs ${DEBUG_SETTINGS.showCanvasSetup ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showCanvasSetup;
-        },
-        
-        /**
-         * Toggle glow effect logs
-         */
-        toggleGlowEffects() {
-            DEBUG_SETTINGS.showGlowEffects = !DEBUG_SETTINGS.showGlowEffects;
-            SmartLogger.log('debug-tools', `✨ Glow effect logs ${DEBUG_SETTINGS.showGlowEffects ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showGlowEffects;
-        },
-        
-        /**
-         * Toggle animation logs
-         */
-        toggleAnimation() {
-            DEBUG_SETTINGS.showAnimation = !DEBUG_SETTINGS.showAnimation;
-            SmartLogger.log('debug-tools', `🎬 Animation logs ${DEBUG_SETTINGS.showAnimation ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showAnimation;
-        },
-        
-        /**
-         * Toggle visual state logs
-         */
-        toggleVisualStates() {
-            DEBUG_SETTINGS.showVisualStates = !DEBUG_SETTINGS.showVisualStates;
-            SmartLogger.log('debug-tools', `🎨 Visual state logs ${DEBUG_SETTINGS.showVisualStates ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showVisualStates;
-        },
-        
-        /**
-         * Toggle creation logs
-         */
-        toggleCreation() {
-            DEBUG_SETTINGS.showCreation = !DEBUG_SETTINGS.showCreation;
-            SmartLogger.log('debug-tools', `🏗️ Creation logs ${DEBUG_SETTINGS.showCreation ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.showCreation;
-        },
-        
-        /**
-         * Enable all debug logs
-         */
-        enableAllDebug() {
-            DEBUG_SETTINGS.showPieceLabels = true;
-            DEBUG_SETTINGS.showHitDetection = true;
-            DEBUG_SETTINGS.showPieceStates = true;
-            DEBUG_SETTINGS.showGlowEffects = true;
-            DEBUG_SETTINGS.showAnimation = true;
-            DEBUG_SETTINGS.showVisualStates = true;
-            DEBUG_SETTINGS.showCreation = true;
-            SmartLogger.log('debug-tools', '🔧 All debug logs ENABLED');
-        },
-        
-        /**
-         * Disable all debug logs
-         */
-        disableAllDebug() {
-            DEBUG_SETTINGS.showPieceLabels = false;
-            DEBUG_SETTINGS.showHitDetection = false;
-            DEBUG_SETTINGS.showPieceStates = false;
-            DEBUG_SETTINGS.showGlowEffects = false;
-            DEBUG_SETTINGS.showAnimation = false;
-            DEBUG_SETTINGS.showVisualStates = false;
-            DEBUG_SETTINGS.showCreation = false;
-            SmartLogger.log('debug-tools', '🔧 All debug logs DISABLED');
-        },
-        
-        /**
-         * Toggle quiet mode
-         */
-        toggleQuietMode() {
-            DEBUG_SETTINGS.quietMode = !DEBUG_SETTINGS.quietMode;
-            SmartLogger.log('debug-tools', `🔇 Quiet mode ${DEBUG_SETTINGS.quietMode ? 'ENABLED' : 'DISABLED'}`);
-            return DEBUG_SETTINGS.quietMode;
-        },
-        
-        /**
-         * Enable quiet mode
-         */
-        enableQuietMode() {
-            DEBUG_SETTINGS.quietMode = true;
-            SmartLogger.log('debug-tools', '🔇 Quiet mode ENABLED - reduced logging');
-        },
-        
-        /**
-         * Disable quiet mode
-         */
-        disableQuietMode() {
-            DEBUG_SETTINGS.quietMode = false;
-            SmartLogger.log('debug-tools', '🔇 Quiet mode DISABLED - full logging');
-        }
-    }
+
 };

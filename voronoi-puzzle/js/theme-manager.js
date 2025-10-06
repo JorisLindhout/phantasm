@@ -73,28 +73,42 @@ class ThemeManager {
 
         // Core colors
         root.style.setProperty('--primary-color', colors.primary.css);
-        root.style.setProperty('--secondary-color', colors.secondary.css);
-        root.style.setProperty('--accent-color', colors.accent.css);
-        root.style.setProperty('--danger-color', colors.danger.css);
 
-        // UI colors
-        root.style.setProperty('--background-color', colors.background.css);
-        root.style.setProperty('--canvas-background', colors.surface.css);
-        root.style.setProperty('--text-color', colors.text.css);
-        root.style.setProperty('--text-muted', colors.textMuted.css);
+        // UI colors (consistent across all themes)
+        root.style.setProperty('--background-color', '#111111');
+        root.style.setProperty('--canvas-background', '#1a1a1a');
+        root.style.setProperty('--text-color', '#ffffff');
+        root.style.setProperty('--text-muted', '#888888');
+        
+        // Control colors (consistent across all themes)
+        root.style.setProperty('--control-hover', '#00B8E6');
+        root.style.setProperty('--control-bg', 'rgba(17, 17, 17, 0.95)');
 
         // Piece colors
         root.style.setProperty('--piece-border', ThemeUtils.getColorWithAlpha(colors.pieceNormal, 0.3));
         root.style.setProperty('--piece-border-hover', ThemeUtils.getColorWithAlpha(colors.pieceHover, 0.6));
         root.style.setProperty('--piece-shadow-hover', `0 0 10px ${ThemeUtils.getColorWithAlpha(colors.pieceHover, 0.3)}`);
         root.style.setProperty('--piece-shadow-drag', `0 10px 30px ${ThemeUtils.getColorWithAlpha(colors.pieceDragging, 0.5)}`);
+        
+        // Cell border colors
+        root.style.setProperty('--cell-border', ThemeUtils.getColorWithAlpha(colors.pieceNormal, 0.2));
+        root.style.setProperty('--cell-border-animated', ThemeUtils.getColorWithAlpha(colors.pieceHover, 0.4));
 
         // Snap colors
         root.style.setProperty('--snap-highlight-bg', ThemeUtils.getColorWithAlpha(colors.pieceSnapped, 0.3));
         root.style.setProperty('--snap-highlight-border', colors.pieceSnapped.css);
+        
+        // Solved state colors
+        root.style.setProperty('--solved-color', colors.solved.css);
+        root.style.setProperty('--solved-glow', colors.solvedGlow.rgba);
+        
 
         // Effects
         root.style.setProperty('--transition-speed', `${effects.animationSpeed}s`);
+        
+        // Border radius (consistent across all themes)
+        root.style.setProperty('--border-radius', '12px');
+        root.style.setProperty('--border-radius-small', '4px');
         root.style.setProperty('--pulse-duration', `${effects.pulseSpeed}s`);
 
         SmartLogger.log('theme-changes', `✅ Updated CSS variables for theme: ${theme.name}`);
@@ -123,6 +137,13 @@ class ThemeManager {
      */
     getCurrentTheme() {
         return this.currentTheme;
+    }
+
+    /**
+     * Get current theme's base image
+     */
+    getCurrentBaseImage() {
+        return this.currentTheme.baseImage || null;
     }
 
     /**

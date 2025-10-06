@@ -63,8 +63,8 @@ class VoronoiPuzzleBase {
                 resolve();
             };
             img.onerror = reject;
-            // Use the same SVG from the main project
-            img.src = './assets/base-image-cube.svg';
+            // Use the base image from the current theme
+            img.src = window.themeManager ? window.themeManager.getCurrentBaseImage() : './assets/base-image-cube.svg';
         });
     }
 
@@ -402,8 +402,8 @@ class VoronoiPuzzleBase {
     // Update canvas outline based on solved state
     updateCanvasOutline(isSolved) {
         if (isSolved) {
-            this.canvas.style.border = '1px solid #00ff00'; // Green outline - same width as default
-            this.canvas.style.boxShadow = '0 0 20px rgba(0, 255, 0, 0.5)'; // Green glow
+            this.canvas.style.border = '1px solid var(--solved-color, #00ff00)'; // Theme solved color
+            this.canvas.style.boxShadow = '0 0 20px var(--solved-glow, rgba(0, 255, 0, 0.5))'; // Theme solved glow
         } else {
             this.canvas.style.border = 'none';
             this.canvas.style.boxShadow = 'none';

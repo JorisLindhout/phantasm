@@ -1,33 +1,33 @@
 /* Shared Base Styles for Phantasm */
-/* Contains styles used by both 2D and 3D renderers */
 
 /* Configuration Variables - Managed by Theme System */
 :root {
     /* Core Colors - Updated by ThemeManager */
-    --primary-color: #00DDFF;
-    --secondary-color: #00FF64;
-    --accent-color: #FF6600;
-    --danger-color: #FF4444;
+    /* --primary-color: #00DDFF; */
     
     /* UI Colors */
-    --background-color: #111111;
-    --canvas-background: #1a1a1a;
-    --text-color: #ffffff;
-    --text-muted: #888888;
+    /* --background-color: #111111; */
+    /* --canvas-background: #1a1a1a; */
+    /* --text-color: #ffffff; */
+    /* --text-muted: #888888; */
+    
+    /* Control colors (consistent across all themes) */
+    /* --control-hover: #00B8E6; */
+    /* --control-bg: rgba(17, 17, 17, 0.95); */
     
     /* Piece Colors - Dynamic */
-    --piece-border: rgba(0, 221, 255, 0.3);
-    --piece-border-hover: rgba(0, 221, 255, 0.6);
-    --piece-shadow-hover: 0 0 10px rgba(0, 221, 255, 0.3);
-    --piece-shadow-drag: 0 10px 30px rgba(0, 221, 255, 0.5);
+    /* --piece-border: rgba(0, 221, 255, 0.3); */
+    /* --piece-border-hover: rgba(0, 221, 255, 0.6); */
+    /* --piece-shadow-hover: 0 0 10px rgba(0, 221, 255, 0.3); */
+    /* --piece-shadow-drag: 0 10px 30px rgba(0, 221, 255, 0.5); */
     
     /* Snap Colors */
-    --snap-highlight-bg: rgba(0, 255, 100, 0.3);
-    --snap-highlight-border: #00FF64;
+    /* --snap-highlight-bg: rgba(0, 255, 100, 0.3); */
+    /* --snap-highlight-border: #00FF64; */
     
     /* Cell Colors (Legacy - kept for compatibility) */
-    --cell-border: var(--piece-border);
-    --cell-border-animated: var(--piece-border-hover);
+    /*--cell-border: var(--piece-border);
+    --cell-border-animated: var(--piece-border-hover);*/
     
     /* Sizing */
     --border-radius: 12px;
@@ -88,25 +88,25 @@ h1 {
     background: var(--canvas-background);
     overflow: auto; /* Allow scrollbars when canvas is larger than container */
     min-height: 400px; /* Ensure minimum height */
-    box-shadow: 0 20px 40px rgba(0, 221, 255, 0.1);
-    border: 1px solid var(--cell-border);
+    box-shadow: 0 20px 40px var(--piece-border);
+    /*border: 1px solid var(--cell-border);*/
     transition: border-color var(--transition-speed) ease;
     margin-bottom: 10px;
 }
 
 /* Solved State Styles */
 .puzzle-solved {
-    border: 0px solid #00ff00 !important;
-    box-shadow: 0 0 30px rgba(0, 255, 0, 0.6), 0 20px 40px rgba(0, 221, 255, 0.1) !important;
+    border: 0px solid var(--solved-color) !important;
+    box-shadow: 0 0 30px var(--solved-glow), 0 20px 40px var(--piece-border) !important;
     animation: solvedGlow 2s ease-in-out infinite alternate;
 }
 
 @keyframes solvedGlow {
     0% {
-        box-shadow: 0 0 20px rgba(0, 255, 0, 0.4), 0 20px 40px rgba(0, 221, 255, 0.1);
+        box-shadow: 0 0 20px var(--solved-glow), 0 20px 40px var(--piece-border);
     }
     100% {
-        box-shadow: 0 0 40px rgba(0, 255, 0, 0.8), 0 20px 40px rgba(0, 221, 255, 0.1);
+        box-shadow: 0 0 40px var(--solved-glow), 0 20px 40px var(--piece-border);
     }
 }
 
