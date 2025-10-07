@@ -2036,6 +2036,10 @@ class WebGLVoronoiRenderer {
         }
         
         // Update separate piece materials using object system
+        if (!this.pieces || !Array.isArray(this.pieces)) {
+            // This is expected during disposal/reinitialization, no need to warn
+            return;
+        }
         this.pieces.forEach((piece, index) => {
             if (piece.mesh && piece.mesh.material) {
                 // Reset to normal state color
@@ -2071,6 +2075,10 @@ class WebGLVoronoiRenderer {
         }
         
         // Update separate outlines using object system
+        if (!this.pieces || !Array.isArray(this.pieces)) {
+            // This is expected during disposal/reinitialization, no need to warn
+            return;
+        }
         this.pieces.forEach(piece => {
             if (piece.outline && piece.outline.material) {
                 const outlineColor = this.getThemeColor('outlineNormal');
@@ -2084,6 +2092,10 @@ class WebGLVoronoiRenderer {
      */
     updateBackgroundColors() {
         // Update WebGL clear color to match theme
+        if (!this.renderer) {
+            // This is expected during disposal/reinitialization, no need to warn
+            return;
+        }
         const bgColor = 0x111111; // Consistent background color
         this.renderer.setClearColor(bgColor, 1.0);
     }
@@ -3067,12 +3079,12 @@ WebGLVoronoiRenderer.prototype.dispose = function() {
     }
     
     // Clean up glow outlines
-    if (this.separateGlowOutlines) {
+    if (this.separateGlowOutlines && Array.isArray(this.separateGlowOutlines)) {
         this.separateGlowOutlines.forEach(glow => {
             if (glow) {
                 this.scene.remove(glow);
-                glow.geometry.dispose();
-                glow.material.dispose();
+                if (glow.geometry) glow.geometry.dispose();
+                if (glow.material) glow.material.dispose();
             }
         });
         this.separateGlowOutlines = null;
@@ -3111,3 +3123,5 @@ WebGLVoronoiRenderer.prototype.dispose = function() {
     
     console.log('✅ WebGL renderer disposed and cleaned up');
 };
+
+// Note: stopAnimation not needed - complete disposal handles animation cleanup

@@ -131,8 +131,10 @@ class ThemeManager {
         }
 
         try {
-            this.webglRenderer.updateTheme(theme);
-            SmartLogger.log('theme-changes', `✅ Updated WebGL colors for theme: ${theme.name}`);
+            if (this.webglRenderer && typeof this.webglRenderer.updateTheme === 'function') {
+                this.webglRenderer.updateTheme(theme);
+                SmartLogger.log('theme-changes', `✅ Updated WebGL colors for theme: ${theme.name}`);
+            }
         } catch (error) {
             console.error('Error updating WebGL theme:', error);
         }

@@ -116,6 +116,27 @@
     border: 2px solid var(--background-color);
 }
 
+.control-group select {
+    width: 120px;
+    background: var(--canvas-background);
+    border: 1px solid var(--cell-border);
+    border-radius: var(--border-radius-small);
+    outline: none;
+    color: var(--text-color);
+    padding: 4px 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.control-group select:hover {
+    border-color: var(--controls-primary-color);
+}
+
+.control-group select:focus {
+    border-color: var(--controls-primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 221, 255, 0.2);
+}
+
 .control-group span {
     color: var(--controls-primary-color);
     font-size: 0.9rem;

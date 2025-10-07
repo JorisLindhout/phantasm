@@ -247,6 +247,13 @@ class VoronoiPuzzleBase {
         animate();
     }
 
+    stopAnimation() {
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+    }
+
     createAnimatedPath(originalPolygon, offset = { x: 0, y: 0 }) {
         const animatedPath = [];
         const time = this.config.time;

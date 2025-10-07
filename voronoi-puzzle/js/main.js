@@ -25,6 +25,7 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
             await this.initializeRenderer();
         } catch (error) {
             console.error('Error initializing Phantasm:', error);
+            throw error; // Re-throw to be handled by the HTML initialization script
         }
     }
 
@@ -71,6 +72,25 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
 
     // Control functions
 
+    /**
+     * Show loading screen
+     */
+    showLoadingScreen(message = 'Loading...') {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) {
+            overlay.classList.add('visible');
+        }
+    }
+
+    /**
+     * Hide loading screen
+     */
+    hideLoadingScreen() {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) {
+            overlay.classList.remove('visible');
+        }
+    }
 
     // Getter for WebGL renderer access
     get webglRenderer() {
@@ -121,13 +141,7 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
     }
     
     dispose() {
-        // Clean up WebGL renderer
-        if (this.webglRenderer) {
-            this.webglRenderer.dispose();
-            this.webglRenderer = null;
-        }
-        
-        // Clean up current renderer
+        // Clean up WebGL renderer (via currentRenderer)
         if (this.currentRenderer) {
             if (this.currentRenderer.dispose) {
                 this.currentRenderer.dispose();

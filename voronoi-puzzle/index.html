@@ -30,6 +30,21 @@
     </script>
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <svg class="heartbeat-gradient" width="238" height="232" viewBox="0 0 238 232" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="119" cy="116" rx="119" ry="116" fill="url(#paint0_radial_1354_28)" fill-opacity="0.8"/>
+                <defs>
+                    <radialGradient id="paint0_radial_1354_28" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(119 116) rotate(90) scale(116 119)">
+                        <stop stop-color="#00CCFF"/>
+                        <stop offset="1" stop-opacity="0"/>
+                    </radialGradient>
+                </defs>
+            </svg>
+        </div>
+    </div>
+
     <div class="container">
         <div class="puzzle-container">
             <canvas id="voronoiCanvas"></canvas>
@@ -45,6 +60,13 @@
         </button>
         
         <div class="controls-content" id="controlsContent">
+            <div class="control-group">
+                <label for="levelSelector">Level:</label>
+                <select id="levelSelector">
+                    <option value="level-1">Level 1</option>
+                    <option value="level-2">Level 2</option>
+                </select>
+            </div>
             <div class="control-group">
                 <label for="cellCount">Cell Count:</label>
                 <input type="range" id="cellCount" min="5" max="50" value="40">
@@ -91,6 +113,7 @@
     <!-- Theme System (ES Modules) -->
     <script type="module" src="js/theme.js"></script>
     <script type="module" src="js/theme-manager.js"></script>
+    <script type="module" src="js/level-manager.js"></script>
     
     <!-- WebGL 3D renderer -->
     <script src="js/webgl-renderer.js?v=25"></script>
@@ -101,6 +124,14 @@
     <!-- Debug system disabled - using console.log for debugging -->
     
     <script>
+        // Show loading screen immediately when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.add('visible');
+            }
+        });
+        
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', async () => {
             SmartLogger.log('initialization', 'Initializing Phantasm...');
@@ -114,9 +145,25 @@
             setTimeout(async () => {
                 if (typeof VoronoiPuzzle === 'undefined') {
                     console.error('VoronoiPuzzle class not found. Check script loading order.');
+                    // Hide loading screen on error
+                    const overlay = document.getElementById('loadingOverlay');
+                    if (overlay) {
+                        overlay.classList.remove('visible');
+                    }
                     return;
                 }
-                window.voronoiPuzzle = new VoronoiPuzzle();
+                
+                try {
+                    window.voronoiPuzzle = new VoronoiPuzzle();
+                } catch (error) {
+                    console.error('Failed to create VoronoiPuzzle:', error);
+                    // Hide loading screen on error
+                    const overlay = document.getElementById('loadingOverlay');
+                    if (overlay) {
+                        overlay.classList.remove('visible');
+                    }
+                    return;
+                }
                 
                 // Initialize theme system
                 setTimeout(async () => {
@@ -133,13 +180,61 @@
                         // Make theme manager globally available for dev tools
                         window.themeManager = themeManager;
                         
+                        // Initialize level system after puzzle is fully ready
+                        const initLevelSystem = async () => {
+                            try {
+                                // Wait for puzzle to be fully initialized
+                                if (!window.voronoiPuzzle) {
+                                    console.warn('Puzzle not ready yet, retrying in 200ms...');
+                                    setTimeout(initLevelSystem, 200);
+                                    return;
+                                }
+                                
+                                // Import level manager
+                                const { levelManager } = await import('./js/level-manager.js');
+                                
+                                // Initialize level manager
+                                levelManager.init(window.voronoiPuzzle);
+                                window.levelManager = levelManager;
+                                
+                                // Set up level selector event listener
+                                const levelSelector = document.getElementById('levelSelector');
+                                if (levelSelector) {
+                                    levelSelector.addEventListener('change', handleLevelChange);
+                                }
+                                
+                                // Initial level is now applied automatically in levelManager.init()
+                                
+                                SmartLogger.log('level-system', '🎮 Level system initialized');
+                                
+                                // Hide loading screen after everything is fully initialized
+                                if (window.voronoiPuzzle && window.voronoiPuzzle.hideLoadingScreen) {
+                                    window.voronoiPuzzle.hideLoadingScreen();
+                                }
+                            } catch (error) {
+                                console.error('Level system initialization failed:', error);
+                                // Hide loading screen even on error
+                                if (window.voronoiPuzzle && window.voronoiPuzzle.hideLoadingScreen) {
+                                    window.voronoiPuzzle.hideLoadingScreen();
+                                }
+                            }
+                        };
+                        
+                        setTimeout(initLevelSystem, 500);
+                        
                         SmartLogger.log('theme-changes', '🎨 Theme system initialized (dev mode)');
                         SmartLogger.log('debug-tools', '💡 Dev tools available:');
                         SmartLogger.log('debug-tools', '   themeManager.setTheme("fluidlock")');
                         SmartLogger.log('debug-tools', '   themeManager.getAvailableThemes()');
                         SmartLogger.log('debug-tools', '   themeManager.getCurrentTheme()');
+                        SmartLogger.log('debug-tools', '   levelManager.setLevel("level-1")');
+                        SmartLogger.log('debug-tools', '   levelManager.getAvailableLevels()');
                     } catch (error) {
                         console.warn('Theme system initialization failed:', error);
+                        // Hide loading screen even if theme system fails
+                        if (window.voronoiPuzzle && window.voronoiPuzzle.hideLoadingScreen) {
+                            window.voronoiPuzzle.hideLoadingScreen();
+                        }
                     }
                 }, 200);
             }, 100);
@@ -148,6 +243,21 @@
         // Global functions for controls
         function regeneratePuzzle() {
             window.voronoiPuzzle?.regeneratePuzzle();
+        }
+        
+        // Level change handler
+        async function handleLevelChange() {
+            const levelSelector = document.getElementById('levelSelector');
+            const selectedLevel = levelSelector.value;
+            
+            console.log(`🎮 UI: Level selector changed to: ${selectedLevel}`);
+            
+            if (window.levelManager) {
+                console.log(`🎮 UI: Calling levelManager.setLevel("${selectedLevel}")`);
+                await window.levelManager.setLevel(selectedLevel);
+            } else {
+                console.warn('Level manager not available');
+            }
         }
         
         function toggleAnimation() {
