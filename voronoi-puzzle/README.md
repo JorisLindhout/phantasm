@@ -68,6 +68,19 @@ The project uses a simple, reliable debugging approach based on standard JavaScr
 - **Dynamic Color Updates**: Real-time theme changes across both renderers
 - **Persistent Preferences**: Theme choices saved between sessions
 
+### 🎮 Level System
+- **Multiple Levels**: Three distinct levels with increasing difficulty
+- **Dynamic Difficulty**: Different cell counts, animation speeds, and noise amplitudes per level
+- **Theme Integration**: Each level has its own visual theme and background image
+- **Complete Reinitialization**: Clean state management with loading screen during transitions
+- **Persistent Progress**: Level preferences saved in localStorage (`phantasm-level`)
+- **Loading Screen**: Visual feedback during level transitions
+
+#### Level Configurations
+- **Level 1**: 40 pieces, normal speed (1.0x), moderate noise (10px) - "Begin your journey"
+- **Level 2**: 60 pieces, faster speed (0.8x), higher noise (15px) - "Master the challenge"  
+- **Level 3**: 80 pieces, fastest speed (0.6x), maximum noise (20px) - "Expert challenge"
+
 ## Quick Start
 
 1. **Clone/Download** the project
@@ -85,6 +98,7 @@ The project uses a simple, reliable debugging approach based on standard JavaScr
 3. **Open browser** to `http://localhost:8080`
 4. **Interact** with puzzle pieces by clicking and dragging
 5. **Adjust settings** using the control panel (click the caret icon)
+6. **Switch levels** using the level selector in the controls panel
 
 ## Architecture
 
@@ -95,6 +109,7 @@ js/
 ├── base.js           # Base puzzle logic
 ├── theme.js          # Theme definitions and utilities
 ├── theme-manager.js  # Dynamic theme management
+├── level-manager.js  # Level switching and configuration
 ├── webgl-renderer.js # WebGL 3D renderer (Three.js)
 └── main.js           # Main application controller
 ```
@@ -170,9 +185,10 @@ voronoi-puzzle/
 ### 🎛️ Control Panel
 Access the control panel by clicking the caret icon (^) in the top-right corner:
 
-- **Cell Count**: Number of Voronoi pieces (5-50)
-- **Animation Speed**: Speed of boundary animation (0.1-2.0x)
-- **Noise Amplitude**: Intensity of boundary deformation (0-50)
+- **Level**: Select between Level 1, Level 2, and Level 3 (auto-adjusts cell count, animation speed, and noise amplitude)
+- **Cell Count**: Number of Voronoi pieces (5-50) - overridden by level selection
+- **Animation Speed**: Speed of boundary animation (0.1-2.0x) - overridden by level selection
+- **Noise Amplitude**: Intensity of boundary deformation (0-50) - overridden by level selection
 - **Regenerate Puzzle**: Create a new puzzle layout
 - **Toggle Animation**: Enable/disable boundary animation
 - **Toggle Grid Outlines**: Show/hide piece outlines
