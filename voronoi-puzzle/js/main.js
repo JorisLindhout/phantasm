@@ -9,7 +9,54 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
         this.useWebGL = true; // WebGL rendering enabled
         this.noise = new Noise(); // Shared noise instance
         
+        // Audio setup
+        this.snapSound = null;
+        this.initAudio();
+        
         this.init();
+    }
+
+    initAudio() {
+        // Get audio element reference (might be null if called before DOM ready)
+        this.snapSound = document.getElementById('snapSound');
+        
+        if (this.snapSound) {
+            SmartLogger.log('initialization', '🔊 Audio element found and initialized');
+        } else {
+            console.warn('⚠️ Audio element not found - will retry on first play');
+        }
+        
+        // Unlock audio on first user interaction (for mobile browsers)
+        document.addEventListener('click', () => {
+            if (!this.snapSound) {
+                this.snapSound = document.getElementById('snapSound');
+            }
+            if (this.snapSound) {
+                this.snapSound.load();
+                SmartLogger.log('audio', '🔊 Audio unlocked on user interaction');
+            }
+        }, { once: true });
+    }
+
+    playSnapSound() {
+        SmartLogger.log('audio', '🔊 playSnapSound() called');
+        
+        // Lazy load audio element if not found yet
+        if (!this.snapSound) {
+            this.snapSound = document.getElementById('snapSound');
+        }
+        
+        if (this.snapSound) {
+            SmartLogger.log('audio', '🔊 Playing snap sound...');
+            // Reset and play to allow overlapping sounds
+            this.snapSound.currentTime = 0;
+            this.snapSound.play().catch(e => {
+                // Silent fail - audio might be blocked by browser
+                console.warn('⚠️ Audio play blocked:', e.message);
+            });
+        } else {
+            console.warn('⚠️ snapSound element not found - check if audio element exists in HTML');
+        }
     }
 
     updateRendererStatus(status) {
@@ -165,6 +212,11 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         super();
         this.webglRenderer = null;
         this.noise = new Noise();
+    }
+    
+    // Helper to get main puzzle instance for audio
+    getMainPuzzle() {
+        return window.voronoiPuzzle || null;
     }
 
     async init() {
@@ -571,6 +623,8 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         
         if (distance < this.snapThreshold) {
             SmartLogger.log('drag-events', `📌 Piece ${draggedIndex} snapping back to original position`);
+            
+            // Note: Snap sound is played in webgl-renderer.js autoSnapPieceToSlot()
             
             // Snap back to original position
             this.webglRenderer.pieces[draggedIndex].offset = { x: 0, y: 0 };
@@ -1115,6 +1169,8 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         
         if (distance < this.snapThreshold) {
             SmartLogger.log('drag-events', `📌 Piece ${draggedIndex} snapping back to original position`);
+            
+            // Note: Snap sound is played in webgl-renderer.js autoSnapPieceToSlot()
             
             // Snap back to original position
             this.webglRenderer.pieces[draggedIndex].offset = { x: 0, y: 0 };

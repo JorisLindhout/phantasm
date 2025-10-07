@@ -43,6 +43,7 @@ The project uses a simple, reliable debugging approach based on standard JavaScr
 ### 🧩 Interactive Puzzle Gameplay
 - **Drag & Drop**: Move individual puzzle pieces around the canvas
 - **Smart Snapping**: Pieces automatically snap to their correct positions when within 25px threshold
+- **Audio Feedback**: Satisfying snap sound plays instantly when pieces lock into place (WebM Opus with MP3 fallback)
 - **Visual Feedback**: Hover effects, drag glows, and snap confirmations
 - **Z-Index Management**: Clicked pieces always appear on top
 - **Hit Detection**: Accurate piece selection with expanded interaction areas
@@ -147,7 +148,10 @@ voronoi-puzzle/
 │   ├── noise.js                 # Perlin noise implementation
 ├── package.json                  # Project dependencies
 ├── assets/                       # Game assets and images
-│   └── base-image-cube.svg       # Default puzzle background image (16:9 aspect ratio)
+│   ├── base-image-cube.svg       # Default puzzle background image (16:9 aspect ratio)
+│   └── sounds/                   # Audio assets
+│       ├── snap.webm             # Snap sound (WebM Opus format, ~10KB)
+│       └── snap.mp3              # Snap sound fallback (MP3 format, ~15KB)
 ├── css/                          # Modular CSS architecture
 │   ├── base.css                  # Base colors and layout
 │   ├── controls.css              # UI controls styling
@@ -355,8 +359,17 @@ The puzzle can experience pieces that become **visually present and animating** 
 
 ### 🌐 Browser APIs
 - **WebGL**: Hardware-accelerated 3D graphics
+- **Web Audio API**: Low-latency audio playback for snap sounds
+- **HTML5 Audio**: Audio element with preloading for instant playback
 - **Local Storage**: Theme preference persistence
 - **Modern JavaScript**: ES6+ features for optimal performance
+
+### 🔊 Audio System
+- **Format**: WebM (Opus codec) primary, MP3 fallback
+- **Trigger**: Plays instantly when piece snaps into place (magnetic snap)
+- **Performance**: Preloaded on page load, zero-latency playback
+- **Mobile Support**: Audio unlocked on first user interaction
+- **File Size**: ~10KB (WebM) / ~15KB (MP3)
 
 ## 🔍 Diagnostic Tools
 
@@ -394,9 +407,8 @@ console.error('Error message here');
 - **Memory Pressure Detection**: Automatic quality reduction when system is under stress
 - **Risk Level**: High - Could cause visual degradation or unexpected behavior
 
-### **Start puzle from unsolved state** - Start the puzzle with it being completely apart. Find a way to give the user an 'inventory' and 'workspace', similar to how you would solve an analogue jigsaw. Perhaps pieces in the inventory are smaller?
+### **Start puzle from unsolved state** - Start the puzzle with it being completely apart. Find a way to give the user an 'inventory' and 'workspace', similar to how you would solve an analogue jigsaw. Perhaps pieces in the inventory are smaller? Progressive reveal: reveal a few images at the start (3) and once one of those is solved, show another. Newly shown pieces have a different outline that only disappears after they have been dragged (so the dark pieces are recognizible on dark bg). How many pieces are shown at once is a level feature: a higher number is making the puzzle more difficult.
 
-### **Add levels** - Each level has its own image, levels are increasingly diffifult
 
 ### **Current Resource Management Features**
 - **Event Listener Cleanup**: Proper cleanup of all event listeners
@@ -405,6 +417,14 @@ console.error('Error message here');
 - **WebGL Resource Disposal**: Complete cleanup of Three.js objects and textures
 - **Memory Leak Prevention**: Comprehensive disposal system prevents memory leaks
 
-### **Audio** - Investigate adding audio
+### **Audio System** ✅ **IMPLEMENTED**
+- **Snap Sound**: Satisfying audio feedback when pieces lock into place
+- **Format**: WebM (Opus) with MP3 fallback for universal browser support
+- **Performance**: Preloaded, zero-latency playback
+- **Mobile Compatible**: Automatic audio unlock on first user interaction
+- **Future Enhancements**: 
+  - Additional sounds (pickup, hover, puzzle complete)
+  - Volume controls
+  - Spatial audio based on piece position
 
 ### **Save option** - Save progress within a level. Use Random Seed value to be able to regenerate the exact same puzzle

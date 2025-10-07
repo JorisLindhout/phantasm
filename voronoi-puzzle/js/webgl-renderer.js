@@ -925,6 +925,11 @@ class WebGLVoronoiRenderer {
         
         SmartLogger.log('piece-states', `🎯 Auto-snapping piece ${pieceIndex} to slot...`);
         
+        // Play snap sound
+        if (window.voronoiPuzzle && window.voronoiPuzzle.playSnapSound) {
+            window.voronoiPuzzle.playSnapSound();
+        }
+        
         // Remove any separate mesh if it exists
         if (piece.mesh) {
             this.removeSeparatePiece(pieceIndex);
