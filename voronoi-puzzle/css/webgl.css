@@ -17,21 +17,6 @@ canvas.webgl-canvas:active {
     cursor: grabbing;
 }
 
-/* WebGL container specific styles */
-.puzzle-container.webgl-mode {
-    /* Any specific styling for WebGL mode */
-}
-
-/* Hide Canvas 2D when WebGL is active */
-.puzzle-container.webgl-mode canvas.canvas-2d {
-    display: none !important;
-}
-
-/* Ensure Canvas 2D is visible when in Canvas 2D mode */
-.puzzle-container.canvas-2d-mode canvas.canvas-2d {
-    display: block !important;
-}
-
 /* WebGL loading state */
 .puzzle-container.webgl-mode .loading {
     /* WebGL specific loading styles if needed */

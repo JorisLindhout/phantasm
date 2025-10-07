@@ -184,7 +184,7 @@ class WebGLVoronoiRenderer {
             throw new Error('WebGL not supported or context creation failed: ' + error.message);
         }
         this.renderer.setSize(width, height, false); // false = don't update CSS size
-        this.renderer.setClearColor(0x111111, 1.0); // Consistent background across all themes
+        this.renderer.setClearColor(0x000000, 1.0); // Pure black background
         
         // Enable depth testing for proper z-layering
         this.renderer.sortObjects = true;
@@ -2099,7 +2099,7 @@ class WebGLVoronoiRenderer {
             // This is expected during disposal/reinitialization, no need to warn
             return;
         }
-        const bgColor = 0x111111; // Consistent background color
+        const bgColor = 0x000000; // Pure black background
         this.renderer.setClearColor(bgColor, 1.0);
     }
     
