@@ -390,3 +390,5 @@ console.error('Error message here');
 - **Memory Leak Prevention**: Comprehensive disposal system prevents memory leaks
 
 ### **Audio** - Investigate adding audio
+
+### **Save option** - Save progress within a level. Use Random Seed value to be able to regenerate the exact same puzzle
