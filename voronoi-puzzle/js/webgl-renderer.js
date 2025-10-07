@@ -233,17 +233,20 @@ class WebGLVoronoiRenderer {
     
     /**
      * Calculate proper UV coordinates based on background image dimensions
-     * This ensures the background image maintains its aspect ratio regardless of canvas size
+     * This centers the background image within the canvas and maintains its aspect ratio
      * 
      * @param {number} x - X coordinate in canvas space
      * @param {number} y - Y coordinate in canvas space
      * @returns {Object} {u, v} UV coordinates (0-1 range)
      */
     calculateBackgroundUV(x, y) {
-        // Calculate UV coordinates based on original background image dimensions
-        // This preserves the aspect ratio of the background image
-        const u = x / this.backgroundImageWidth;
-        const v = 1.0 - (y / this.backgroundImageHeight); // Flip Y for WebGL coordinates
+        // Calculate offset to center the background image within the canvas
+        const offsetX = (this.canvas.width - this.backgroundImageWidth) / 2;
+        const offsetY = (this.canvas.height - this.backgroundImageHeight) / 2;
+        
+        // Apply offset to coordinates before calculating UV
+        const u = (x - offsetX) / this.backgroundImageWidth;
+        const v = 1.0 - ((y - offsetY) / this.backgroundImageHeight); // Flip Y for WebGL coordinates
         
         return { u, v };
     }
