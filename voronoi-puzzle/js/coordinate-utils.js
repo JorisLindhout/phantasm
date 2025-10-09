@@ -65,11 +65,6 @@ class CoordinateUtils {
         const scaledX = screenX * scaleX;
         const scaledY = screenY * scaleY;
         
-        // Debug logging for coordinate transformation
-        if (window.SmartLogger && SmartLogger.categories && SmartLogger.categories['coordinate-transforms']) {
-            SmartLogger.log('coordinate-transforms', `🖱️ Mouse normalization: client(${mouseEvent.clientX}, ${mouseEvent.clientY}) -> rect(${rect.left}, ${rect.top}) -> screen(${screenX.toFixed(1)}, ${screenY.toFixed(1)}) -> scaled(${scaledX.toFixed(1)}, ${scaledY.toFixed(1)})`);
-        }
-        
         return this.screenToWebGL(scaledX, scaledY, canvas.height);
     }
     
@@ -135,18 +130,6 @@ class CoordinateUtils {
         return x >= 0 && x <= canvasWidth && y >= 0 && y <= canvasHeight;
     }
     
-    /**
-     * Debug helper: Log coordinate transformation
-     * 
-     * @param {string} label - Label for the log
-     * @param {Object} from - Source coordinates
-     * @param {Object} to - Target coordinates
-     * @param {string} fromSystem - Source coordinate system name
-     * @param {string} toSystem - Target coordinate system name
-     */
-    static logTransformation(label, from, to, fromSystem, toSystem) {
-        SmartLogger.log('coordinate-transforms', `🔄 ${label}: ${fromSystem}(${from.x.toFixed(1)}, ${from.y.toFixed(1)}) -> ${toSystem}(${to.x.toFixed(1)}, ${to.y.toFixed(1)})`);
-    }
 }
 
 // Export for use in other modules

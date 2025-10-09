@@ -80,10 +80,6 @@ class VoronoiPuzzleBase {
         // Set canvas styling
         this.canvas.style.display = 'block';
         this.canvas.style.cursor = 'grab';
-        
-        if (this.debugLogging && this.debugLogging.canvasSetup) {
-            SmartLogger.log('initialization', '🎨 Canvas setup: size', this.canvas.width, 'x', this.canvas.height);
-        }
     }
     
     setupFixedCanvas() {
@@ -121,19 +117,10 @@ class VoronoiPuzzleBase {
         
         // Create Voronoi diagram using d3-delaunay
         if (typeof d3 !== 'undefined' && d3.Delaunay) {
-            if (this.debugLogging && this.debugLogging.canvasSetup) {
-                SmartLogger.log('initialization', 'Using npm d3-delaunay');
-            }
             this.voronoi = d3.Delaunay.from(this.points).voronoi([0, 0, width, height]);
         } else if (typeof Delaunay !== 'undefined') {
-            if (this.debugLogging && this.debugLogging.canvasSetup) {
-                SmartLogger.log('initialization', 'Using direct Delaunay');
-            }
             this.voronoi = Delaunay.from(this.points).voronoi([0, 0, width, height]);
         } else {
-            if (this.debugLogging && this.debugLogging.canvasSetup) {
-                SmartLogger.log('initialization', 'Delaunay not available, using fallback');
-            }
             this.voronoi = this.createFallbackVoronoi();
         }
     }
@@ -213,10 +200,7 @@ class VoronoiPuzzleBase {
     setupDragAndDrop() {
         // Store original points for snap-back functionality
         this.originalPoints = [...this.points];
-        SmartLogger.log('initialization', '🔍 Base.js setupDragAndDrop:');
-        SmartLogger.log('initialization', '  - this.points length:', this.points ? this.points.length : 'undefined');
-        SmartLogger.log('initialization', '  - this.originalPoints length:', this.originalPoints ? this.originalPoints.length : 'undefined');
-        
+
         // Initialize piece offsets for separate pieces mode
         if (this.separatePieces) {
             // Only initialize z-index if not already set
@@ -319,14 +303,9 @@ class VoronoiPuzzleBase {
         
         // CRITICAL FIX: Normalize z-indices more aggressively to prevent precision issues
         if (maxZIndex > 25) { // Reduced from 100 to 25 to prevent interaction issues
-            if (this.debugLogging && this.debugLogging.canvasSetup) {
-                SmartLogger.log('piece-states', `🔄 Normalizing z-indices (max was ${maxZIndex})`);
-            }
             this.normalizeZIndices();
         }
         
-        // Log only the clicked piece's z-index (once per click)
-        SmartLogger.log('piece-states', `🖱️  Piece ${cellIndex} -> z:${this.pieceZIndex[cellIndex]}`);
     }
     
     normalizeZIndices() {
@@ -344,9 +323,7 @@ class VoronoiPuzzleBase {
             sortedIndices.forEach((item, newZ) => {
                 this.pieceZIndex[item.index] = newZ;
             });
-            
-            SmartLogger.log('piece-states', `🔄 Z-indices normalized: max was ${maxZ}, now max is ${Math.max(...this.pieceZIndex)}`);
-            
+
             // Update WebGL renderer if available
             if (this.webglRenderer && this.webglRenderer.updatePieceZIndex) {
                 for (let i = 0; i < this.pieceZIndex.length; i++) {
@@ -366,7 +343,12 @@ class VoronoiPuzzleBase {
             if (!this.pieceZIndex || this.pieceZIndex.length !== this.points.length) {
                 this.pieceZIndex = new Array(this.points.length).fill(0);
             }
-            this.snappedPieces.clear();
+            // Reinitialize snappedPieces if it was disposed
+            if (!this.snappedPieces) {
+                this.snappedPieces = new Set();
+            } else {
+                this.snappedPieces.clear();
+            }
         }
         
         // Reset solved state and check

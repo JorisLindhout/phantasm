@@ -18,7 +18,6 @@ class ThemeManager {
     init(webglRenderer = null) {
         this.webglRenderer = webglRenderer;
         this.applyTheme(DEFAULT_THEME.name);
-        SmartLogger.log('theme-changes', `🎨 Theme Manager initialized with theme: ${this.currentTheme.name}`);
     }
 
     /**
@@ -117,7 +116,6 @@ class ThemeManager {
         root.style.setProperty('--border-radius-small', '4px');
         root.style.setProperty('--pulse-duration', `${effects.pulseSpeed}s`);
 
-        SmartLogger.log('theme-changes', `✅ Updated CSS variables for theme: ${theme.name}`);
     }
 
     /**
@@ -133,7 +131,6 @@ class ThemeManager {
         try {
             if (this.webglRenderer && typeof this.webglRenderer.updateTheme === 'function') {
                 this.webglRenderer.updateTheme(theme);
-                SmartLogger.log('theme-changes', `✅ Updated WebGL colors for theme: ${theme.name}`);
             }
         } catch (error) {
             console.error('Error updating WebGL theme:', error);

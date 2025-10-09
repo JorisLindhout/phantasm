@@ -4,23 +4,26 @@ A high-performance web-based puzzle prototype featuring animated Voronoi cells w
 
 ## TODO
 - [] **Fix unreachable pieces issue** - Some pieces become unresponsive to interaction - this seems fixed, but leaving here since we might need to do some more rigorous testing
-- [] **Clean up SmartLogger calls** - Remove 219+ SmartLogger.log() calls using regex pattern `SmartLogger\.log\([^;]*\);` (low priority - no-ops are harmless)
+- [] **Remove array system leftovers** - Remove `separateGlowOutlines[]` (22 uses) and `pieceZIndices[]` (23 uses) arrays in webgl-renderer.js and convert all references to use object-based system only (`this.pieces[index].glowOutline` and `this.pieces[index].zIndex`). Comment on line 39 says "Array backup system removed" but arrays are still being used with fallback logic.
 
 ## 🐛 Debugging & Error Reporting
 
 The project uses a simple, reliable debugging approach based on standard JavaScript console logging.
 
 ### 🚀 Debugging Approach
-- **Console.log** - Standard JavaScript debugging with simple prefixes
+- **Console Commands** - Global debug functions accessible via browser console
 - **Error Handling** - Critical errors are logged to console.error()
-- **Production Safe** - Debug statements can be easily added/removed as needed
-- **No Dependencies** - No complex debug infrastructure to maintain
+- **Debug Utilities** - Separate debug-utils.js file with diagnostic tools
+- **Production Safe** - Debug code is isolated and easy to exclude from production builds
+- **No Dependencies** - Simple, lightweight debugging tools
 
-### 🎯 Current Status
-- **Debug System** - Disabled (was causing game initialization issues)
-- **SmartLogger** - Fallback mode (no-ops for compatibility)
-- **Error Reporting** - Standard console.error() for critical issues
-- **Performance** - Zero overhead from debug infrastructure
+### 🎯 Available Debug Commands
+Run `showDebugCommands()` in the console to see all available debugging utilities including:
+- `autoRecoverPieces()` - Auto-fix stuck/unreachable pieces
+- `debugLostPieces()` - Diagnose piece interaction issues
+- `checkGhostPieces()` - Detect invisible unresponsive pieces
+- `toggleInteractionDebug()` - Enable detailed interaction logging
+- And 10+ more diagnostic functions
 
 
 ## Table of Contents
@@ -31,11 +34,11 @@ The project uses a simple, reliable debugging approach based on standard JavaScr
 - [File Structure](#file-structure)
 - [Usage & Controls](#usage--controls)
 - [Development](#development)
-- [Documentation](#documentation)
 - [Known Issues](#known-issues)
 - [Browser Compatibility](#browser-compatibility)
 - [Performance](#performance)
 - [Dependencies](#dependencies)
+- [Debug Utilities](#debug-utilities)
 - [Future Development](#future-development)
 
 ## Features
@@ -48,7 +51,7 @@ The project uses a simple, reliable debugging approach based on standard JavaScr
 - **Z-Index Management**: Clicked pieces always appear on top
 - **Hit Detection**: Accurate piece selection with expanded interaction areas
 - **Auto-Recovery System**: Automatically detects and restores unreachable pieces
-- **Fixed Canvas Size**: Always 1200x675 pixels (16:9 aspect ratio) regardless of screen size - may cause horizontal scrolling on narrow screens
+- **Responsive Canvas**: Optional responsive mode adapts to screen width while maintaining 16:9 aspect ratio, or fixed 1200x675 pixels mode
 
 ### 🎨 WebGL 3D Rendering
 - **Hardware Acceleration**: GPU-accelerated rendering with Three.js
@@ -64,13 +67,13 @@ The project uses a simple, reliable debugging approach based on standard JavaScr
 - **Slot Hover System**: Visual feedback when hovering over placement areas
 
 ### 🎨 Unified Theme System
-- **FluidLock Theme**: Default cyan/green color scheme optimized for the puzzle
+- **Multiple Themes**: Level-specific themes with distinct visual styles
 - **Dev Tools Integration**: Console-based theme switching for development
-- **Dynamic Color Updates**: Real-time theme changes across both renderers
-- **Persistent Preferences**: Theme choices saved between sessions
+- **Dynamic Color Updates**: Real-time theme changes via theme manager
+- **Persistent Preferences**: Theme and level choices saved between sessions
 
 ### 🎮 Level System
-- **Multiple Levels**: Three distinct levels with increasing difficulty
+- **Multiple Levels**: Two distinct levels with increasing difficulty
 - **Dynamic Difficulty**: Different cell counts, animation speeds, and noise amplitudes per level
 - **Theme Integration**: Each level has its own visual theme and background image
 - **Complete Reinitialization**: Clean state management with loading screen during transitions
@@ -78,41 +81,50 @@ The project uses a simple, reliable debugging approach based on standard JavaScr
 - **Loading Screen**: Visual feedback during level transitions
 
 #### Level Configurations
-- **Level 1**: 40 pieces, normal speed (1.0x), moderate noise (10px) - "Begin your journey"
-- **Level 2**: 60 pieces, faster speed (0.8x), higher noise (15px) - "Master the challenge"  
-- **Level 3**: 80 pieces, fastest speed (0.6x), maximum noise (20px) - "Expert challenge"
+- **Level 1**: 40 pieces, normal speed (1.0x), moderate noise (10px)
+- **Level 2**: 60 pieces, faster speed (0.8x), higher noise (15px)
 
 ## Quick Start
 
 1. **Clone/Download** the project
-2. **Start a local server:**
+2. **Install dependencies:**
    ```bash
-   # Python 3
-   python3 -m http.server 8080
-   
-   # Python 2
-   python -m SimpleHTTPServer 8080
-   
-   # Node.js (if you have it)
-   npx http-server -p 8080
+   npm install
    ```
-3. **Open browser** to `http://localhost:8080`
-4. **Interact** with puzzle pieces by clicking and dragging
-5. **Adjust settings** using the control panel (click the caret icon)
-6. **Switch levels** using the level selector in the controls panel
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   # or
+   npm start
+   ```
+4. **Browser will auto-open** to `http://localhost:8080`
+5. **Interact** with puzzle pieces by clicking and dragging
+6. **Adjust settings** using the control panel (click the caret icon)
+7. **Switch levels** using the level selector in the controls panel
+
+### Building for Production
+```bash
+npm run build        # Build optimized version to dist/
+npm run preview      # Preview production build locally
+```
 
 ## Architecture
 
 ### 🏗️ Clean Modular Structure
 ```
 js/
-├── utils.js          # Voronoi diagram utilities
-├── base.js           # Base puzzle logic
-├── theme.js          # Theme definitions and utilities
-├── theme-manager.js  # Dynamic theme management
-├── level-manager.js  # Level switching and configuration
-├── webgl-renderer.js # WebGL 3D renderer (Three.js)
-└── main.js           # Main application controller
+├── utils.js              # Voronoi diagram utilities
+├── noise.js              # Perlin noise implementation
+├── base.js               # Base puzzle logic
+├── coordinate-utils.js   # Coordinate system utilities
+├── position-manager.js   # Position and coordinate management
+├── responsive-canvas.js  # Responsive canvas system
+├── theme.js              # Theme definitions and utilities
+├── theme-manager.js      # Dynamic theme management
+├── level-manager.js      # Level switching and configuration
+├── webgl-renderer.js     # WebGL 3D renderer (Three.js)
+├── debug-utils.js        # Debug utilities and console commands
+└── main.js               # Main application controller
 ```
 
 ### 🔧 Core Technologies
@@ -144,38 +156,33 @@ The application uses **WebGL coordinates** as the global standard throughout the
 voronoi-puzzle/
 ├── index.html                    # Main HTML entry point
 ├── styles.css                    # Main CSS (imports modular styles)
-├── js/
-│   ├── noise.js                 # Perlin noise implementation
 ├── package.json                  # Project dependencies
+├── vite.config.js                # Vite configuration for development server
 ├── assets/                       # Game assets and images
-│   ├── base-image-cube.svg       # Default puzzle background image (16:9 aspect ratio)
+│   ├── Level-1.svg               # Level 1 background image
+│   ├── Level-2.svg               # Level 2 background image
+│   ├── Phantasm.svg              # Additional background image
 │   └── sounds/                   # Audio assets
 │       ├── snap.webm             # Snap sound (WebM Opus format, ~10KB)
 │       └── snap.mp3              # Snap sound fallback (MP3 format, ~15KB)
 ├── css/                          # Modular CSS architecture
 │   ├── base.css                  # Base colors and layout
 │   ├── controls.css              # UI controls styling
-│   ├── responsive.css             # Responsive design
+│   ├── responsive.css            # Responsive design
 │   └── webgl.css                 # WebGL 3D specific styles
 ├── js/                           # JavaScript modules
 │   ├── utils.js                  # Voronoi diagram utilities
+│   ├── noise.js                  # Perlin noise implementation
 │   ├── base.js                   # Core puzzle logic
-│   ├── theme.js                  # Theme system definitions
-│   ├── theme-manager.js          # Dynamic theme management
 │   ├── coordinate-utils.js       # Coordinate system conversion utilities
 │   ├── position-manager.js       # Centralized position management
+│   ├── responsive-canvas.js      # Responsive canvas system
+│   ├── theme.js                  # Theme system definitions
+│   ├── theme-manager.js          # Dynamic theme management
+│   ├── level-manager.js          # Level switching and configuration
 │   ├── webgl-renderer.js         # WebGL 3D renderer (Three.js)
+│   ├── debug-utils.js            # Debug utilities and console commands
 │   └── main.js                   # Main application controller
-├── debug-tools/                  # Debug tools (disabled - kept for reference)
-│   ├── index.js                  # Central debug tools loader
-│   ├── simple-precision-test.js  # Raycaster precision testing
-│   ├── scene-state-diagnostic.js # Scene management diagnostics
-│   └── [other debug tools...]    # Additional diagnostic tools
-├── docs/                         # Project documentation
-│   └── debug/                    # Debug system documentation (legacy)
-│       ├── DEBUG_SYSTEM_GUIDE.md # Complete debug system guide
-│       ├── DEBUG_QUICK_REFERENCE.md # Quick reference card
-│       └── debug-tools.md        # Debug tools documentation
 └── README.md                     # This documentation
 ```
 
@@ -189,7 +196,7 @@ voronoi-puzzle/
 ### 🎛️ Control Panel
 Access the control panel by clicking the caret icon (^) in the top-right corner:
 
-- **Level**: Select between Level 1, Level 2, and Level 3 (auto-adjusts cell count, animation speed, and noise amplitude)
+- **Level**: Select between Level 1 and Level 2 (auto-adjusts cell count, animation speed, and noise amplitude)
 - **Cell Count**: Number of Voronoi pieces (5-50) - overridden by level selection
 - **Animation Speed**: Speed of boundary animation (0.1-2.0x) - overridden by level selection
 - **Noise Amplitude**: Intensity of boundary deformation (0-50) - overridden by level selection
@@ -200,7 +207,7 @@ Access the control panel by clicking the caret icon (^) in the top-right corner:
 ### 🎨 Theme Development (Console Commands)
 ```javascript
 // Switch to available theme
-themeManager.setTheme('fluidlock')   // Default cyan/green theme
+themeManager.setTheme('phantasm')   // Default cyan/green theme
 
 // Theme information
 themeManager.getAvailableThemes()    // List all available themes
@@ -214,24 +221,30 @@ themeManager.currentTheme.colors     // Access all color definitions
 
 ### 🛠️ Development Tools
 - **Theme System**: Use browser console for theme switching
-- **Debug Logging**: Standard console.log() statements for debugging
+- **Debug Utilities**: Global functions for troubleshooting (see `debug-utils.js`)
 - **Hot Reload**: No build step - just refresh browser after changes
 - **Modular Architecture**: Easy to modify individual components
+- **Vite Dev Server**: Fast development server with hot module replacement
 
-### 🔧 Debug System (Console Commands)
+### 🔧 Debug Utilities (Console Commands)
 ```javascript
-// Note: Debug system has been disabled. Use standard console.log() for debugging.
+// Show all available debug commands
+showDebugCommands()
 
-// Basic debugging
-console.log('[DEBUG]', 'Your debug message here');
-console.log('Game state:', window.voronoiPuzzle);
+// Common debugging commands
+autoRecoverPieces()           // Fix stuck/unreachable pieces
+debugLostPieces()            // Diagnose piece issues
+checkGhostPieces()           // Find invisible pieces
+testInteractionSystem()       // Run diagnostic tests
 
-// Check for errors
-console.error('Error message here');
+// Toggle verbose logging
+toggleInteractionDebug()      // Mouse/click logging
+toggleMaterialUpdates()       // Visual update logging
+toggleNeonGlow()             // Glow effect logging
 
-// Theme system (still available)
-themeManager.setTheme('fluidlock');
-themeManager.getCurrentTheme();
+// Theme system
+themeManager.setTheme('phantasm')
+themeManager.getCurrentTheme()
 ```
 
 ### 🏗️ Object-Based Architecture
@@ -259,71 +272,25 @@ pieces[index] = {
 - **Future-Proof**: Easy to extend with new properties
 - **Performance**: Object property access is fast and reliable
 
-## Documentation
-
-### 📁 Documentation Structure
-
-All project documentation is organized in the `docs/` folder:
-
-```
-docs/
-└── debug/                          # Debug system documentation (legacy)
-    ├── DEBUG_SYSTEM_GUIDE.md       # Complete debug system usage guide
-    ├── DEBUG_QUICK_REFERENCE.md    # Quick reference for debug commands
-    └── debug-tools.md              # Debug tools documentation
-```
-
-### 📚 Available Documentation
-
-- **[Debug System Guide](docs/debug/DEBUG_SYSTEM_GUIDE.md)** - Legacy debug system documentation (system disabled)
-- **[Debug Quick Reference](docs/debug/DEBUG_QUICK_REFERENCE.md)** - Legacy debug commands (system disabled)
-- **[Debug Tools Documentation](docs/debug/debug-tools.md)** - Legacy debug tools documentation (system disabled)
-
-**Note:** The debug system has been disabled due to initialization issues. Current debugging uses standard `console.log()` statements.
-
-### 🎯 Quick Access
-
-For immediate debugging needs:
-```javascript
-// Check browser console for errors
-console.log('Debug info here');
-
-// Add temporary debug statements
-console.log('[DEBUG]', variableName);
-
-// Check game state
-console.log('Game state:', window.voronoiPuzzle);
-```
-
 ## Known Issues
 
-### 🔧 "Lost Pieces" / "Unresponsive Pieces" Problem
 
-The puzzle can experience pieces that become **visually present and animating** but **not responding to hover/click/drag**. This is a complex interaction desynchronization issue with multiple potential causes:
 
-#### Root Causes Identified:
-1. **Scene Graph Desynchronization**: Pieces exist in the object system but are not properly positioned in the Three.js scene
-2. **Interaction State Desynchronization**: Pieces lose their event handling capabilities due to state management issues
-3. **Z-Index Accumulation**: `bringPieceToFront()` can cause z-indices to grow unbounded
-4. **Waterfall Effect**: One lost piece can trigger a cascade of other pieces becoming unresponsive
-
-#### Detection & Recovery Systems:
-- **Auto-Recovery System**: `autoRecoverPieces()` - Automatically detects and restores unreachable pieces
-- **Scene Synchronization**: `fixMispositionedPieces()` - Ensures pieces are properly positioned in 3D scene
-- **Interaction Debugging**: `toggleInteractionDebug()` - Detailed logging of interaction state
-- **Manual Recovery**: Console commands for manual piece restoration
-
-#### Advanced Diagnostic Tools:
-- **Raycaster Precision Testing**: `runPrecisionTests()` - Tests if raycaster precision degrades with large coordinates
-- **Scene State Diagnostics**: `diagnoseSceneState()` - Comprehensive analysis of scene management issues
-- **Auto-Fix Tools**: `autoFixSceneIssues()` - Automatically repairs detected scene problems
+#### Detection & Recovery Tools:
+Run `showDebugCommands()` in the console to see all available tools, including:
+- **Auto-Recovery**: `autoRecoverPieces()` - Automatically detects and restores unreachable pieces
+- **Lost Piece Diagnosis**: `debugLostPieces()` - Identifies pieces with interaction issues
+- **Ghost Piece Detection**: `checkGhostPieces()` - Finds invisible unresponsive pieces
+- **Scene Sync Fix**: `fixMispositionedPieces()` - Ensures pieces are properly positioned
+- **System Tests**: `testInteractionSystem()` - Run comprehensive diagnostics
+- **Debug Logging**: `toggleInteractionDebug()` - Enable detailed interaction logging
 
 #### Prevention Strategies:
 - **Object-Based Architecture**: Clean, maintainable code structure
 - **Enhanced State Management**: Better tracking of piece states and relationships
 - **Robust Hit Detection**: Multiple fallback methods for piece selection
 - **Z-Index Management**: Automatic normalization to prevent accumulation
-- **Comprehensive Logging**: Controllable debug output for troubleshooting
+- **Debug Utilities**: Built-in diagnostic tools for troubleshooting (see `debug-utils.js`)
 
 ## Browser Compatibility
 
@@ -371,19 +338,26 @@ The puzzle can experience pieces that become **visually present and animating** 
 - **Mobile Support**: Audio unlocked on first user interaction
 - **File Size**: ~10KB (WebM) / ~15KB (MP3)
 
-## 🔍 Diagnostic Tools
+## 🔍 Debug Utilities
 
-**Note:** The diagnostic tools system has been disabled due to initialization issues. For debugging, use standard browser console tools.
+The project includes a comprehensive set of debugging tools accessible via the browser console.
 
 ### Quick Start
 ```javascript
-// Basic debugging
-console.log('[DEBUG]', 'Your debug message here');
-console.log('Game state:', window.voronoiPuzzle);
+// Show all available debug commands
+showDebugCommands()
 
-// Check for errors
-console.error('Error message here');
+// Common troubleshooting
+autoRecoverPieces()           // Fix stuck pieces
+debugLostPieces()            // Diagnose interaction issues
+testInteractionSystem()       // Run system diagnostics
+
+// Enable verbose logging for specific systems
+toggleInteractionDebug()      // Mouse/click events
+toggleMaterialUpdates()       // Visual updates
 ```
+
+All debug utilities are defined in `js/debug-utils.js` and are automatically loaded with the application.
 
 
 ## Future Development

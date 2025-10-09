@@ -1,4 +1,4 @@
-# FluidLock
+# Phantasm
 
 A responsive canvas application that displays an SVG at double size using HTML5 Canvas with draggable grid pieces and smart snapping.
 

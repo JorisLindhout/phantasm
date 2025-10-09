@@ -97,9 +97,6 @@
         </div>
     </div>
 
-    <!-- Debug System - Load FIRST -->
-    <script src="debug-init.js"></script>
-    
     <!-- External libraries -->
     <script src="node_modules/d3-delaunay/dist/d3-delaunay.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -124,6 +121,9 @@
     <!-- WebGL 3D renderer -->
     <script src="js/webgl-renderer.js?v=25"></script>
     
+    <!-- Debug utilities (console commands) -->
+    <script src="js/debug-utils.js"></script>
+    
     <!-- Main puzzle class -->
     <script src="js/main.js"></script>
     
@@ -140,13 +140,6 @@
         
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', async () => {
-            SmartLogger.log('initialization', 'Initializing Phantasm...');
-            SmartLogger.log('initialization', 'Delaunay available:', typeof Delaunay !== 'undefined');
-            SmartLogger.log('initialization', 'd3 available:', typeof d3 !== 'undefined');
-            if (typeof d3 !== 'undefined') {
-                SmartLogger.log('initialization', 'd3.Delaunay available:', typeof d3.Delaunay !== 'undefined');
-            }
-            
             // Small delay to ensure all scripts are loaded
             setTimeout(async () => {
                 if (typeof VoronoiPuzzle === 'undefined') {
@@ -208,11 +201,7 @@
                                 if (levelSelector) {
                                     levelSelector.addEventListener('change', handleLevelChange);
                                 }
-                                
-                                // Initial level is now applied automatically in levelManager.init()
-                                
-                                SmartLogger.log('level-system', '🎮 Level system initialized');
-                                
+
                                 // Hide loading screen after everything is fully initialized
                                 if (window.voronoiPuzzle && window.voronoiPuzzle.hideLoadingScreen) {
                                     window.voronoiPuzzle.hideLoadingScreen();
@@ -228,13 +217,6 @@
                         
                         setTimeout(initLevelSystem, 500);
                         
-                        SmartLogger.log('theme-changes', '🎨 Theme system initialized (dev mode)');
-                        SmartLogger.log('debug-tools', '💡 Dev tools available:');
-                        SmartLogger.log('debug-tools', '   themeManager.setTheme("fluidlock")');
-                        SmartLogger.log('debug-tools', '   themeManager.getAvailableThemes()');
-                        SmartLogger.log('debug-tools', '   themeManager.getCurrentTheme()');
-                        SmartLogger.log('debug-tools', '   levelManager.setLevel("level-1")');
-                        SmartLogger.log('debug-tools', '   levelManager.getAvailableLevels()');
                     } catch (error) {
                         console.warn('Theme system initialization failed:', error);
                         // Hide loading screen even if theme system fails

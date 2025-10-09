@@ -119,10 +119,7 @@ class ResponsiveCanvas {
         
         // Log the change
         console.log(`🎨 Canvas resized to ${optimalSize.width}×${optimalSize.height} (responsive mode)`);
-        
-        if (window.SmartLogger) {
-            SmartLogger.log('responsive-canvas', `📐 Canvas size: ${optimalSize.width}×${optimalSize.height}, Viewport: ${this.getViewportSize().width}×${this.getViewportSize().height}`);
-        }
+
     }
     
     /**
