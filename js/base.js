@@ -64,7 +64,7 @@ class VoronoiPuzzleBase {
             };
             img.onerror = reject;
             // Use the base image from the current theme
-            img.src = window.themeManager ? window.themeManager.getCurrentBaseImage() : './assets/base-image-cube.svg';
+            img.src = window.themeManager ? window.themeManager.getCurrentBaseImage() : './assets/Level-1.svg';
         });
     }
 

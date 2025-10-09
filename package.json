@@ -1,17 +1,22 @@
 {
-  "name": "fluidlock",
+  "name": "phantasm",
   "version": "1.0.0",
-  "description": "FluidLock - SVG Canvas Application",
+  "description": "A web-based puzzle prototype featuring animated Voronoi cells with Perlin noise boundaries.",
+  "main": "index.html",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "d3-delaunay": "^5.3.0"
   },
   "devDependencies": {
-    "vite": "^5.0.0"
-  },
-  "keywords": ["svg", "canvas", "responsive", "fluidlock"],
-  "author": "",
-  "license": "MIT"
+    "vite": "^5.4.20"
+  }
 }
