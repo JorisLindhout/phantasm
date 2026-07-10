@@ -1,9 +1,11 @@
 /**
  * Level Manager
- * 
+ *
  * Handles level switching with complete reinitialization approach.
  * This ensures clean state and avoids coordinate system conflicts.
  */
+
+import { resolveLevelConfig } from './animated-path.js';
 
 class LevelManager {
     constructor() {
@@ -60,9 +62,10 @@ class LevelManager {
         console.log(`🎨 Applying initial level: ${levelConfig.name}`);
 
         // Update puzzle config
-        this.puzzle.config.cellCount = levelConfig.config.cellCount;
-        this.puzzle.config.animationSpeed = levelConfig.config.animationSpeed;
-        this.puzzle.config.noiseAmplitude = levelConfig.config.noiseAmplitude;
+        const resolved = resolveLevelConfig(levelConfig);
+        this.puzzle.config.cellCount = resolved.cellCount;
+        this.puzzle.config.animationSpeed = resolved.animationSpeed;
+        this.puzzle.config.noiseAmplitude = resolved.noiseAmplitude;
 
         // Apply theme
         if (window.themeManager) {
@@ -152,9 +155,10 @@ class LevelManager {
         console.log(`🔄 Complete reinitialization for ${levelConfig.name}`);
 
         // 1. Update puzzle configuration
-        this.puzzle.config.cellCount = levelConfig.cellCount;
-        this.puzzle.config.animationSpeed = levelConfig.animationSpeed;
-        this.puzzle.config.noiseAmplitude = levelConfig.noiseAmplitude;
+        const resolved = resolveLevelConfig(levelConfig);
+        this.puzzle.config.cellCount = resolved.cellCount;
+        this.puzzle.config.animationSpeed = resolved.animationSpeed;
+        this.puzzle.config.noiseAmplitude = resolved.noiseAmplitude;
 
         // 2. Dispose current puzzle state
         await this.disposePuzzle();
@@ -206,11 +210,15 @@ class LevelManager {
      */
     showLoadingScreen(message = 'Loading Level...') {
         const overlay = document.getElementById('loadingOverlay');
-        const text = overlay.querySelector('.loading-text');
-        
-        if (overlay && text) {
-            text.textContent = message;
+        const text = overlay?.querySelector('.loading-text');
+
+        if (overlay) {
             overlay.classList.add('visible');
+            overlay.setAttribute('aria-busy', 'true');
+        }
+
+        if (text) {
+            text.textContent = message;
         }
     }
 
@@ -221,6 +229,7 @@ class LevelManager {
         const overlay = document.getElementById('loadingOverlay');
         if (overlay) {
             overlay.classList.remove('visible');
+            overlay.setAttribute('aria-busy', 'false');
         }
     }
 

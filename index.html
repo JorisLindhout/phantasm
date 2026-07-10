@@ -4,36 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phantasm</title>
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Phantasm" />
-    <link rel="manifest" href="/site.webmanifest" />    <link rel="stylesheet" href="styles.css">
-    
-    <!-- ASCII Art Banner - Display FIRST, before everything else -->
-    <script>
-        // Display ASCII art banner as the very first console output
-        (function() {
-            const asciiArt = `  __ __    __   __    _____   __   __  _______   _____   ______ __    __   
- /_/\\__/\\ /\\_\\ /_/\\  /\\___/\\ /_/\\ /\\_Y\\_______)\\/\\___/\\ / ____/Y_/\\  /\\_\\  
- ) ) ) ) | ( (_) ) )/ / _ \\ \\) ) \\ ( ((___  __\\/ / _ \\ \\) ) __\\) ) \\/ ( (  
-/_/ /_/ / \\ \\___/ / \\ \\(_)/ /_/   \\ \\_\\/ / /   \\ \\(_)/ / \\ \\ \\/_/ \\  / \\_\\ 
-\\ \\ \\_\\/  / / _ \\ \\ / / _ \\ \\ \\ \\   / ( ( (    / / _ \\ \\ _\\ \\ \\ \\ \\\\// / / 
- )_) )   ( (_( )_) | (_( )_) )_) \\ (_( \\ \\ \\  ( (_( )_) )____) )_) )( (_(  
- \\_\\/     \\/_/ \\_\\/ \\/_/ \\_\\/\\_\\/ \\/_/ /_/_/   \\/_/ \\_\\/\\____\\/\\_\\/  \\/_/  
-                                                                             `;
-            
-            // Use console styling to prevent line breaks and add visual appeal
-            console.log('%c' + asciiArt, 'font-family: monospace; font-size: 10px; line-height: 1; white-space: pre; color: #00ff88; text-shadow: 0 0 10px #00ff88;');
-        })();
-    </script>
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <a class="skip-link" href="#voronoiCanvas">Skip to puzzle</a>
+
+    <div id="a11yLiveRegion" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay">
+    <div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite" aria-busy="true">
         <div class="loading-content">
-            <svg class="heartbeat-gradient" width="238" height="232" viewBox="0 0 238 232" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <p class="loading-text">Loading Phantasm...</p>
+            <div class="loading-bar" aria-hidden="true"></div>
+            <svg class="heartbeat-gradient" width="238" height="232" viewBox="0 0 238 232" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <ellipse cx="119" cy="116" rx="119" ry="116" fill="url(#paint0_radial_1354_28)" fill-opacity="0.8"/>
                 <defs>
                     <radialGradient id="paint0_radial_1354_28" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(119 116) rotate(90) scale(116 119)">
@@ -47,24 +33,33 @@
 
     <div class="container">
         <div class="puzzle-container">
-            <canvas id="voronoiCanvas"></canvas>
+            <canvas
+                id="voronoiCanvas"
+                role="img"
+                aria-label="Interactive Voronoi puzzle. Use mouse, touch, or keyboard arrows to select and move pieces."
+                tabindex="0"
+            ></canvas>
         </div>
     </div>
-    
-    <!-- Audio elements -->
-    <audio id="snapSound" preload="auto">
-        <source src="assets/sounds/snap.webm" type="audio/webm; codecs=opus">
-        <source src="assets/sounds/snap.mp3" type="audio/mpeg">
-    </audio>
+
+    <!-- Audio elements (optional - add assets/sounds/snap.webm and snap.mp3 to enable) -->
+    <audio id="snapSound" preload="none"></audio>
 
     <!-- Controls Drawer -->
-    <div class="controls-drawer" id="controlsDrawer">
-        <button class="drawer-toggle" id="drawerToggle" onclick="toggleDrawer()">
-            <svg class="caret-icon" viewBox="0 0 24 24" width="16" height="16">
+    <aside class="controls-drawer" id="controlsDrawer" aria-label="Puzzle settings" aria-hidden="true">
+        <button
+            class="drawer-toggle"
+            id="drawerToggle"
+            type="button"
+            aria-label="Toggle puzzle settings"
+            aria-expanded="false"
+            aria-controls="controlsContent"
+        >
+            <svg class="caret-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
                 <path d="M7 14l5-5 5 5z" fill="currentColor"/>
             </svg>
         </button>
-        
+
         <div class="controls-content" id="controlsContent">
             <div class="control-group">
                 <label for="levelSelector">Level:</label>
@@ -75,230 +70,28 @@
             </div>
             <div class="control-group">
                 <label for="cellCount">Cell Count:</label>
-                <input type="range" id="cellCount" min="5" max="50" value="40">
-                <span id="cellCountValue">40</span>
+                <input type="range" id="cellCount" min="5" max="60" value="40" aria-valuemin="5" aria-valuemax="60" aria-valuenow="40" aria-valuetext="40">
+                <span id="cellCountValue" aria-hidden="true">40</span>
             </div>
             <div class="control-group">
                 <label for="animationSpeed">Animation Speed:</label>
-                <input type="range" id="animationSpeed" min="0.1" max="2.0" step="0.1" value="1.0">
-                <span id="animationSpeedValue">1.0</span>
+                <input type="range" id="animationSpeed" min="0.1" max="2.0" step="0.1" value="1.0" aria-valuemin="0.1" aria-valuemax="2" aria-valuenow="1" aria-valuetext="1.0">
+                <span id="animationSpeedValue" aria-hidden="true">1.0</span>
             </div>
             <div class="control-group">
                 <label for="noiseAmplitude">Noise Amplitude:</label>
-                <input type="range" id="noiseAmplitude" min="0" max="50" value="10">
-                <span id="noiseAmplitudeValue">10</span>
+                <input type="range" id="noiseAmplitude" min="0" max="50" value="10" aria-valuemin="0" aria-valuemax="50" aria-valuenow="10" aria-valuetext="10">
+                <span id="noiseAmplitudeValue" aria-hidden="true">10</span>
             </div>
             <div class="control-group">
-                <button onclick="regeneratePuzzle()">Regenerate Puzzle</button>
-                <button onclick="toggleAnimation()">Toggle Animation</button>
-                <button onclick="toggleGridOutlines()">Toggle Grid Outlines</button>
-                <button onclick="toggleResponsiveCanvas()">Toggle Responsive Canvas</button>
+                <button type="button" data-action="regenerate">Regenerate Puzzle</button>
+                <button type="button" data-action="toggle-animation">Pause Animation</button>
+                <button type="button" data-action="toggle-grid-outlines">Toggle Grid Outlines</button>
+                <button type="button" data-action="toggle-responsive-canvas">Toggle Responsive Canvas</button>
             </div>
         </div>
-    </div>
+    </aside>
 
-    <!-- External libraries -->
-    <script src="node_modules/d3-delaunay/dist/d3-delaunay.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <!-- Shared modules -->
-    <script src="js/noise.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/base.js"></script>
-    
-    <!-- Coordinate System Utilities -->
-    <script src="js/coordinate-utils.js"></script>
-    <script src="js/position-manager.js"></script>
-    
-    <!-- Responsive Canvas System -->
-    <script src="js/responsive-canvas.js"></script>
-    
-    <!-- Theme System (ES Modules) -->
-    <script type="module" src="js/theme.js"></script>
-    <script type="module" src="js/theme-manager.js"></script>
-    <script type="module" src="js/level-manager.js"></script>
-    
-    <!-- WebGL 3D renderer -->
-    <script src="js/webgl-renderer.js?v=25"></script>
-    
-    <!-- Debug utilities (console commands) -->
-    <script src="js/debug-utils.js"></script>
-    
-    <!-- Main puzzle class -->
-    <script src="js/main.js"></script>
-    
-    <!-- Debug system disabled - using console.log for debugging -->
-    
-    <script>
-        // Show loading screen immediately when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            const overlay = document.getElementById('loadingOverlay');
-            if (overlay) {
-                overlay.classList.add('visible');
-            }
-        });
-        
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Small delay to ensure all scripts are loaded
-            setTimeout(async () => {
-                if (typeof VoronoiPuzzle === 'undefined') {
-                    console.error('VoronoiPuzzle class not found. Check script loading order.');
-                    // Hide loading screen on error
-                    const overlay = document.getElementById('loadingOverlay');
-                    if (overlay) {
-                        overlay.classList.remove('visible');
-                    }
-                    return;
-                }
-                
-                try {
-                    window.voronoiPuzzle = new VoronoiPuzzle();
-                } catch (error) {
-                    console.error('Failed to create VoronoiPuzzle:', error);
-                    // Hide loading screen on error
-                    const overlay = document.getElementById('loadingOverlay');
-                    if (overlay) {
-                        overlay.classList.remove('visible');
-                    }
-                    return;
-                }
-                
-                // Initialize theme system
-                setTimeout(async () => {
-                    try {
-                        // Import theme manager
-                        const { themeManager } = await import('./js/theme-manager.js');
-                        
-                        // Initialize with WebGL renderer reference
-                        themeManager.init(window.voronoiPuzzle?.webglRenderer);
-                        
-                        // Load saved theme preference (no UI selector)
-                        themeManager.loadThemePreference();
-                        
-                        // Make theme manager globally available for dev tools
-                        window.themeManager = themeManager;
-                        
-                        // Initialize level system after puzzle is fully ready
-                        const initLevelSystem = async () => {
-                            try {
-                                // Wait for puzzle to be fully initialized
-                                if (!window.voronoiPuzzle) {
-                                    console.warn('Puzzle not ready yet, retrying in 200ms...');
-                                    setTimeout(initLevelSystem, 200);
-                                    return;
-                                }
-                                
-                                // Import level manager
-                                const { levelManager } = await import('./js/level-manager.js');
-                                
-                                // Initialize level manager
-                                levelManager.init(window.voronoiPuzzle);
-                                window.levelManager = levelManager;
-                                
-                                // Set up level selector event listener
-                                const levelSelector = document.getElementById('levelSelector');
-                                if (levelSelector) {
-                                    levelSelector.addEventListener('change', handleLevelChange);
-                                }
-
-                                // Hide loading screen after everything is fully initialized
-                                if (window.voronoiPuzzle && window.voronoiPuzzle.hideLoadingScreen) {
-                                    window.voronoiPuzzle.hideLoadingScreen();
-                                }
-                            } catch (error) {
-                                console.error('Level system initialization failed:', error);
-                                // Hide loading screen even on error
-                                if (window.voronoiPuzzle && window.voronoiPuzzle.hideLoadingScreen) {
-                                    window.voronoiPuzzle.hideLoadingScreen();
-                                }
-                            }
-                        };
-                        
-                        setTimeout(initLevelSystem, 500);
-                        
-                    } catch (error) {
-                        console.warn('Theme system initialization failed:', error);
-                        // Hide loading screen even if theme system fails
-                        if (window.voronoiPuzzle && window.voronoiPuzzle.hideLoadingScreen) {
-                            window.voronoiPuzzle.hideLoadingScreen();
-                        }
-                    }
-                }, 200);
-            }, 100);
-        });
-        
-        // Global functions for controls
-        function regeneratePuzzle() {
-            window.voronoiPuzzle?.regeneratePuzzle();
-        }
-        
-        // Level change handler
-        async function handleLevelChange() {
-            const levelSelector = document.getElementById('levelSelector');
-            const selectedLevel = levelSelector.value;
-            
-            console.log(`🎮 UI: Level selector changed to: ${selectedLevel}`);
-            
-            if (window.levelManager) {
-                console.log(`🎮 UI: Calling levelManager.setLevel("${selectedLevel}")`);
-                await window.levelManager.setLevel(selectedLevel);
-            } else {
-                console.warn('Level manager not available');
-            }
-        }
-        
-        function toggleAnimation() {
-            window.voronoiPuzzle?.toggleAnimation();
-        }
-        
-        // Handle viewport resize
-        window.addEventListener('resize', () => {
-            if (window.responsiveCanvas) {
-                window.responsiveCanvas.handleViewportResize();
-            }
-        });
-        
-        
-        
-        function toggleGridOutlines() {
-            if (window.voronoiPuzzle && window.voronoiPuzzle.webglRenderer) {
-                const isOn = window.voronoiPuzzle.webglRenderer.toggleGridOutlines();
-                console.log(`🔗 Grid outlines toggled: ${isOn ? 'ON' : 'OFF'}`);
-            } else {
-                console.log('❌ Grid outline toggle only available in WebGL mode');
-            }
-        }
-        
-        function toggleDrawer() {
-            const drawer = document.getElementById('controlsDrawer');
-            const toggle = document.getElementById('drawerToggle');
-            const caret = toggle.querySelector('.caret-icon');
-            
-            drawer.classList.toggle('open');
-            
-            // Rotate caret icon
-            if (drawer.classList.contains('open')) {
-                caret.style.transform = 'rotate(180deg)';
-            } else {
-                caret.style.transform = 'rotate(0deg)';
-            }
-        }
-        
-        function toggleResponsiveCanvas() {
-            if (window.responsiveCanvas && window.voronoiPuzzle) {
-                const currentMode = window.responsiveCanvas.isResponsive;
-                window.responsiveCanvas.setResponsiveMode(!currentMode);
-                
-                // Re-setup canvas with new mode
-                window.voronoiPuzzle.currentRenderer?.setupCanvas();
-                
-                // Regenerate puzzle to match new canvas size
-                window.voronoiPuzzle.regeneratePuzzle();
-                
-                console.log(`🎨 Responsive canvas: ${!currentMode ? 'ENABLED' : 'DISABLED'}`);
-            }
-        }
-    </script>
+    <script type="module" src="/js/app.js"></script>
 </body>
 </html>

@@ -25,7 +25,7 @@ export default defineConfig({
   
   // Optimize dependencies for WebGL libraries
   optimizeDeps: {
-    include: ['d3-delaunay']
+    include: ['d3-delaunay', 'three']
   },
   
   // CSS configuration

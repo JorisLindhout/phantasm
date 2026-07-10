@@ -3,6 +3,8 @@
  * Contains functionality used by both 2D and 3D renderers
  */
 
+import { SNAP_THRESHOLD, SOLVE_THRESHOLD } from './constants.js';
+
 // Base configuration for Phantasm
 class VoronoiConfig {
     constructor() {
@@ -31,7 +33,7 @@ class VoronoiPuzzleBase {
         this.draggedCellIndex = -1;
         this.dragOffset = { x: 0, y: 0 };
         this.originalPoints = [];
-        this.snapThreshold = 30; // pixels
+        this.snapThreshold = SNAP_THRESHOLD;
         this.scaleFactor = 1.1; // Scale content slightly to minimize gaps
         
         // Separate pieces mode
@@ -48,7 +50,7 @@ class VoronoiPuzzleBase {
         
         // Solved state tracking
         this.isSolved = false;
-        this.solveThreshold = 10; // pixels - how close pieces need to be to be considered "solved"
+        this.solveThreshold = SOLVE_THRESHOLD;
         
         // Event listener tracking for cleanup
         this.eventListeners = [];
@@ -164,10 +166,17 @@ class VoronoiPuzzleBase {
         const cellCountValue = document.getElementById('cellCountValue');
         if (cellCountSlider && cellCountValue) {
             cellCountSlider.addEventListener('input', (e) => {
-                this.config.cellCount = parseInt(e.target.value);
+                this.config.cellCount = parseInt(e.target.value, 10);
                 cellCountValue.textContent = e.target.value;
-                // Regenerate Voronoi when cell count changes
-                this.generateVoronoi();
+                e.target.setAttribute('aria-valuenow', e.target.value);
+                e.target.setAttribute('aria-valuetext', e.target.value);
+
+                if (typeof this.regeneratePuzzle === 'function') {
+                    this.regeneratePuzzle();
+                } else {
+                    this.generateVoronoi();
+                    this.originalPoints = [...this.points];
+                }
             });
         }
 
@@ -219,16 +228,20 @@ class VoronoiPuzzleBase {
             cancelAnimationFrame(this.animationId);
         }
         
-        const animate = () => {
+        const animate = (timestamp) => {
             if (this.config.isAnimating) {
                 this.render();
                 this.config.time += 0.01 * this.config.animationSpeed;
-                this.snapAnimationTime += 0.02; // Update snap animation time
+                this.snapAnimationTime += 0.02;
+                this.animationId = requestAnimationFrame(animate);
+            } else {
+                this.animationId = null;
             }
-            this.animationId = requestAnimationFrame(animate);
         };
-        
-        animate();
+
+        if (this.config.isAnimating) {
+            this.animationId = requestAnimationFrame(animate);
+        }
     }
 
     stopAnimation() {
@@ -358,8 +371,18 @@ class VoronoiPuzzleBase {
 
     toggleAnimation() {
         this.config.isAnimating = !this.config.isAnimating;
-        const button = event.target;
-        button.textContent = this.config.isAnimating ? 'Pause Animation' : 'Start Animation';
+
+        if (this.config.isAnimating) {
+            this.startAnimation();
+        } else if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+
+        const button = document.querySelector('[data-action="toggle-animation"]');
+        if (button) {
+            button.textContent = this.config.isAnimating ? 'Pause Animation' : 'Start Animation';
+        }
     }
     
     // Check if the puzzle is solved (all pieces are in correct positions)

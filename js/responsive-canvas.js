@@ -177,34 +177,31 @@ class ResponsiveCanvas {
      * Show resize notification to user
      */
     showResizeNotification() {
-        // Remove existing notification
         const existing = document.querySelector('.resize-notification');
         if (existing) {
             existing.remove();
         }
-        
-        // Create notification
+
         const notification = document.createElement('div');
         notification.className = 'resize-notification';
-        notification.innerHTML = `
-            <div style="
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: var(--primary-color);
-                color: var(--text-color);
-                padding: 12px 20px;
-                border-radius: 8px;
-                font-size: 14px;
-                z-index: 1000;
-                box-shadow: 0 4px 12px var(--background-color);
-                cursor: pointer;
-                transition: opacity 0.3s ease;
-            ">
-                📱 Viewport changed - <strong>Reload page</strong> for optimal sizing
-            </div>
-        `;
-        
+        notification.setAttribute('role', 'status');
+
+        Object.assign(notification.style, {
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            background: 'var(--primary-color)',
+            color: 'var(--text-color)',
+            padding: '12px 20px',
+            borderRadius: '8px',
+            fontSize: '14px',
+            zIndex: '1000',
+            boxShadow: '0 4px 12px var(--background-color)',
+            cursor: 'pointer',
+            transition: 'opacity 0.3s ease',
+        });
+
+        notification.textContent = 'Viewport changed - reload page for optimal sizing';
         document.body.appendChild(notification);
         
         // Auto-hide after 5 seconds

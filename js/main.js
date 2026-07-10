@@ -2,6 +2,8 @@
  * Phantasm Main Controller
  */
 
+import { announce } from './accessibility.js';
+
 class VoronoiPuzzle extends VoronoiPuzzleBase {
     constructor() {
         super();
@@ -12,8 +14,10 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
         // Audio setup
         this.snapSound = null;
         this.initAudio();
-        
-        this.init();
+    }
+
+    async start() {
+        await this.init();
     }
 
     initAudio() {
@@ -226,17 +230,16 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             await this.webglRenderer.loadBackgroundTexture(window.themeManager ? window.themeManager.getCurrentBaseImage() : './assets/Level-1.svg');
             
             this.generateVoronoi();
+            this.setupDragAndDrop();
 
-            if (this.webglRenderer && this.originalPoints) {
-                // KEEP: User-facing success message
+            if (this.webglRenderer && this.originalPoints?.length) {
                 console.log('✅ Main.js initializing position manager with', this.originalPoints.length, 'points');
                 this.webglRenderer.initPositionManager(this.originalPoints);
             } else {
-                // KEEP: User-facing warning message
                 console.log('⚠️ Main.js position manager not initialized - missing webglRenderer or originalPoints');
             }
+
             this.setupControls();
-            this.setupDragAndDrop();
             this.startAnimation();
         } catch (error) {
             console.error('Error initializing WebGL hybrid renderer:', error);
@@ -246,16 +249,17 @@ class WebGLRenderer extends VoronoiPuzzleBase {
 
     setupDragAndDrop() {
         super.setupDragAndDrop();
-        
+
         // Use WebGL canvas for events
         const eventCanvas = this.webglRenderer.canvas;
-        
+
         // Mouse event handlers
         eventCanvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
         eventCanvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
         eventCanvas.addEventListener('mouseup', (e) => this.handleMouseUp(e));
         eventCanvas.addEventListener('mouseleave', (e) => this.handleMouseLeave(e));
-        
+        eventCanvas.addEventListener('keydown', (e) => this.handleKeyDown(e));
+
         // Touch event handlers for mobile
         eventCanvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
@@ -269,6 +273,79 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             e.preventDefault();
             this.handleMouseUp(e);
         });
+
+        this.keyboardSelectedIndex = 0;
+    }
+
+    regeneratePuzzle() {
+        super.regeneratePuzzle();
+        if (this.webglRenderer && this.voronoi) {
+            this.createWebGLPieces();
+        }
+    }
+
+    handleKeyDown(e) {
+        if (!this.webglRenderer || !this.points?.length) return;
+
+        const pieceCount = this.points.length;
+
+        switch (e.key) {
+            case 'ArrowRight':
+            case 'ArrowDown':
+                e.preventDefault();
+                this.keyboardSelectedIndex = (this.keyboardSelectedIndex + 1) % pieceCount;
+                this.highlightKeyboardSelection();
+                break;
+            case 'ArrowLeft':
+            case 'ArrowUp':
+                e.preventDefault();
+                this.keyboardSelectedIndex = (this.keyboardSelectedIndex - 1 + pieceCount) % pieceCount;
+                this.highlightKeyboardSelection();
+                break;
+            case 'Enter':
+            case ' ':
+                e.preventDefault();
+                this.toggleKeyboardDrag();
+                break;
+            case 'Escape':
+                e.preventDefault();
+                if (this.isDragging) {
+                    this.resetInteractionState();
+                    announce('Drag cancelled.');
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    highlightKeyboardSelection() {
+        if (this.hoveredPiece !== -1 && this.webglRenderer) {
+            this.webglRenderer.updatePieceVisualState(this.hoveredPiece, 'normal');
+        }
+
+        this.hoveredPiece = this.keyboardSelectedIndex;
+        this.webglRenderer.updatePieceVisualState(this.keyboardSelectedIndex, 'hover');
+        announce(`Piece ${this.keyboardSelectedIndex + 1} selected. Press Enter to pick up or drop.`);
+    }
+
+    toggleKeyboardDrag() {
+        const index = this.keyboardSelectedIndex;
+
+        if (!this.isDragging) {
+            const position = this.webglRenderer.positionManager?.getPiecePosition(
+                index,
+                this.webglRenderer.pieces[index]?.offset || { x: 0, y: 0 }
+            ) || { x: this.points[index][0], y: this.points[index][1] };
+
+            this.activatePiece(index, position.x, position.y);
+            announce(`Piece ${index + 1} picked up. Use Enter to drop or Escape to cancel.`);
+            return;
+        }
+
+        if (this.draggedCellIndex === index) {
+            this.handleMouseUp({});
+        }
     }
 
     generateVoronoi() {
@@ -690,5 +767,6 @@ class WebGLRenderer extends VoronoiPuzzleBase {
 }
 
 // Export classes
+export { VoronoiPuzzle, WebGLRenderer };
 window.VoronoiPuzzle = VoronoiPuzzle;
 window.WebGLRenderer = WebGLRenderer;

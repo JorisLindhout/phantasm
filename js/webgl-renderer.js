@@ -3,6 +3,16 @@
  * Uses Three.js for simplified WebGL management
  */
 
+import * as THREE from 'three';
+import { SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS } from './constants.js';
+import { createAnimatedPolygon } from './animated-path.js';
+import {
+    buildFanTriangulation,
+    updateFanTriangulationBuffers,
+    buildBoundaryVertices,
+    updateBoundaryVertices,
+} from './polygon-geometry.js';
+
 // Check if WebGL is supported
 function isWebGLSupported() {
     try {
@@ -67,7 +77,18 @@ class WebGLVoronoiRenderer {
         
         // Solved state tracking
         this.isSolved = false;
-        this.solveThreshold = 10; // pixels - how close pieces need to be to be considered "solved"
+        this.solveThreshold = SOLVE_THRESHOLD;
+
+        this.debugLogging = {
+            interactionDebug: false,
+            materialUpdates: false,
+            hoverEffects: false,
+            neonGlow: false,
+            initialization: false,
+            coordinates: false,
+            rendererSwitching: false,
+            canvasSetup: false,
+        };
         
         this.init();
     }
@@ -124,19 +145,13 @@ class WebGLVoronoiRenderer {
         this.camera.position.z = 100;
         
         try {
-            // Test if we can get a WebGL context directly first
-            const testGL = this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
-            if (!testGL) {
-                throw new Error('Cannot get WebGL context from canvas');
-            }
-            
             this.renderer = new THREE.WebGLRenderer({
                 canvas: this.canvas,
                 alpha: true,
                 antialias: true,
-                preserveDrawingBuffer: true,
-                powerPreference: "default", // Use default power preference for compatibility
-                failIfMajorPerformanceCaveat: false // Don't fail on performance issues
+                preserveDrawingBuffer: false,
+                powerPreference: 'default',
+                failIfMajorPerformanceCaveat: false,
             });
         } catch (error) {
             console.error('❌ WebGL context creation failed:', error);
@@ -149,6 +164,18 @@ class WebGLVoronoiRenderer {
         // Enable depth testing for proper z-layering
         this.renderer.sortObjects = true;
         this.renderer.setPixelRatio(1); // Force pixel ratio to 1 to avoid scaling issues
+
+        this.canvas.addEventListener('webglcontextlost', (event) => {
+            event.preventDefault();
+            console.warn('WebGL context lost');
+        });
+
+        this.canvas.addEventListener('webglcontextrestored', () => {
+            console.log('WebGL context restored');
+            if (this.voronoiPolygons.length > 0) {
+                this.createConnectedMesh();
+            }
+        });
         
         // KEEP: User-facing success message
         console.log('✅ WebGL renderer initialized');
@@ -720,7 +747,7 @@ class WebGLVoronoiRenderer {
         const distance = Math.sqrt(offset.x * offset.x + offset.y * offset.y);
         
         // NEW: Auto-snap when piece gets close to its slot
-        if (distance <= 25 && this.pieces[index].state === 'unsolved') {
+        if (distance <= SNAP_THRESHOLD && this.pieces[index].state === 'unsolved') {
             // Piece is close to its slot - trigger auto-snap
             // Add a small delay to prevent rapid cycling
             if (!this.pieces[index].autoSnapTimeout) {
@@ -733,7 +760,7 @@ class WebGLVoronoiRenderer {
         }
         
         // If piece has significant offset, create separate mesh
-        if (distance > 25) { // Increased threshold to prevent rapid cycling
+        if (distance > SNAP_THRESHOLD) { // Increased threshold to prevent rapid cycling
             // Piece is being moved out - update states (ARRAY SYSTEM)
             
             // NEW: Update object system
@@ -963,44 +990,25 @@ class WebGLVoronoiRenderer {
     // Create neon glow outline for a polygon with multiple layers for realistic glow effect
     createNeonGlowOutlineForPolygon(polygon, position, visible = true) {
         const glowLayers = [];
-
-        // Create multi-layered glow effect similar to CSS box-shadow
-        // Multiple layers with different opacities and scales for realistic glow
         const glowColor = this.getThemeColor('pieceDragging');
-        const glowConfigs = [
-            // Inner glow layers (closest to piece) - bright and tight
-            { scale: 1.0, opacity: 1.0, color: glowColor, zOffset: 0.01 },
-            { scale: 1.01, opacity: 0.8, color: glowColor, zOffset: 0.02 },
-            { scale: 1.02, opacity: 0.6, color: glowColor, zOffset: 0.03 },
-            { scale: 1.04, opacity: 0.4, color: glowColor, zOffset: 0.04 },
-            // Middle glow layers - medium spread
-            { scale: 1.06, opacity: 0.3, color: glowColor, zOffset: 0.05 },
-            { scale: 1.08, opacity: 0.25, color: glowColor, zOffset: 0.06 },
-            { scale: 1.10, opacity: 0.2, color: glowColor, zOffset: 0.07 },
-            // Outer glow layers (further from piece) - soft and wide
-            { scale: 1.12, opacity: 0.15, color: glowColor, zOffset: 0.08 },
-            { scale: 1.15, opacity: 0.1, color: glowColor, zOffset: 0.09 },
-            { scale: 1.18, opacity: 0.05, color: glowColor, zOffset: 0.10 },
-        ];
-        
-        glowConfigs.forEach((config, index) => {
-            // Create boundary geometry for this glow layer using only the polygon outline
-            const glowGeometry = this.createBoundaryGeometryForPolygon(polygon, config.scale);
-            
+
+        GLOW_LAYER_CONFIGS.forEach((config) => {
+            const vertices = buildBoundaryVertices(polygon, config.scale);
+            const glowGeometry = new THREE.BufferGeometry();
+            glowGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
             const glowMaterial = new THREE.LineBasicMaterial({
-                color: config.color,
+                color: glowColor,
                 transparent: true,
                 opacity: config.opacity,
-                linewidth: 1
+                linewidth: 1,
             });
-            
+
             const glowOutline = new THREE.LineSegments(glowGeometry, glowMaterial);
-            
-            // Position the glow outline at the same position as the piece
             glowOutline.position.copy(position);
-            glowOutline.position.z += config.zOffset; // Layer the glow effects
+            glowOutline.position.z += config.zOffset;
             glowOutline.visible = visible;
-            
+
             glowLayers.push(glowOutline);
             this.scene.add(glowOutline);
         });
@@ -1060,37 +1068,17 @@ class WebGLVoronoiRenderer {
     updateNeonGlowOutlineForPolygon(glowLayers, polygon, position) {
         if (!glowLayers || glowLayers.length === 0) return;
 
-        // Define the same glow configs as in createNeonGlowOutlineForPolygon
-        const glowConfigs = [
-            { scale: 1.0, opacity: 1.0, zOffset: 0.01 },
-            { scale: 1.01, opacity: 0.8, zOffset: 0.02 },
-            { scale: 1.02, opacity: 0.6, zOffset: 0.03 },
-            { scale: 1.04, opacity: 0.4, zOffset: 0.04 },
-            { scale: 1.06, opacity: 0.3, zOffset: 0.05 },
-            { scale: 1.08, opacity: 0.25, zOffset: 0.06 },
-            { scale: 1.10, opacity: 0.2, zOffset: 0.07 },
-            { scale: 1.12, opacity: 0.15, zOffset: 0.08 },
-            { scale: 1.15, opacity: 0.1, zOffset: 0.09 },
-            { scale: 1.18, opacity: 0.05, zOffset: 0.10 },
-        ];
-        
         glowLayers.forEach((glowOutline, index) => {
-            if (index < glowConfigs.length) {
-                const config = glowConfigs[index];
-                
-                // Create new boundary geometry with proper scaling
-                const newBoundaryGeometry = this.createBoundaryGeometryForPolygon(polygon, config.scale);
-                
-                // Update geometry
-                glowOutline.geometry.dispose();
-                glowOutline.geometry = newBoundaryGeometry;
-                
-                // Update position - use same coordinate system as piece
-                // The position parameter should match the piece's mesh position
-                glowOutline.position.x = position.x;
-                glowOutline.position.y = position.y;
-                glowOutline.position.z = position.z + config.zOffset;
-            }
+            if (index >= GLOW_LAYER_CONFIGS.length) return;
+
+            const config = GLOW_LAYER_CONFIGS[index];
+            const positions = glowOutline.geometry.attributes.position.array;
+            updateBoundaryVertices(positions, polygon, config.scale);
+            glowOutline.geometry.attributes.position.needsUpdate = true;
+
+            glowOutline.position.x = position.x;
+            glowOutline.position.y = position.y;
+            glowOutline.position.z = position.z + config.zOffset;
         });
     }
     
@@ -1151,30 +1139,21 @@ class WebGLVoronoiRenderer {
     updateOutlineState(material, state) {
         switch (state) {
             case 'hover':
-                // Theme hover color
                 material.color.setHex(this.getThemeColor('outlineHover'));
-                material.opacity = 0.6;
-                material.linewidth = 2;
+                material.opacity = 1.0;
                 break;
             case 'dragging':
-                // Very bright outline for dragging - make it super visible
-                material.color.setHex(this.getThemeColor('outlineDragging')); // Theme dragging outline
-                material.opacity = 1.0; // Full opacity
-                material.linewidth = 4; // Thick line
-                console.log(`🔥 Applied bright dragging outline`);
+                material.color.setHex(this.getThemeColor('outlineDragging'));
+                material.opacity = 1.0;
                 break;
             case 'snapped':
-                // Green outline for snapped pieces
                 material.color.setHex(this.getThemeColor('outlineSnapped'));
-                material.opacity = 0.8;
-                material.linewidth = 2;
+                material.opacity = 1.0;
                 break;
             case 'normal':
             default:
-                // Default subtle outline
                 material.color.setHex(this.getThemeColor('outlineNormal'));
-                material.opacity = 0.3;
-                material.linewidth = 1;
+                material.opacity = 0.8;
                 break;
         }
     }
@@ -1387,29 +1366,13 @@ class WebGLVoronoiRenderer {
         const polygon = this.voronoiPolygons[index];
         if (!polygon || polygon.length < 3) return;
         
-        // Create geometry for this piece
-        const shape = new THREE.Shape();
-        shape.moveTo(polygon[0][0], polygon[0][1]);
-        for (let i = 1; i < polygon.length; i++) {
-            shape.lineTo(polygon[i][0], polygon[i][1]);
-        }
-        
-        const geometry = new THREE.ShapeGeometry(shape);
-        
-        // Set up UV coordinates
-        if (geometry.attributes.position) {
-            const positions = geometry.attributes.position.array;
-            const uvs = [];
-            
-            for (let i = 0; i < positions.length; i += 3) {
-                const x = positions[i];
-                const y = positions[i + 1];
-                const vertexUV = this.calculateBackgroundUV(x, y);
-                uvs.push(vertexUV.u, vertexUV.v);
-            }
-            
-            geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-        }
+        // Create geometry for this piece using fan triangulation (supports in-place updates)
+        const uvFn = (x, y) => this.calculateBackgroundUV(x, y);
+        const { vertices, uvs, indices } = buildFanTriangulation(polygon, uvFn);
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+        geometry.setIndex(indices);
         
         // Create material - only show background image if piece is unsolved
         const showBackground = this.pieces[index].state === 'unsolved';
@@ -1527,29 +1490,6 @@ class WebGLVoronoiRenderer {
         }
     }
     
-    
-    updateOutlineState(material, state) {
-        switch (state) {
-            case 'hover':
-                material.color.setHex(this.getThemeColor('outlineHover')); // Theme hover color
-                material.opacity = 1.0;
-                break;
-            case 'dragging':
-                material.color.setHex(this.getThemeColor('outlineDragging')); // Theme dragging color
-                material.opacity = 1.0;
-                break;
-            case 'snapped':
-                material.color.setHex(this.getThemeColor('outlineSnapped')); // Theme snapped color
-                material.opacity = 1.0;
-                break;
-            case 'normal':
-            default:
-                material.color.setHex(this.getThemeColor('outlineNormal')); // Theme normal color
-                material.opacity = 0.8;
-                break;
-        }
-    }
-    
     animatePieceBoundaries(time) {
         this.animationTime = time;
         
@@ -1578,27 +1518,8 @@ class WebGLVoronoiRenderer {
     
     // Create animated path using noise (similar to 2D version)
     createAnimatedPath(originalPolygon, time, amplitude = null) {
-        const animatedPath = [];
-        
-        // Use config amplitude if not provided, fallback to default
         const noiseAmplitude = amplitude !== null ? amplitude : this.config.noiseAmplitude;
-        
-        for (let i = 0; i < originalPolygon.length; i++) {
-            const [x, y] = originalPolygon[i];
-            
-            // Calculate noise-based offset (enhanced for better visibility)
-            const timeScale = 0.002; // Slower animation for better visibility
-            const spatialScale = 0.015; // More variation across space
-            const noiseX = Math.sin(time * timeScale + x * spatialScale + y * spatialScale * 0.7) * noiseAmplitude * 0.8;
-            const noiseY = Math.cos(time * timeScale * 1.3 + x * spatialScale * 0.8 + y * spatialScale) * noiseAmplitude * 0.8;
-            
-            const animatedX = x + noiseX;
-            const animatedY = y + noiseY;
-            
-            animatedPath.push([animatedX, animatedY]);
-        }
-        
-        return animatedPath;
+        return createAnimatedPolygon(originalPolygon, time, noiseAmplitude);
     }
     
     // Update connected mesh geometry with animated boundaries
@@ -1656,51 +1577,27 @@ class WebGLVoronoiRenderer {
     
     // Update separate piece geometry with animated boundaries
     updateSeparatePieceGeometry(piece, index, time) {
-        // Use object system for polygon data
         const pieceObj = this.pieces[index];
         const originalPolygon = pieceObj ? pieceObj.polygon : this.voronoiPolygons[index];
-        if (!originalPolygon) return;
-        
-        // Create animated polygon
+        if (!originalPolygon || !piece.geometry?.attributes?.position) return;
+
         const animatedPolygon = this.createAnimatedPath(originalPolygon, time);
-        
-        // Create new geometry with animated boundaries
-        const shape = new THREE.Shape();
-        shape.moveTo(animatedPolygon[0][0], animatedPolygon[0][1]);
-        for (let i = 1; i < animatedPolygon.length; i++) {
-            shape.lineTo(animatedPolygon[i][0], animatedPolygon[i][1]);
-        }
-        
-        const newGeometry = new THREE.ShapeGeometry(shape);
-        
-        // Set up UV coordinates
-        if (newGeometry.attributes.position) {
-            const positions = newGeometry.attributes.position.array;
-            const uvs = [];
-            
-            for (let i = 0; i < positions.length; i += 3) {
-                const x = positions[i];
-                const y = positions[i + 1];
-                // Sync UV coordinates with animated positions
-                const vertexUV = this.calculateBackgroundUV(x, y);
-                uvs.push(vertexUV.u, vertexUV.v);
-            }
-            
-            newGeometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-        }
-        
-        // Replace geometry
-        piece.geometry.dispose();
-        piece.geometry = newGeometry;
-        
-        // Update neon glow outline to follow animated boundaries
+        const uvFn = (x, y) => this.calculateBackgroundUV(x, y);
+
+        updateFanTriangulationBuffers(
+            piece.geometry.attributes.position.array,
+            piece.geometry.attributes.uv.array,
+            animatedPolygon,
+            uvFn
+        );
+
+        piece.geometry.attributes.position.needsUpdate = true;
+        piece.geometry.attributes.uv.needsUpdate = true;
+        piece.geometry.computeBoundingBox();
+
         const neonGlow = this.separateGlowOutlines[index];
         if (neonGlow) {
-            const originalPolygon = this.voronoiPolygons[index];
-            if (originalPolygon) {
-                const animatedPolygon = this.createAnimatedPath(originalPolygon, time);
-                this.updateNeonGlowOutlineForPolygon(neonGlow, animatedPolygon, piece.position);
-            }
+            this.updateNeonGlowOutlineForPolygon(neonGlow, animatedPolygon, piece.position);
         }
     }
     
