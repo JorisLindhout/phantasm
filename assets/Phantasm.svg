@@ -1,9 +1,8 @@
-<svg width="850" height="478" viewBox="0 0 850 478" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="850" height="478" fill="#111111"/>
-<path d="M306 354.5H544V123H306V354.5Z" stroke="#1E546A" stroke-width="2"/>
-<ellipse cx="425" cy="239" rx="119" ry="116" fill="url(#paint0_radial_1354_22)" fill-opacity="0.8"/>
+<svg width="450" height="450" viewBox="0 0 450 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="450" height="450" fill="#111111"/>
+<ellipse cx="225" cy="225" rx="119" ry="116" fill="url(#paint0_radial_1354_22)" fill-opacity="0.8"/>
 <defs>
-<radialGradient id="paint0_radial_1354_22" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(425 239) rotate(90) scale(116 119)">
+<radialGradient id="paint0_radial_1354_22" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(225 225) rotate(90) scale(116 119)">
 <stop stop-color="#00CCFF"/>
 <stop offset="1" stop-opacity="0"/>
 </radialGradient>

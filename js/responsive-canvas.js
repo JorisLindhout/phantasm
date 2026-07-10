@@ -1,254 +1,213 @@
 /**
- * Responsive Canvas System
- * 
- * This module provides responsive canvas sizing that:
- * 1. Adjusts canvas size to fit viewport on page load
- * 2. Maintains 16:9 aspect ratio
- * 3. Handles coordinate system properly
- * 4. Provides reload mechanism for viewport changes
+ * Responsive stage sizing for the puzzle canvas.
+ *
+ * - Display size scales to fit the viewport (fixed 1:1 level aspect ratio, max width).
+ * - Logical canvas pixels are locked for the session so mid-game resize preserves state.
+ * - Pointer input maps through CSS scale via CoordinateUtils.normalizeMouseCoordinates.
  */
+
+import {
+    LEVEL_ASPECT_RATIO,
+    STAGE_GLOW_PADDING,
+    STAGE_HORIZONTAL_PADDING,
+    STAGE_MAX_WIDTH,
+    STAGE_MIN_HEIGHT,
+    STAGE_MIN_WIDTH,
+    STAGE_VERTICAL_CHROME,
+} from './stage-constants.js';
+
+/**
+ * @param {{ width: number, height: number }} viewport
+ * @param {object} [options]
+ * @returns {{ width: number, height: number }}
+ */
+export function calculateDisplaySize(viewport, options = {}) {
+    const aspectRatio = options.aspectRatio ?? LEVEL_ASPECT_RATIO;
+    const maxWidth = options.maxWidth ?? STAGE_MAX_WIDTH;
+    const minWidth = options.minWidth ?? STAGE_MIN_WIDTH;
+    const minHeight = options.minHeight ?? STAGE_MIN_HEIGHT;
+    const horizontalPadding = options.horizontalPadding ?? STAGE_HORIZONTAL_PADDING;
+    const verticalChrome = options.verticalChrome ?? STAGE_VERTICAL_CHROME;
+
+    const availableWidth = Math.max(
+        0,
+        options.availableWidth ?? viewport.width - horizontalPadding,
+    );
+    const availableHeight = Math.max(
+        0,
+        options.availableHeight ?? viewport.height - verticalChrome,
+    );
+
+    let width = Math.min(availableWidth, maxWidth);
+    let height = width / aspectRatio;
+
+    if (height > availableHeight) {
+        height = availableHeight;
+        width = height * aspectRatio;
+    }
+
+    if (width < minWidth && availableWidth >= minWidth) {
+        width = minWidth;
+        height = width / aspectRatio;
+        if (height > availableHeight) {
+            height = Math.max(minHeight, availableHeight);
+            width = height * aspectRatio;
+        }
+    }
+
+    width = Math.floor(Math.max(1, Math.min(width, availableWidth || width)));
+    height = Math.floor(Math.max(1, width / aspectRatio));
+
+    return { width, height };
+}
+
+/**
+ * @returns {{ width: number, height: number }}
+ */
+export function getViewportSize() {
+    if (typeof window === 'undefined') {
+        return { width: 1024, height: 768 };
+    }
+
+    return {
+        width: window.innerWidth,
+        height: window.innerHeight,
+    };
+}
 
 class ResponsiveCanvas {
     constructor() {
-        this.aspectRatio = 16 / 9;
-        this.minWidth = 800;
-        this.minHeight = 450;
-        this.maxWidth = 1920;
-        this.maxHeight = 1080;
-        
-        // Store original canvas settings for fallback
-        this.originalWidth = 1200;
-        this.originalHeight = 675;
-        
-        this.isResponsive = true;
-        this.viewportSize = null;
+        /** @type {{ width: number, height: number } | null} */
+        this.logicalSize = null;
     }
-    
+
     /**
-     * Calculate optimal canvas size for current viewport
-     * @returns {Object} {width, height} in pixels
+     * @param {HTMLCanvasElement} canvas
+     * @returns {HTMLElement | null}
      */
-    calculateOptimalSize() {
-        const viewport = this.getViewportSize();
-        
-        // Calculate available space (accounting for UI elements)
-        const availableWidth = viewport.width - 40; // 20px padding on each side
-        const availableHeight = viewport.height - 120; // Account for header, controls, etc.
-        
-        // Calculate size based on width (16:9 aspect ratio)
-        let width = availableWidth;
-        let height = width / this.aspectRatio;
-        
-        // If height is too large, scale down based on height
-        if (height > availableHeight) {
-            height = availableHeight;
-            width = height * this.aspectRatio;
+    getStageElement(canvas) {
+        return canvas?.closest('.stage') ?? null;
+    }
+
+    /**
+     * @param {HTMLCanvasElement} canvas
+     * @returns {{ width: number, height: number }}
+     */
+    getAvailableBounds(canvas) {
+        const glowInset = STAGE_GLOW_PADDING * 2;
+        const container = canvas?.closest('.puzzle-container');
+        if (container) {
+            const rect = container.getBoundingClientRect();
+            return {
+                width: Math.max(0, Math.floor(rect.width) - glowInset),
+                height: Math.max(0, Math.floor(rect.height) - glowInset),
+            };
         }
-        
-        // Apply min/max constraints
-        width = Math.max(this.minWidth, Math.min(this.maxWidth, width));
-        height = Math.max(this.minHeight, Math.min(this.maxHeight, height));
-        
-        // Ensure we have integer dimensions
-        width = Math.floor(width);
-        height = Math.floor(height);
-        
-        return { width, height };
-    }
-    
-    /**
-     * Get current viewport size
-     * @returns {Object} {width, height} in pixels
-     */
-    getViewportSize() {
+
+        const viewport = getViewportSize();
         return {
-            width: window.innerWidth,
-            height: window.innerHeight
+            width: Math.max(0, viewport.width - STAGE_HORIZONTAL_PADDING - glowInset),
+            height: Math.max(0, viewport.height - STAGE_VERTICAL_CHROME - glowInset),
         };
     }
-    
-    /**
-     * Check if viewport size has changed significantly
-     * @returns {boolean} True if viewport size changed significantly
-     */
-    hasViewportChanged() {
-        const currentViewport = this.getViewportSize();
-        
-        if (!this.viewportSize) {
-            this.viewportSize = currentViewport;
-            return false;
-        }
-        
-        const widthDiff = Math.abs(currentViewport.width - this.viewportSize.width);
-        const heightDiff = Math.abs(currentViewport.height - this.viewportSize.height);
-        
-        // Consider changed if difference is more than 50px in any dimension
-        const hasChanged = widthDiff > 50 || heightDiff > 50;
-        
-        if (hasChanged) {
-            this.viewportSize = currentViewport;
-        }
-        
-        return hasChanged;
-    }
-    
-    /**
-     * Setup responsive canvas sizing
-     * @param {HTMLCanvasElement} canvas - The canvas element to resize
-     * @param {boolean} forceResponsive - Force responsive mode even if disabled
-     */
-    setupResponsiveCanvas(canvas, forceResponsive = false) {
-        if (!this.isResponsive && !forceResponsive) {
-            // Use fixed size
-            this.setupFixedCanvas(canvas);
-            return;
-        }
-        
-        const optimalSize = this.calculateOptimalSize();
-        
-        // Set canvas internal resolution
-        canvas.width = optimalSize.width;
-        canvas.height = optimalSize.height;
-        
-        // Set canvas display size
-        canvas.style.width = optimalSize.width + 'px';
-        canvas.style.height = optimalSize.height + 'px';
-        
-        // Update container to center the canvas
-        this.centerCanvasInContainer(canvas);
-        
-        // Log the change
-        console.log(`🎨 Canvas resized to ${optimalSize.width}×${optimalSize.height} (responsive mode)`);
 
-    }
-    
     /**
-     * Setup fixed canvas sizing (original behavior)
-     * @param {HTMLCanvasElement} canvas - The canvas element to resize
+     * @param {HTMLCanvasElement} canvas
+     * @returns {{ width: number, height: number }}
      */
-    setupFixedCanvas(canvas) {
-        canvas.width = this.originalWidth;
-        canvas.height = this.originalHeight;
-        canvas.style.width = this.originalWidth + 'px';
-        canvas.style.height = this.originalHeight + 'px';
-        
-        this.centerCanvasInContainer(canvas);
-        
-        console.log(`🎨 Canvas set to fixed size ${this.originalWidth}×${this.originalHeight}`);
-    }
-    
-    /**
-     * Center canvas in its container
-     * @param {HTMLCanvasElement} canvas - The canvas element
-     */
-    centerCanvasInContainer(canvas) {
-        const container = canvas.closest('.puzzle-container');
-        if (container) {
-            container.style.display = 'flex';
-            container.style.justifyContent = 'center';
-            container.style.alignItems = 'center';
-        }
-    }
-    
-    /**
-     * Enable or disable responsive mode
-     * @param {boolean} enabled - Whether to enable responsive mode
-     */
-    setResponsiveMode(enabled) {
-        this.isResponsive = enabled;
-        console.log(`🎨 Responsive canvas mode: ${enabled ? 'ENABLED' : 'DISABLED'}`);
-    }
-    
-    /**
-     * Handle viewport resize - suggest page reload
-     */
-    handleViewportResize() {
-        if (!this.isResponsive) return;
-        
-        if (this.hasViewportChanged()) {
-            console.log('📱 Viewport size changed significantly. Consider reloading the page for optimal experience.');
-            
-            // Show a subtle notification
-            this.showResizeNotification();
-        }
-    }
-    
-    /**
-     * Show resize notification to user
-     */
-    showResizeNotification() {
-        const existing = document.querySelector('.resize-notification');
-        if (existing) {
-            existing.remove();
-        }
-
-        const notification = document.createElement('div');
-        notification.className = 'resize-notification';
-        notification.setAttribute('role', 'status');
-
-        Object.assign(notification.style, {
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            background: 'var(--primary-color)',
-            color: 'var(--text-color)',
-            padding: '12px 20px',
-            borderRadius: '8px',
-            fontSize: '14px',
-            zIndex: '1000',
-            boxShadow: '0 4px 12px var(--background-color)',
-            cursor: 'pointer',
-            transition: 'opacity 0.3s ease',
-        });
-
-        notification.textContent = 'Viewport changed - reload page for optimal sizing';
-        document.body.appendChild(notification);
-        
-        // Auto-hide after 5 seconds
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            setTimeout(() => notification.remove(), 300);
-        }, 5000);
-        
-        // Hide on click
-        notification.addEventListener('click', () => {
-            notification.style.opacity = '0';
-            setTimeout(() => notification.remove(), 300);
+    computeDisplaySize(canvas) {
+        const bounds = this.getAvailableBounds(canvas);
+        return calculateDisplaySize(getViewportSize(), {
+            availableWidth: bounds.width,
+            availableHeight: bounds.height,
         });
     }
-    
+
     /**
-     * Get current canvas size
-     * @param {HTMLCanvasElement} canvas - The canvas element
-     * @returns {Object} {width, height} in pixels
+     * Lock logical resolution and apply display sizing.
+     * @param {HTMLCanvasElement} canvas
+     * @param {{ resetLogical?: boolean }} [options]
+     * @returns {{ logical: { width: number, height: number }, display: { width: number, height: number } }}
+     */
+    setupStage(canvas, options = {}) {
+        const displaySize = this.computeDisplaySize(canvas);
+
+        if (options.resetLogical || !this.logicalSize) {
+            this.logicalSize = { ...displaySize };
+        }
+
+        canvas.width = this.logicalSize.width;
+        canvas.height = this.logicalSize.height;
+
+        this.applyDisplaySize(canvas, displaySize);
+
+        return {
+            logical: { ...this.logicalSize },
+            display: { ...displaySize },
+        };
+    }
+
+    /**
+     * @param {HTMLCanvasElement} canvas
+     */
+    setupResponsiveCanvas(canvas, options = {}) {
+        return this.setupStage(canvas, options);
+    }
+
+    /**
+     * @param {HTMLCanvasElement} canvas
+     * @param {{ width: number, height: number }} displaySize
+     */
+    applyDisplaySize(canvas, displaySize) {
+        const stage = this.getStageElement(canvas);
+        if (stage) {
+            stage.style.width = `${displaySize.width}px`;
+            stage.style.height = `${displaySize.height}px`;
+        }
+    }
+
+    /**
+     * Update display size on viewport change without touching logical coordinates.
+     * @param {HTMLCanvasElement} canvas
+     */
+    handleViewportResize(canvas) {
+        if (!canvas) return;
+
+        const displaySize = this.computeDisplaySize(canvas);
+        this.applyDisplaySize(canvas, displaySize);
+    }
+
+    resetLogicalSize() {
+        this.logicalSize = null;
+    }
+
+    /**
+     * @param {HTMLCanvasElement} canvas
+     * @returns {{ width: number, height: number }}
      */
     getCanvasSize(canvas) {
         return {
             width: canvas.width,
-            height: canvas.height
+            height: canvas.height,
         };
     }
-    
+
     /**
-     * Get canvas scale factor (internal resolution vs display size)
-     * @param {HTMLCanvasElement} canvas - The canvas element
-     * @returns {Object} {scaleX, scaleY}
+     * @param {HTMLCanvasElement} canvas
+     * @returns {{ scaleX: number, scaleY: number }}
      */
     getCanvasScale(canvas) {
         const rect = canvas.getBoundingClientRect();
         return {
             scaleX: canvas.width / rect.width,
-            scaleY: canvas.height / rect.height
+            scaleY: canvas.height / rect.height,
         };
     }
 }
 
-// Create global instance
-window.responsiveCanvas = new ResponsiveCanvas();
+const responsiveCanvas = new ResponsiveCanvas();
 
-// Export for module systems
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ResponsiveCanvas;
-} else {
-    window.ResponsiveCanvas = ResponsiveCanvas;
-}
+window.responsiveCanvas = responsiveCanvas;
+window.ResponsiveCanvas = ResponsiveCanvas;
+
+export { ResponsiveCanvas, responsiveCanvas };

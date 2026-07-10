@@ -3,7 +3,7 @@
  * Updates both CSS variables and WebGL renderer colors
  */
 
-import { THEMES, DEFAULT_THEME, ThemeUtils } from './theme.js';
+import { THEMES, DEFAULT_THEME, ThemeUtils, UNSOLVED_STAGE_GLOW, UNSOLVED_STAGE_GLOW_ALPHA } from './theme.js';
 
 class ThemeManager {
     constructor() {
@@ -75,7 +75,7 @@ class ThemeManager {
 
         // UI colors (consistent across all themes)
         root.style.setProperty('--background-color', '#111111');
-        root.style.setProperty('--canvas-background', '#1a1a1a');
+        root.style.setProperty('--canvas-background', '#111111');
         root.style.setProperty('--text-color', '#ffffff');
         root.style.setProperty('--text-muted', '#888888');
         
@@ -106,6 +106,12 @@ class ThemeManager {
         // Solved state colors
         root.style.setProperty('--solved-color', colors.solved.css);
         root.style.setProperty('--solved-glow', colors.solvedGlow.rgba);
+
+        // Unsolved stage frame (global, not per-level)
+        root.style.setProperty(
+            '--stage-glow',
+            ThemeUtils.getColorWithAlpha(UNSOLVED_STAGE_GLOW, UNSOLVED_STAGE_GLOW_ALPHA),
+        );
         
 
         // Effects

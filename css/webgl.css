@@ -18,6 +18,12 @@ canvas.webgl-canvas {
     -webkit-tap-highlight-color: transparent;
 }
 
+/* Hidden 2D canvas is only used for coordinate alignment in WebGL mode */
+.puzzle-container.webgl-mode #voronoiCanvas {
+    opacity: 0;
+    pointer-events: none;
+}
+
 canvas.webgl-canvas:active {
     cursor: grabbing;
 }

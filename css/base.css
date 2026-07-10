@@ -43,6 +43,12 @@
     --glow-intensity: 0.8;
     --scale-hover: 1.02;
     --scale-dragging: 1.1;
+
+    /* Space around the puzzle stage for solved-state glow (matches STAGE_GLOW_PADDING) */
+    --stage-glow-padding: 48px;
+
+    /* Unsolved stage halo — overridden by theme-manager */
+    --stage-glow: rgba(255, 102, 0, 0.45);
 }
 
 /* Reset and Base Styles */
@@ -71,7 +77,11 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    height: 100dvh;
     padding: 10px;
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
 }
 
 h1 {
@@ -84,33 +94,49 @@ h1 {
     flex-shrink: 0;
 }
 
-/* Puzzle Container */
+/* Puzzle Container — transparent wrapper; stage holds the puzzle */
 .puzzle-container {
     position: relative;
     flex: 1;
-    background: #1a1a1a; /* Fallback */
-    background: var(--canvas-background); /* Theme override */
-    overflow: auto; /* Allow scrollbars when canvas is larger than container */
-    min-height: 400px; /* Ensure minimum height */
-    box-shadow: 0 20px 40px var(--piece-border);
-    /*border: 1px solid var(--cell-border);*/
-    transition: border-color var(--transition-speed) ease;
-    margin-bottom: 10px;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    overflow: visible;
+    margin: var(--stage-glow-padding) 0;
 }
 
-/* Solved State Styles */
-.puzzle-solved {
-    border: 0px solid var(--solved-color) !important;
-    box-shadow: 0 0 30px var(--solved-glow), 0 20px 40px var(--piece-border) !important;
+/* Centered stage with fixed level aspect ratio (1:1) */
+.stage {
+    --stage-max-width: 1200px;
+    position: relative;
+    flex-shrink: 0;
+    border-radius: var(--border-radius-small);
+    box-shadow: 0 0 12px var(--stage-glow);
+    transition: box-shadow var(--transition-speed) ease;
+}
+
+.stage canvas#voronoiCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Solved State Styles — uniform glow around .stage only when puzzle is complete */
+.stage.puzzle-solved {
+    box-shadow: 0 0 30px var(--solved-glow) !important;
     animation: solvedGlow 2s ease-in-out infinite alternate;
 }
 
 @keyframes solvedGlow {
     0% {
-        box-shadow: 0 0 20px var(--solved-glow), 0 20px 40px var(--piece-border);
+        box-shadow: 0 0 20px var(--solved-glow);
     }
     100% {
-        box-shadow: 0 0 40px var(--solved-glow), 0 20px 40px var(--piece-border);
+        box-shadow: 0 0 40px var(--solved-glow);
     }
 }
 

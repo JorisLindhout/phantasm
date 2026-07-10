@@ -10,6 +10,7 @@ import { buildSeparatePieceGeometry } from './separate-piece-geometry.js';
 import { getSeparatePieceMeshPosition } from './drag-offset.js';
 import { ensureUnsolvedPieceBackground } from './piece-material.js';
 import { configureRendererColors, configureTextureColors } from './three-config.js';
+import { LEVEL_HEIGHT, LEVEL_WIDTH } from './stage-constants.js';
 
 // Check if WebGL is supported
 function isWebGLSupported() {
@@ -39,8 +40,8 @@ class WebGLVoronoiRenderer {
         this.config = config || { noiseAmplitude: 20 };
         
         // Store original background image dimensions for proper UV mapping
-        this.backgroundImageWidth = 850;  // Original SVG width
-        this.backgroundImageHeight = 478; // Original SVG height
+        this.backgroundImageWidth = LEVEL_WIDTH;
+        this.backgroundImageHeight = LEVEL_HEIGHT;
         
         // Store Voronoi data for connected rendering
         this.voronoiPolygons = [];
@@ -104,15 +105,13 @@ class WebGLVoronoiRenderer {
         
         // Create a new canvas for WebGL to avoid context conflicts
         this.canvas = document.createElement('canvas');
-        
-        // Get the display size from the original canvas container
-        const container = this.originalCanvas.parentElement;
-        const displayWidth = container.clientWidth;
-        const displayHeight = container.clientHeight;
-        
-        // Set canvas resolution to match display size (avoid high DPI scaling issues)
-        this.canvas.width = displayWidth;
-        this.canvas.height = displayHeight;
+
+        // Match logical resolution set by setupCanvas on the hidden canvas
+        const logicalWidth = this.originalCanvas.width;
+        const logicalHeight = this.originalCanvas.height;
+
+        this.canvas.width = logicalWidth;
+        this.canvas.height = logicalHeight;
         
         // Set CSS size to fill container
         this.canvas.style.position = 'absolute';
@@ -157,7 +156,7 @@ class WebGLVoronoiRenderer {
             throw new Error('WebGL not supported or context creation failed: ' + error.message);
         }
         this.renderer.setSize(width, height, false); // false = don't update CSS size
-        this.renderer.setClearColor(0x000000, 1.0); // Pure black background
+        this.renderer.setClearColor(0x111111, 1.0);
         
         // Enable depth testing for proper z-layering
         this.renderer.sortObjects = true;
@@ -1779,7 +1778,7 @@ class WebGLVoronoiRenderer {
             // This is expected during disposal/reinitialization, no need to warn
             return;
         }
-        const bgColor = 0x000000; // Pure black background
+        const bgColor = 0x111111;
         this.renderer.setClearColor(bgColor, 1.0);
     }
     
@@ -2247,17 +2246,12 @@ class WebGLVoronoiRenderer {
             }
         }
         
-        // Update canvas outline
-        this.updateCanvasOutline(isSolved);
+        // Glow is handled by .stage.puzzle-solved CSS on the parent element.
     }
-    
+
     // Update canvas outline based on solved state
-    updateCanvasOutline(isSolved) {
-        if (isSolved) {
-            this.canvas.style.boxShadow = '0 20 40px var(--solved-glow)'; // Theme solved glow
-        } else {
-            this.canvas.style.boxShadow = 'none';
-        }
+    updateCanvasOutline(_isSolved) {
+        this.canvas.style.boxShadow = 'none';
     }
 }
 

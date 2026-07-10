@@ -187,6 +187,12 @@ export const THEMES = {
 // Default theme
 export const DEFAULT_THEME = THEMES.levelOne;
 
+/** Global stage frame glow while the puzzle is unsolved (all levels). */
+export const UNSOLVED_STAGE_GLOW = COLORS.fluidOrange;
+
+/** Alpha for the unsolved stage halo on #111 background. */
+export const UNSOLVED_STAGE_GLOW_ALPHA = 0.45;
+
 // Visual state definitions
 export const VISUAL_STATES = {
     NORMAL: 'normal',

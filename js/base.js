@@ -4,6 +4,7 @@
  */
 
 import { SNAP_THRESHOLD, SOLVE_THRESHOLD } from './constants.js';
+import { LEVEL_HEIGHT, LEVEL_WIDTH } from './stage-constants.js';
 
 // Base configuration for Phantasm
 class VoronoiConfig {
@@ -70,38 +71,25 @@ class VoronoiPuzzleBase {
         });
     }
 
-    setupCanvas() {
-        // Use responsive canvas system if available
+    setupCanvas(options = {}) {
         if (window.responsiveCanvas) {
-            window.responsiveCanvas.setupResponsiveCanvas(this.canvas);
+            window.responsiveCanvas.setupStage(this.canvas, options);
         } else {
-            // Fallback to fixed size
             this.setupFixedCanvas();
         }
-        
-        // Set canvas styling
+
         this.canvas.style.display = 'block';
         this.canvas.style.cursor = 'grab';
     }
-    
+
     setupFixedCanvas() {
-        // Set fixed canvas size based on 16:9 aspect ratio
-        const baseWidth = 1200; // Fixed width
-        const baseHeight = 675; // 16:9 aspect ratio (1200 / 1.777...)
-        
-        // Set canvas size - truly fixed
+        const baseWidth = 1200;
+        const baseHeight = Math.floor(baseWidth / (LEVEL_WIDTH / LEVEL_HEIGHT));
+
         this.canvas.width = baseWidth;
         this.canvas.height = baseHeight;
-        this.canvas.style.width = baseWidth + 'px';
-        this.canvas.style.height = baseHeight + 'px';
-        
-        // Make canvas truly fixed size
-        this.canvas.style.margin = '0 auto';
-        this.canvas.style.maxWidth = 'none';
-        this.canvas.style.maxHeight = 'none';
-        this.canvas.style.minWidth = baseWidth + 'px';
-        this.canvas.style.minHeight = baseHeight + 'px';
-        this.canvas.style.flexShrink = '0';
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
     }
 
     generateVoronoi() {
@@ -407,19 +395,13 @@ class VoronoiPuzzleBase {
             }
         }
         
-        // Update canvas outline
-        this.updateCanvasOutline(isSolved);
+        // Glow is handled by .stage.puzzle-solved CSS on the parent element.
     }
-    
+
     // Update canvas outline based on solved state
-    updateCanvasOutline(isSolved) {
-        if (isSolved) {
-            this.canvas.style.border = '1px solid var(--solved-color, #00ff00)'; // Theme solved color
-            this.canvas.style.boxShadow = '0 0 20px var(--solved-glow, rgba(0, 255, 0, 0.5))'; // Theme solved glow
-        } else {
-            this.canvas.style.border = 'none';
-            this.canvas.style.boxShadow = 'none';
-        }
+    updateCanvasOutline(_isSolved) {
+        this.canvas.style.border = 'none';
+        this.canvas.style.boxShadow = 'none';
     }
 
 

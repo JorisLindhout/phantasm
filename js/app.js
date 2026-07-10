@@ -39,6 +39,14 @@ function updateAnimationButtonLabel(isAnimating) {
     }
 }
 
+function debounce(fn, wait) {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn(...args), wait);
+    };
+}
+
 function setupControlHandlers() {
     document.querySelector('[data-action="regenerate"]')?.addEventListener('click', () => {
         window.voronoiPuzzle?.regeneratePuzzle();
@@ -56,14 +64,12 @@ function setupControlHandlers() {
         }
     });
 
-    document.querySelector('[data-action="toggle-responsive-canvas"]')?.addEventListener('click', () => {
-        if (window.responsiveCanvas && window.voronoiPuzzle) {
-            const currentMode = window.responsiveCanvas.isResponsive;
-            window.responsiveCanvas.setResponsiveMode(!currentMode);
-            window.voronoiPuzzle.currentRenderer?.setupCanvas();
-            window.voronoiPuzzle.regeneratePuzzle();
-        }
-    });
+    const handleStageResize = debounce(() => {
+        const canvas = document.getElementById('voronoiCanvas');
+        window.responsiveCanvas?.handleViewportResize(canvas);
+    }, 150);
+
+    window.addEventListener('resize', handleStageResize);
 
     document.getElementById('drawerToggle')?.addEventListener('click', toggleDrawer);
 
@@ -72,10 +78,6 @@ function setupControlHandlers() {
         if (window.levelManager) {
             await window.levelManager.setLevel(selectedLevel);
         }
-    });
-
-    window.addEventListener('resize', () => {
-        window.responsiveCanvas?.handleViewportResize();
     });
 }
 

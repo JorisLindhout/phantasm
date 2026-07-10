@@ -33,12 +33,14 @@
 
     <div class="container">
         <div class="puzzle-container">
-            <canvas
-                id="voronoiCanvas"
-                role="img"
-                aria-label="Interactive Voronoi puzzle. Use mouse, touch, or keyboard arrows to select and move pieces."
-                tabindex="0"
-            ></canvas>
+            <div class="stage">
+                <canvas
+                    id="voronoiCanvas"
+                    role="img"
+                    aria-label="Interactive Voronoi puzzle. Use mouse, touch, or keyboard arrows to select and move pieces."
+                    tabindex="0"
+                ></canvas>
+            </div>
         </div>
     </div>
 
@@ -87,7 +89,6 @@
                 <button type="button" data-action="regenerate">Regenerate Puzzle</button>
                 <button type="button" data-action="toggle-animation">Pause Animation</button>
                 <button type="button" data-action="toggle-grid-outlines">Toggle Grid Outlines</button>
-                <button type="button" data-action="toggle-responsive-canvas">Toggle Responsive Canvas</button>
             </div>
         </div>
     </aside>

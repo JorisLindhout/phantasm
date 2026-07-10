@@ -234,7 +234,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     async init() {
         try {
             await this.loadBackgroundImage();
-            this.setupCanvas();
+            this.setupCanvas({ resetLogical: true });
             
             // Initialize WebGL renderer with config
             this.webglRenderer = new WebGLVoronoiRenderer(this.canvas, this.config);
