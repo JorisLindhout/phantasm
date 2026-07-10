@@ -6,9 +6,8 @@
 import * as THREE from 'three';
 import { SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS } from './constants.js';
 import { createAnimatedPolygon } from './animated-path.js';
+import { buildSeparatePieceGeometry } from './separate-piece-geometry.js';
 import {
-    buildFanTriangulation,
-    updateFanTriangulationBuffers,
     buildBoundaryVertices,
     updateBoundaryVertices,
 } from './polygon-geometry.js';
@@ -1366,13 +1365,9 @@ class WebGLVoronoiRenderer {
         const polygon = this.voronoiPolygons[index];
         if (!polygon || polygon.length < 3) return;
         
-        // Create geometry for this piece using fan triangulation (supports in-place updates)
+        // Create geometry for this piece using ShapeGeometry (matches original rendering)
         const uvFn = (x, y) => this.calculateBackgroundUV(x, y);
-        const { vertices, uvs, indices } = buildFanTriangulation(polygon, uvFn);
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-        geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-        geometry.setIndex(indices);
+        const geometry = buildSeparatePieceGeometry(polygon, uvFn);
         
         // Create material - only show background image if piece is unsolved
         const showBackground = this.pieces[index].state === 'unsolved';
@@ -1579,21 +1574,14 @@ class WebGLVoronoiRenderer {
     updateSeparatePieceGeometry(piece, index, time) {
         const pieceObj = this.pieces[index];
         const originalPolygon = pieceObj ? pieceObj.polygon : this.voronoiPolygons[index];
-        if (!originalPolygon || !piece.geometry?.attributes?.position) return;
+        if (!originalPolygon) return;
 
         const animatedPolygon = this.createAnimatedPath(originalPolygon, time);
         const uvFn = (x, y) => this.calculateBackgroundUV(x, y);
+        const newGeometry = buildSeparatePieceGeometry(animatedPolygon, uvFn);
 
-        updateFanTriangulationBuffers(
-            piece.geometry.attributes.position.array,
-            piece.geometry.attributes.uv.array,
-            animatedPolygon,
-            uvFn
-        );
-
-        piece.geometry.attributes.position.needsUpdate = true;
-        piece.geometry.attributes.uv.needsUpdate = true;
-        piece.geometry.computeBoundingBox();
+        piece.geometry.dispose();
+        piece.geometry = newGeometry;
 
         const neonGlow = this.separateGlowOutlines[index];
         if (neonGlow) {
