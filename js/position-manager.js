@@ -1,13 +1,15 @@
 /**
  * Position Manager
- * 
- * This module provides centralized position management for puzzle pieces,
- * handling the conversion between different coordinate systems and ensuring
- * consistent positioning throughout the application.
- * 
- * The system uses WebGL coordinates as the global standard, with conversions
- * happening only at the boundaries (mouse input and display output).
+ *
+ * Converts seed-point + offset into a world position for slot/snap logic.
+ * Returns: { x: originalPoint[x] + offset.x, y: originalPoint[y] + offset.y }
+ *
+ * NOT for separate-piece mesh positioning — separate ShapeGeometry is absolute
+ * (see drag-offset.js). Using getMeshPosition() for separate meshes double-applies
+ * the seed and has caused repeated off-screen / cursor-mismatch regressions.
  */
+
+import { resolvePuzzlePoints } from './voronoi-coordinates.js';
 
 class PositionManager {
     constructor(originalPoints, canvasHeight) {
@@ -34,13 +36,9 @@ class PositionManager {
      * @returns {Object} Position in WebGL coordinates {x, y}
      */
     getPiecePosition(pieceIndex, offset) {
-        // Try originalPoints first, then fall back to points if available
         let points = this.originalPoints;
         if (!points || points.length === 0) {
-            // Fallback: try to get points from the main puzzle
-            if (window.voronoiPuzzle && window.voronoiPuzzle.points) {
-                points = window.voronoiPuzzle.points;
-            }
+            points = resolvePuzzlePoints();
         }
         
         const original = points && points[pieceIndex] ? points[pieceIndex] : null;
@@ -143,13 +141,9 @@ class PositionManager {
      * @returns {Object} Original position in WebGL coordinates {x, y}
      */
     getOriginalPosition(pieceIndex) {
-        // Try originalPoints first, then fall back to points if available
         let points = this.originalPoints;
         if (!points || points.length === 0) {
-            // Fallback: try to get points from the main puzzle
-            if (window.voronoiPuzzle && window.voronoiPuzzle.points) {
-                points = window.voronoiPuzzle.points;
-            }
+            points = resolvePuzzlePoints();
         }
         
         const original = points && points[pieceIndex] ? points[pieceIndex] : null;

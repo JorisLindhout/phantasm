@@ -3,6 +3,8 @@
  */
 
 import { announce } from './accessibility.js';
+import { computePieceOffsetFromDragDelta } from './drag-offset.js';
+import { alignCanvasDimensions } from './voronoi-coordinates.js';
 
 class VoronoiPuzzle extends VoronoiPuzzleBase {
     constructor() {
@@ -229,15 +231,11 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             this.webglRenderer = new WebGLVoronoiRenderer(this.canvas, this.config);
             await this.webglRenderer.loadBackgroundTexture(window.themeManager ? window.themeManager.getCurrentBaseImage() : './assets/Level-1.svg');
             
+            // Order matters: generateVoronoi → setupDragAndDrop → syncWebGLPositionData
+            // (see voronoi-coordinates.js and syncWebGLPositionData comments).
             this.generateVoronoi();
             this.setupDragAndDrop();
-
-            if (this.webglRenderer && this.originalPoints?.length) {
-                console.log('✅ Main.js initializing position manager with', this.originalPoints.length, 'points');
-                this.webglRenderer.initPositionManager(this.originalPoints);
-            } else {
-                console.log('⚠️ Main.js position manager not initialized - missing webglRenderer or originalPoints');
-            }
+            this.syncWebGLPositionData();
 
             this.setupControls();
             this.startAnimation();
@@ -279,9 +277,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
 
     regeneratePuzzle() {
         super.regeneratePuzzle();
-        if (this.webglRenderer && this.voronoi) {
-            this.createWebGLPieces();
-        }
+        this.syncWebGLPositionData();
     }
 
     handleKeyDown(e) {
@@ -349,12 +345,40 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     }
 
     generateVoronoi() {
+        // Align hidden 2D canvas to WebGL canvas before seed generation (see voronoi-coordinates.js).
+        this.alignVoronoiCoordinateSpace();
         super.generateVoronoi();
-        
-        // Create WebGL pieces
+
         if (this.webglRenderer) {
             this.createWebGLPieces();
         }
+    }
+
+    /**
+     * Hidden this.canvas and WebGL canvas can differ in size; seeds must match WebGL bounds.
+     */
+    alignVoronoiCoordinateSpace() {
+        const glCanvas = this.webglRenderer?.canvas;
+        if (!glCanvas || !this.canvas) return;
+
+        alignCanvasDimensions(this.canvas, glCanvas);
+    }
+
+    /**
+     * Position manager needs originalPoints AFTER setupDragAndDrop() copies this.points.
+     * Initializing earlier produced "0 points" and broken snap/drag math.
+     */
+    syncWebGLPositionData() {
+        if (!this.webglRenderer) return;
+
+        if ((!this.originalPoints || this.originalPoints.length === 0) && this.points?.length) {
+            this.originalPoints = [...this.points];
+        }
+
+        if (!this.originalPoints?.length) return;
+
+        this.webglRenderer.originalPoints = this.originalPoints;
+        this.webglRenderer.initPositionManager(this.originalPoints);
     }
 
     createWebGLPieces() {
@@ -476,24 +500,11 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         this.isDragging = true;
         this.draggedCellIndex = cellIndex;
         
-        // Calculate current piece position using position manager
         const currentOffset = this.webglRenderer.pieces[cellIndex].offset || { x: 0, y: 0 };
 
-        if (!this.webglRenderer.positionManager) {
-            console.error('❌ Position manager not available! Using fallback calculation.');
-            // Fallback to direct calculation
-            const currentPieceX = this.points[cellIndex][0] + currentOffset.x;
-            const currentPieceY = this.points[cellIndex][1] + currentOffset.y;
-            this.dragOffset.x = x - currentPieceX;
-            this.dragOffset.y = y - currentPieceY;
-            return;
-        }
-        
-        const currentPosition = this.webglRenderer.positionManager.getPiecePosition(cellIndex, currentOffset);
-        
-        // Calculate drag offset from current position, not original position
-        this.dragOffset.x = x - currentPosition.x;
-        this.dragOffset.y = y - currentPosition.y;
+        // Drag uses pointer delta, not seed-based math (see drag-offset.js).
+        this.dragPointerStart = { x, y };
+        this.dragOffsetStart = { x: currentOffset.x, y: currentOffset.y };
 
         // Notify WebGL renderer about dragging state
         if (this.webglRenderer && this.webglRenderer.setDraggingState) {
@@ -531,6 +542,8 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         this.isDragging = false;
         this.draggedCellIndex = -1;
         this.dragOffset = { x: 0, y: 0 };
+        this.dragPointerStart = null;
+        this.dragOffsetStart = null;
         
         // Notify WebGL renderer about stopping drag
         if (this.webglRenderer && this.webglRenderer.setDraggingState) {
@@ -603,18 +616,17 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         
         // Handle dragging
         if (this.draggedCellIndex === -1) return;
-        
-        // Safety check: ensure original points exist
-        if (!this.originalPoints || !this.originalPoints[this.draggedCellIndex]) {
-            console.error(`❌ Cannot move piece ${this.draggedCellIndex}: originalPoints not initialized`);
-            return;
-        }
-        
-        // Update piece offset for separate pieces
-        this.webglRenderer.pieces[this.draggedCellIndex].offset = {
-            x: x - this.dragOffset.x,
-            y: y - this.dragOffset.y
-        };
+
+        if (!this.dragPointerStart || !this.dragOffsetStart) return;
+
+        // offset is displacement from home slot; mesh.position = offset (see drag-offset.js).
+        const offset = computePieceOffsetFromDragDelta(
+            { x, y },
+            this.dragPointerStart,
+            this.dragOffsetStart
+        );
+
+        this.webglRenderer.pieces[this.draggedCellIndex].offset = offset;
         
         // Update WebGL piece position
         if (this.webglRenderer) {

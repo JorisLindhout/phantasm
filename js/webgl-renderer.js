@@ -7,6 +7,8 @@ import * as THREE from 'three';
 import { SNAP_THRESHOLD, WEBGL_SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS, OUTLINE_OPACITY } from './constants.js';
 import { createAnimatedPolygon } from './animated-path.js';
 import { buildSeparatePieceGeometry } from './separate-piece-geometry.js';
+import { getSeparatePieceMeshPosition } from './drag-offset.js';
+import { ensureUnsolvedPieceBackground } from './piece-material.js';
 import { configureRendererColors, configureTextureColors } from './three-config.js';
 
 // Check if WebGL is supported
@@ -800,27 +802,14 @@ class WebGLVoronoiRenderer {
         this.checkSolvedState();
     }
     
-    // Update position of existing separate piece
+    // Separate mesh position = offset only (geometry is absolute — see drag-offset.js).
     updateSeparatePiecePosition(index, offset) {
         const piece = this.pieces[index];
         if (!piece.mesh) return;
-        
-        // Get position using position manager (WebGL coordinates, no Y-flip needed)
-        if (this.positionManager) {
-            const position = this.positionManager.getMeshPosition(index, offset);
-            piece.mesh.position.x = position.x;
-            piece.mesh.position.y = position.y;
-        } else {
-            // Fallback to direct calculation if position manager not available
-            const originalPoint = this.originalPoints ? this.originalPoints[index] : null;
-            if (originalPoint) {
-                piece.mesh.position.x = originalPoint[0] + offset.x;
-                piece.mesh.position.y = originalPoint[1] + offset.y;
-            } else {
-                piece.mesh.position.x = offset.x;
-                piece.mesh.position.y = offset.y;
-            }
-        }
+
+        const position = getSeparatePieceMeshPosition(offset);
+        piece.mesh.position.x = position.x;
+        piece.mesh.position.y = position.y;
         
         // Update outline position if it exists
         if (piece.outline) {
@@ -902,8 +891,9 @@ class WebGLVoronoiRenderer {
         const separatePiece = pieceObj.mesh;
         const separateOutline = pieceObj.outline;
         
-        if (separatePiece && separateOutline) {            
-            this.updateMaterialState(separatePiece.material, state);
+        if (separatePiece && separateOutline) {
+            const pieceState = pieceObj.state || 'solved';
+            this.updateMaterialState(separatePiece.material, state, pieceState);
             this.updateOutlineState(separateOutline.material, state);
             this.updatePieceScale(separatePiece, state);
             
@@ -939,47 +929,56 @@ class WebGLVoronoiRenderer {
         // The separate piece outline should be visible and properly styled for hover effects
     }
     
-    // Update material properties for piece fill
-    updateMaterialState(material, state) {
-        // Store original color and opacity if not already stored
+    /**
+     * Material state for separate pieces. Unsolved pieces must keep backgroundTexture
+     * on material.map in every state — see piece-material.js. Do not strip map for drag glow.
+     */
+    updateMaterialState(material, state, pieceState = 'solved') {
         if (!material.originalColor) {
             material.originalColor = material.color.clone();
             material.originalOpacity = material.opacity;
         }
-                
+
+        const isUnsolvedSeparate = pieceState === 'unsolved';
+
         switch (state) {
             case 'hover':
-                // Keep original material color for hover - only outline changes
-                material.color.copy(material.originalColor);
-                material.opacity = material.originalOpacity || 1.0;
+                if (isUnsolvedSeparate) {
+                    ensureUnsolvedPieceBackground(material, this.backgroundTexture);
+                } else {
+                    material.color.copy(material.originalColor);
+                    material.opacity = material.originalOpacity || 1.0;
+                }
                 break;
             case 'dragging':
-                // Very bright tint for dragging - temporarily remove texture for pure glow
-                if (material.map) {
+                if (isUnsolvedSeparate) {
+                    ensureUnsolvedPieceBackground(material, this.backgroundTexture);
+                    material.color.setHex(this.getThemeColor('pieceDragging'));
+                    material.opacity = this.getThemeEffect('opacityDragging', 0.9);
+                } else if (material.map) {
                     material.originalMap = material.map;
-                    material.map = null; // Remove texture to show pure color glow
+                    material.map = null;
+                    material.color.setHex(this.getThemeColor('pieceDragging'));
+                    material.opacity = this.getThemeEffect('opacityDragging', 0.9);
                 }
-                material.color.setHex(this.getThemeColor('pieceDragging')); // Theme dragging color
-                material.opacity = this.getThemeEffect('opacityDragging', 0.9);
                 break;
             case 'snapped':
-                // Green tint for snapped pieces
                 material.color.setHex(this.getThemeColor('pieceSnapped'));
                 material.opacity = 1.0;
-                console.log(`✅ Applied snapped tint: ${this.getThemeColor('pieceSnapped')}`);
                 break;
             case 'normal':
             default:
-                // Restore original color, opacity, and texture
-                material.color.copy(material.originalColor);
-                material.opacity = material.originalOpacity || 1.0;
-                
-                // Restore texture if it was temporarily removed
-                if (material.originalMap) {
-                    material.map = material.originalMap;
-                    material.originalMap = null;
+                if (isUnsolvedSeparate) {
+                    ensureUnsolvedPieceBackground(material, this.backgroundTexture);
+                } else {
+                    material.color.copy(material.originalColor);
+                    material.opacity = material.originalOpacity || 1.0;
+
+                    if (material.originalMap) {
+                        material.map = material.originalMap;
+                        material.originalMap = null;
+                    }
                 }
-                
                 break;
         }
     }
@@ -1355,6 +1354,10 @@ class WebGLVoronoiRenderer {
         geometry.attributes.color.needsUpdate = true;
     }
     
+    /**
+     * Creates a standalone mesh when a piece is dragged away from its slot.
+     * Geometry vertices are absolute canvas coords; mesh.position = offset only.
+     */
     createSeparatePiece(index, offset) {
         // Remove existing separate piece if any
         this.removeSeparatePiece(index);
@@ -1378,24 +1381,10 @@ class WebGLVoronoiRenderer {
         
         // Create mesh
         const mesh = new THREE.Mesh(geometry, material);
-        
-        // Get position using position manager (WebGL coordinates, no Y-flip needed)
-        if (this.positionManager) {
-            const position = this.positionManager.getMeshPosition(index, offset);
-            mesh.position.x = position.x;
-            mesh.position.y = position.y;
-        } else {
-            // Fallback to direct calculation if position manager not available
-            // REMOVED: Pure debug noise - no user value
-            const originalPoint = this.originalPoints ? this.originalPoints[index] : null;
-            if (originalPoint) {
-                mesh.position.x = originalPoint[0] + offset.x;
-                mesh.position.y = originalPoint[1] + offset.y;
-            } else {
-                mesh.position.x = offset.x;
-                mesh.position.y = offset.y;
-            }
-        }
+
+        const position = getSeparatePieceMeshPosition(offset);
+        mesh.position.x = position.x;
+        mesh.position.y = position.y;
         mesh.position.z = this.pieceZIndices[index] * 10;
         
         // Force bounding box computation for hit detection
@@ -1431,7 +1420,11 @@ class WebGLVoronoiRenderer {
         this.pieces[index].glowOutline = neonGlow;
         this.scene.add(mesh);
         this.scene.add(outline);
-        
+
+        // Sync drag visuals when mesh is created mid-drag (activatePiece runs before mesh exists).
+        if (this.isDragging && this.draggedPieceIndex === index) {
+            this.updatePieceVisualState(index, 'dragging');
+        }
     }
     
     removeSeparatePiece(index) {
@@ -1729,11 +1722,14 @@ class WebGLVoronoiRenderer {
         }
         this.pieces.forEach((piece, index) => {
             if (piece.mesh && piece.mesh.material) {
-                // Reset to normal state color
+                // Unsolved separate pieces must keep white + background map (piece-material.js).
+                if (piece.state === 'unsolved') {
+                    ensureUnsolvedPieceBackground(piece.mesh.material, this.backgroundTexture);
+                    return;
+                }
+
                 const normalColor = this.getThemeColor('pieceNormal');
                 piece.mesh.material.color.setHex(normalColor);
-                
-                // Store original color for state changes
                 piece.mesh.material.originalColor = piece.mesh.material.color.clone();
             }
         });
@@ -1846,17 +1842,14 @@ class WebGLVoronoiRenderer {
             this.scene.add(piece);
         }
         
-        // CRITICAL FIX: Ensure piece is positioned correctly for hit detection
+        // Reposition for hit test: offset only — NOT positionManager.getMeshPosition()
+        // (that adds seed coords and has caused off-screen / skin-disappear regressions).
         if (piece && piece.position) {
-            // For separate pieces, ensure they're positioned where they should be
             const pieceObj = this.pieces[index];
             if (pieceObj && pieceObj.mesh === piece) {
-                // Ensure the piece is visible and positioned correctly
                 piece.visible = true;
-                // The position should already be set by updatePiecePosition, but let's ensure it
                 if (pieceObj.offset) {
-                    // Use position manager to get consistent WebGL coordinates
-                    const position = this.positionManager ? this.positionManager.getMeshPosition(index, pieceObj.offset) : { x: pieceObj.offset.x, y: pieceObj.offset.y };
+                    const position = getSeparatePieceMeshPosition(pieceObj.offset);
                     piece.position.set(position.x, position.y, piece.position.z);
                 }
             }

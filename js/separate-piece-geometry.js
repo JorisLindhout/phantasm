@@ -1,6 +1,11 @@
 /**
  * Separate piece geometry using Three.js ShapeGeometry (earcut triangulation).
  * Matches the original main-branch rendering for dragged puzzle pieces.
+ *
+ * IMPORTANT: Polygon vertices are in absolute canvas coordinates (same space as the
+ * connected mesh). The separate mesh is positioned with offset-only displacement
+ * (see drag-offset.js getSeparatePieceMeshPosition). Do not add seed coordinates
+ * to mesh.position — geometry already encodes the home location.
  */
 
 import * as THREE from 'three';
