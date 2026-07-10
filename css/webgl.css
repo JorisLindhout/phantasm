@@ -11,6 +11,11 @@ canvas.webgl-canvas {
     pointer-events: auto !important;
     z-index: 10;
     cursor: grab;
+    /* Prevent browser scroll/zoom gestures from stealing puzzle drags */
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 canvas.webgl-canvas:active {

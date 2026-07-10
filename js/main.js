@@ -5,6 +5,15 @@
 import { announce } from './accessibility.js';
 import { computePieceOffsetFromDragDelta } from './drag-offset.js';
 import { alignCanvasDimensions } from './voronoi-coordinates.js';
+import {
+    ActivePointerTracker,
+    ActiveTouchTracker,
+    configureInteractionSurface,
+    getTouchEndPoint,
+    getTouchMovePoint,
+    isPrimaryMouseButton,
+    supportsPointerEvents,
+} from './pointer-input.js';
 
 class VoronoiPuzzle extends VoronoiPuzzleBase {
     constructor() {
@@ -248,31 +257,185 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     setupDragAndDrop() {
         super.setupDragAndDrop();
 
-        // Use WebGL canvas for events
         const eventCanvas = this.webglRenderer.canvas;
+        configureInteractionSurface(this.canvas, eventCanvas);
 
-        // Mouse event handlers
+        this.pointerTracker = new ActivePointerTracker();
+        this.touchTracker = new ActiveTouchTracker();
+        this.capturedPointerId = null;
+
+        eventCanvas.addEventListener('keydown', (e) => this.handleKeyDown(e));
+
+        if (supportsPointerEvents()) {
+            this.setupPointerListeners(eventCanvas);
+        } else {
+            this.setupMouseAndTouchListeners(eventCanvas);
+        }
+
+        this.keyboardSelectedIndex = 0;
+    }
+
+    setupPointerListeners(eventCanvas) {
+        const options = { passive: false };
+
+        eventCanvas.addEventListener('pointerdown', (e) => this.handlePointerDown(e), options);
+        eventCanvas.addEventListener('pointermove', (e) => this.handlePointerMove(e), options);
+        eventCanvas.addEventListener('pointerup', (e) => this.handlePointerEnd(e), options);
+        eventCanvas.addEventListener('pointercancel', (e) => this.handlePointerCancel(e), options);
+        eventCanvas.addEventListener('pointerleave', (e) => this.handlePointerLeave(e));
+    }
+
+    setupMouseAndTouchListeners(eventCanvas) {
+        const touchOptions = { passive: false };
+
         eventCanvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
         eventCanvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
         eventCanvas.addEventListener('mouseup', (e) => this.handleMouseUp(e));
         eventCanvas.addEventListener('mouseleave', (e) => this.handleMouseLeave(e));
-        eventCanvas.addEventListener('keydown', (e) => this.handleKeyDown(e));
 
-        // Touch event handlers for mobile
-        eventCanvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            this.handleMouseDown(e.touches[0]);
-        });
-        eventCanvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            this.handleMouseMove(e.touches[0]);
-        });
-        eventCanvas.addEventListener('touchend', (e) => {
-            e.preventDefault();
+        eventCanvas.addEventListener('touchstart', (e) => this.handleTouchStart(e), touchOptions);
+        eventCanvas.addEventListener('touchmove', (e) => this.handleTouchMove(e), touchOptions);
+        eventCanvas.addEventListener('touchend', (e) => this.handleTouchEnd(e), touchOptions);
+        eventCanvas.addEventListener('touchcancel', (e) => this.handleTouchCancel(e), touchOptions);
+    }
+
+    handlePointerDown(e) {
+        if (!this.pointerTracker.shouldHandle(e) || !isPrimaryMouseButton(e)) {
+            return;
+        }
+
+        e.preventDefault();
+        this.pointerTracker.claim(e.pointerId);
+        this.handleMouseDown(e);
+
+        if (this.isDragging) {
+            try {
+                e.currentTarget.setPointerCapture(e.pointerId);
+                this.capturedPointerId = e.pointerId;
+            } catch {
+                // Capture may fail on some browsers; drag still works without it.
+            }
+        } else {
+            this.pointerTracker.release();
+        }
+    }
+
+    handlePointerMove(e) {
+        if (!this.pointerTracker.shouldHandle(e)) {
+            return;
+        }
+
+        e.preventDefault();
+        this.handleMouseMove(e);
+    }
+
+    handlePointerEnd(e) {
+        if (this.pointerTracker.id !== null && !this.pointerTracker.isOwner(e)) {
+            return;
+        }
+
+        e.preventDefault();
+
+        if (this.isDragging) {
+            this.handleMouseMove(e);
             this.handleMouseUp(e);
-        });
+        }
 
-        this.keyboardSelectedIndex = 0;
+        this.releaseCapturedPointer(e.currentTarget);
+        this.pointerTracker.release();
+    }
+
+    handlePointerCancel(e) {
+        if (!this.pointerTracker.isOwner(e)) {
+            return;
+        }
+
+        e.preventDefault();
+
+        if (this.isDragging) {
+            this.handleMouseMove(e);
+            this.resetInteractionState();
+        } else {
+            this.handleMouseLeave(e);
+        }
+
+        this.releaseCapturedPointer(e.currentTarget);
+        this.pointerTracker.release();
+    }
+
+    handlePointerLeave(e) {
+        if (this.isDragging && this.capturedPointerId !== null) {
+            return;
+        }
+
+        if (!this.pointerTracker.shouldHandle(e)) {
+            return;
+        }
+
+        this.handleMouseLeave(e);
+    }
+
+    handleTouchStart(e) {
+        if (e.touches.length === 0) {
+            return;
+        }
+
+        e.preventDefault();
+        const touch = e.touches[0];
+        this.touchTracker.claim(touch.identifier);
+        this.handleMouseDown(touch);
+    }
+
+    handleTouchMove(e) {
+        const touch = getTouchMovePoint(e, this.touchTracker);
+        if (!touch) {
+            return;
+        }
+
+        e.preventDefault();
+        this.handleMouseMove(touch);
+    }
+
+    handleTouchEnd(e) {
+        const touch = getTouchEndPoint(e, this.touchTracker);
+        if (!touch) {
+            return;
+        }
+
+        e.preventDefault();
+
+        if (this.isDragging) {
+            this.handleMouseMove(touch);
+            this.handleMouseUp(e);
+        }
+
+        this.touchTracker.release();
+    }
+
+    handleTouchCancel(e) {
+        const touch = getTouchEndPoint(e, this.touchTracker);
+        if (touch && this.isDragging) {
+            this.handleMouseMove(touch);
+        }
+
+        e.preventDefault();
+        this.resetInteractionState();
+        this.touchTracker.release();
+    }
+
+    releaseCapturedPointer(eventCanvas) {
+        if (this.capturedPointerId === null || !eventCanvas?.releasePointerCapture) {
+            this.capturedPointerId = null;
+            return;
+        }
+
+        try {
+            eventCanvas.releasePointerCapture(this.capturedPointerId);
+        } catch {
+            // Already released.
+        }
+
+        this.capturedPointerId = null;
     }
 
     regeneratePuzzle() {
@@ -549,6 +712,10 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         if (this.webglRenderer && this.webglRenderer.setDraggingState) {
             this.webglRenderer.setDraggingState(false, -1);
         }
+
+        this.releaseCapturedPointer(this.webglRenderer?.canvas);
+        this.pointerTracker?.release();
+        this.touchTracker?.release();
         
         // Reset cursor
         if (this.webglRenderer) {
