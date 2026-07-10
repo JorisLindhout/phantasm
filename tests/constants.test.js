@@ -4,6 +4,7 @@ import {
     SOLVE_THRESHOLD,
     MAX_CELL_COUNT,
     GLOW_LAYER_CONFIGS,
+    WEBGL_SNAP_THRESHOLD,
 } from '../js/constants.js';
 
 describe('constants', () => {
@@ -18,5 +19,10 @@ describe('constants', () => {
 
     it('restores the original 10-layer neon glow configuration', () => {
         expect(GLOW_LAYER_CONFIGS.length).toBe(10);
+    });
+
+    it('keeps the original webgl snap threshold separate from base snap threshold', () => {
+        expect(WEBGL_SNAP_THRESHOLD).toBe(25);
+        expect(SNAP_THRESHOLD).toBe(30);
     });
 });
