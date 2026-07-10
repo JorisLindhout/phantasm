@@ -133,8 +133,6 @@ async function initializeApp() {
         await window.voronoiPuzzle.start();
 
         if (prefersReducedMotion()) {
-            window.voronoiPuzzle.config.isAnimating = false;
-            updateAnimationButtonLabel(false);
             announce('Animations reduced based on your system settings.');
         }
 
