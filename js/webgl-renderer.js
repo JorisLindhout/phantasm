@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS } from './constants.js';
 import { createAnimatedPolygon } from './animated-path.js';
 import { buildSeparatePieceGeometry } from './separate-piece-geometry.js';
+import { configureRendererColors, configureTextureColors } from './three-config.js';
 import {
     buildBoundaryVertices,
     updateBoundaryVertices,
@@ -163,6 +164,7 @@ class WebGLVoronoiRenderer {
         // Enable depth testing for proper z-layering
         this.renderer.sortObjects = true;
         this.renderer.setPixelRatio(1); // Force pixel ratio to 1 to avoid scaling issues
+        configureRendererColors(this.renderer);
 
         this.canvas.addEventListener('webglcontextlost', (event) => {
             event.preventDefault();
@@ -198,7 +200,7 @@ class WebGLVoronoiRenderer {
             loader.load(
                 imageUrl,
                 (texture) => {
-                    this.backgroundTexture = texture;
+                    this.backgroundTexture = configureTextureColors(texture);
                     texture.wrapS = THREE.ClampToEdgeWrapping;
                     texture.wrapT = THREE.ClampToEdgeWrapping;
                     texture.minFilter = THREE.LinearFilter;

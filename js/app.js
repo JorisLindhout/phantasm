@@ -7,6 +7,9 @@ import { Delaunay } from 'd3-delaunay';
 import { themeManager } from './theme-manager.js';
 import { levelManager } from './level-manager.js';
 import { prefersReducedMotion, announce, updateRangeAriaValue, setDrawerExpanded } from './accessibility.js';
+import { configureLegacyColorPipeline } from './three-config.js';
+
+configureLegacyColorPipeline();
 
 import './noise.js';
 import './utils.js';
