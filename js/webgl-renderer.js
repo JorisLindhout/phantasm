@@ -4,7 +4,7 @@
  */
 
 import * as THREE from 'three';
-import { SNAP_THRESHOLD, WEBGL_SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS } from './constants.js';
+import { SNAP_THRESHOLD, WEBGL_SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS, OUTLINE_OPACITY } from './constants.js';
 import { createAnimatedPolygon } from './animated-path.js';
 import { buildSeparatePieceGeometry } from './separate-piece-geometry.js';
 import { configureRendererColors, configureTextureColors } from './three-config.js';
@@ -744,7 +744,7 @@ class WebGLVoronoiRenderer {
         const distance = Math.sqrt(offset.x * offset.x + offset.y * offset.y);
         
         // NEW: Auto-snap when piece gets close to its slot
-        if (distance <= SNAP_THRESHOLD && this.pieces[index].state === 'unsolved') {
+        if (distance <= WEBGL_SNAP_THRESHOLD && this.pieces[index].state === 'unsolved') {
             // Piece is close to its slot - trigger auto-snap
             // Add a small delay to prevent rapid cycling
             if (!this.pieces[index].autoSnapTimeout) {
@@ -757,7 +757,7 @@ class WebGLVoronoiRenderer {
         }
         
         // If piece has significant offset, create separate mesh
-        if (distance > SNAP_THRESHOLD) { // Increased threshold to prevent rapid cycling
+        if (distance > WEBGL_SNAP_THRESHOLD) { // Increased threshold to prevent rapid cycling
             // Piece is being moved out - update states (ARRAY SYSTEM)
             
             // NEW: Update object system
@@ -1136,20 +1136,20 @@ class WebGLVoronoiRenderer {
         switch (state) {
             case 'hover':
                 material.color.setHex(this.getThemeColor('outlineHover'));
-                material.opacity = 1.0;
+                material.opacity = OUTLINE_OPACITY.hover;
                 break;
             case 'dragging':
                 material.color.setHex(this.getThemeColor('outlineDragging'));
-                material.opacity = 1.0;
+                material.opacity = OUTLINE_OPACITY.dragging;
                 break;
             case 'snapped':
                 material.color.setHex(this.getThemeColor('outlineSnapped'));
-                material.opacity = 1.0;
+                material.opacity = OUTLINE_OPACITY.snapped;
                 break;
             case 'normal':
             default:
                 material.color.setHex(this.getThemeColor('outlineNormal'));
-                material.opacity = 0.8;
+                material.opacity = OUTLINE_OPACITY.normal;
                 break;
         }
     }
