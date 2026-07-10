@@ -16,7 +16,7 @@ describe('constants', () => {
         expect(MAX_CELL_COUNT).toBeGreaterThanOrEqual(60);
     });
 
-    it('limits neon glow layers for performance', () => {
-        expect(GLOW_LAYER_CONFIGS.length).toBeLessThanOrEqual(4);
+    it('restores the original 10-layer neon glow configuration', () => {
+        expect(GLOW_LAYER_CONFIGS.length).toBe(10);
     });
 });

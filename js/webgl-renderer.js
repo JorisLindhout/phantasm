@@ -4,14 +4,10 @@
  */
 
 import * as THREE from 'three';
-import { SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS } from './constants.js';
+import { SNAP_THRESHOLD, WEBGL_SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS } from './constants.js';
 import { createAnimatedPolygon } from './animated-path.js';
 import { buildSeparatePieceGeometry } from './separate-piece-geometry.js';
 import { configureRendererColors, configureTextureColors } from './three-config.js';
-import {
-    buildBoundaryVertices,
-    updateBoundaryVertices,
-} from './polygon-geometry.js';
 
 // Check if WebGL is supported
 function isWebGLSupported() {
@@ -994,9 +990,7 @@ class WebGLVoronoiRenderer {
         const glowColor = this.getThemeColor('pieceDragging');
 
         GLOW_LAYER_CONFIGS.forEach((config) => {
-            const vertices = buildBoundaryVertices(polygon, config.scale);
-            const glowGeometry = new THREE.BufferGeometry();
-            glowGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            const glowGeometry = this.createBoundaryGeometryForPolygon(polygon, config.scale);
 
             const glowMaterial = new THREE.LineBasicMaterial({
                 color: glowColor,
@@ -1073,9 +1067,10 @@ class WebGLVoronoiRenderer {
             if (index >= GLOW_LAYER_CONFIGS.length) return;
 
             const config = GLOW_LAYER_CONFIGS[index];
-            const positions = glowOutline.geometry.attributes.position.array;
-            updateBoundaryVertices(positions, polygon, config.scale);
-            glowOutline.geometry.attributes.position.needsUpdate = true;
+            const newBoundaryGeometry = this.createBoundaryGeometryForPolygon(polygon, config.scale);
+
+            glowOutline.geometry.dispose();
+            glowOutline.geometry = newBoundaryGeometry;
 
             glowOutline.position.x = position.x;
             glowOutline.position.y = position.y;
