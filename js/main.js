@@ -245,6 +245,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             this.generateVoronoi();
             this.setupDragAndDrop();
             this.syncWebGLPositionData();
+            this.startUnsolvedLayout();
 
             this.setupControls();
             this.startAnimation();
@@ -441,6 +442,23 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     regeneratePuzzle() {
         super.regeneratePuzzle();
         this.syncWebGLPositionData();
+        this.startUnsolvedLayout();
+    }
+
+    startUnsolvedLayout() {
+        if (!this.webglRenderer) return;
+
+        this.isSolved = false;
+        this.onSolvedStateChanged(false);
+
+        this.webglRenderer.prepareUnsolvedGrid();
+
+        if (window.pieceReleaseManager) {
+            window.pieceReleaseManager.reset(this.webglRenderer.pieces.length);
+            window.pieceReleaseManager.releaseInitialBatch(this.webglRenderer);
+            this.webglRenderer.recoverOffscreenLoosePieces?.();
+            window.pieceReleaseManager.updateButtonVisibility(this.webglRenderer);
+        }
     }
 
     handleKeyDown(e) {
@@ -536,6 +554,14 @@ class WebGLRenderer extends VoronoiPuzzleBase {
 
         if ((!this.originalPoints || this.originalPoints.length === 0) && this.points?.length) {
             this.originalPoints = [...this.points];
+        }
+
+        if ((!this.pieceZIndex || this.pieceZIndex.length !== this.points.length) && this.points?.length) {
+            this.pieceZIndex = new Array(this.points.length).fill(0);
+        }
+
+        if (this.pieceZIndex?.length) {
+            this.webglRenderer.pieceZIndices = [...this.pieceZIndex];
         }
 
         if (!this.originalPoints?.length) return;

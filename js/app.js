@@ -6,6 +6,7 @@ import { Delaunay } from 'd3-delaunay';
 
 import { themeManager } from './theme-manager.js';
 import { levelManager } from './level-manager.js';
+import { pieceReleaseManager } from './piece-release-manager.js';
 import { prefersReducedMotion, announce, updateRangeAriaValue, setDrawerExpanded } from './accessibility.js';
 import { configureLegacyColorPipeline } from './three-config.js';
 
@@ -131,6 +132,15 @@ async function initializeApp() {
     }
 
     try {
+        window.themeManager = themeManager;
+        themeManager.init(null);
+
+        window.levelManager = levelManager;
+        levelManager.prepareForStartup();
+
+        window.pieceReleaseManager = pieceReleaseManager;
+        pieceReleaseManager.bindButton();
+
         window.voronoiPuzzle = new VoronoiPuzzle();
         await window.voronoiPuzzle.start();
 
@@ -139,11 +149,7 @@ async function initializeApp() {
         }
 
         themeManager.init(window.voronoiPuzzle?.webglRenderer);
-        themeManager.loadThemePreference();
-        window.themeManager = themeManager;
-
         levelManager.init(window.voronoiPuzzle);
-        window.levelManager = levelManager;
 
         bindRangeAccessibility();
         setupControlHandlers();

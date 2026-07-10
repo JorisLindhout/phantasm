@@ -44,6 +44,13 @@
         </div>
     </div>
 
+    <button
+        type="button"
+        id="releasePiecesBtn"
+        class="release-pieces-btn"
+        aria-label="Release more puzzle pieces"
+    >+</button>
+
     <!-- Audio elements (optional - add assets/sounds/snap.webm and snap.mp3 to enable) -->
     <audio id="snapSound" preload="none"></audio>
 
@@ -66,7 +73,7 @@
             <div class="control-group">
                 <label for="levelSelector">Level:</label>
                 <select id="levelSelector">
-                    <option value="level-1">Level 1</option>
+                    <option value="level-1" selected>Level 1</option>
                     <option value="level-2">Level 2</option>
                 </select>
             </div>

@@ -11,7 +11,7 @@ class LevelManager {
     constructor() {
         // Initialize level configurations first
         this.initializeLevelConfigurations();
-        this.currentLevel = this.loadLevelPreference() || 'level-1';
+        this.currentLevel = 'level-1';
         this.puzzle = null;
         this.isChangingLevel = false;
         
@@ -42,40 +42,39 @@ class LevelManager {
     }
 
     /**
-     * Initialize the level manager
+     * Apply level 1 theme and selector before the puzzle initializes.
+     */
+    prepareForStartup() {
+        this.currentLevel = 'level-1';
+
+        const levelConfig = this.getCurrentLevel();
+        if (levelConfig && window.themeManager) {
+            window.themeManager.applyTheme(levelConfig.theme);
+        }
+
+        this.updateLevelSelector();
+    }
+
+    /**
+     * Attach puzzle reference and sync config after startup.
      */
     init(puzzle) {
         this.puzzle = puzzle;
         console.log(`🎮 Level Manager initialized with level: ${this.currentLevel}`);
-        
-        // Apply initial level configuration without disposal
-        this.applyInitialLevel();
+        this.syncPuzzleConfig();
     }
 
     /**
-     * Apply initial level configuration without disposal (for startup)
+     * Sync puzzle config from current level without reinitialization.
      */
-    applyInitialLevel() {
+    syncPuzzleConfig() {
         const levelConfig = this.getCurrentLevel();
-        if (!levelConfig) return;
+        if (!levelConfig || !this.puzzle) return;
 
-        console.log(`🎨 Applying initial level: ${levelConfig.name}`);
-
-        // Update puzzle config
         const resolved = resolveLevelConfig(levelConfig);
         this.puzzle.config.cellCount = resolved.cellCount;
         this.puzzle.config.animationSpeed = resolved.animationSpeed;
         this.puzzle.config.noiseAmplitude = resolved.noiseAmplitude;
-
-        // Apply theme
-        if (window.themeManager) {
-            window.themeManager.applyTheme(levelConfig.theme);
-        }
-
-        // Update UI
-        this.updateLevelSelector();
-
-        console.log(`✅ Initial level applied: ${levelConfig.name}`);
     }
 
     /**

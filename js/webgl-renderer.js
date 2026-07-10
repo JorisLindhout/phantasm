@@ -11,6 +11,8 @@ import { getSeparatePieceMeshPosition } from './drag-offset.js';
 import { ensureUnsolvedPieceBackground } from './piece-material.js';
 import { configureRendererColors, configureTextureColors } from './three-config.js';
 import { LEVEL_HEIGHT, LEVEL_WIDTH } from './stage-constants.js';
+import { SLOT_GHOST_OPACITY, LOOSE_PIECE_Z_BASE, isPolygonWithinStage, scatterPiece, polygonRadius } from './unsolved-layout.js';
+import { polygonCenter } from './polygon-geometry.js';
 
 // Check if WebGL is supported
 function isWebGLSupported() {
@@ -58,6 +60,7 @@ class WebGLVoronoiRenderer {
         // Hover effect for connected pieces and slots
         this.hoverOverlay = null; // Temporary highlight mesh for piece hover
         this.slotHoverOverlay = null; // Temporary highlight mesh for slot hover
+        this.slotGhostOutlines = []; // Persistent outlines for empty slots
         this.hoveredPieceIndex = undefined; // Track which piece is currently hovered
         this.hoveredSlotIndex = undefined; // Track which slot is currently hovered
         
@@ -253,6 +256,7 @@ class WebGLVoronoiRenderer {
                 glowOutline: null,
                 state: 'solved',
                 slotState: 'filled',
+                released: false,
                 zIndex: 0,
                 offset: { x: 0, y: 0 },
                 visible: true,
@@ -280,10 +284,8 @@ class WebGLVoronoiRenderer {
         
         // Create the connected mesh that represents all pieces
         this.createConnectedMesh();
-        
-        // Initialize solved state (puzzle starts solved since all pieces are in place)
-        this.isSolved = true;
-        this.onSolvedStateChanged(true);
+
+        this.pieceZIndices = new Array(polygons.length).fill(0);
 
         if (this.originalPoints && this.originalPoints.length > 0) {
             // KEEP: User-facing success message
@@ -587,6 +589,7 @@ class WebGLVoronoiRenderer {
         // Create and add new mesh
         this.connectedMesh = new THREE.Mesh(combinedGeometry, material);
         this.connectedMesh.position.z = 0; // Base layer
+        this.connectedMesh.renderOrder = 0;
         this.scene.add(this.connectedMesh);
         
         // Create outline mesh
@@ -859,6 +862,10 @@ class WebGLVoronoiRenderer {
         this.updateConnectedMeshVisibility();
     }   
     
+    getLoosePieceZ(zIndex = 0) {
+        return LOOSE_PIECE_Z_BASE + zIndex;
+    }
+
     updatePieceZIndex(index, zIndex) {
         // ARRAY SYSTEM
         this.pieceZIndices[index] = zIndex;
@@ -870,7 +877,8 @@ class WebGLVoronoiRenderer {
         // Array backup removed - using object system only
         const separatePiece = this.pieces[index].mesh;
         if (separatePiece) {
-            separatePiece.position.z = zIndex * 10;
+            separatePiece.position.z = this.getLoosePieceZ(zIndex);
+            separatePiece.renderOrder = 10 + zIndex;
         }
         
         // Note: Connected pieces use render order for z-index, handled in render()
@@ -882,6 +890,18 @@ class WebGLVoronoiRenderer {
         this.draggedPieceIndex = pieceIndex;
     }
     
+    shouldShowSeparateOutline(pieceObj, visualState = 'normal') {
+        if (visualState === 'hover' || visualState === 'dragging') {
+            return true;
+        }
+
+        if (pieceObj.state === 'unsolved') {
+            return true;
+        }
+
+        return this.showGridOutlines;
+    }
+
     // Update visual state of a piece (hover, dragging, snapped, normal)
     updatePieceVisualState(index, state) {
         // Use object system for piece and outline access
@@ -896,12 +916,7 @@ class WebGLVoronoiRenderer {
             this.updateOutlineState(separateOutline.material, state);
             this.updatePieceScale(separatePiece, state);
             
-            // Control outline visibility based on state
-            if (state === 'hover' || state === 'dragging') {
-                separateOutline.visible = true;
-            } else {
-                separateOutline.visible = false; // Hide outline for normal state
-            }
+            separateOutline.visible = this.shouldShowSeparateOutline(pieceObj, state);
             
             // Control neon glow visibility based on state (use object system)
             const neonGlow = pieceObj ? pieceObj.glowOutline : this.separateGlowOutlines[index];
@@ -1351,6 +1366,161 @@ class WebGLVoronoiRenderer {
         
         // Mark colors as needing update
         geometry.attributes.color.needsUpdate = true;
+
+        this.updateSlotGhostOutlines();
+    }
+
+    disposeSlotGhostOutlines() {
+        if (!this.slotGhostOutlines?.length) return;
+
+        for (const outline of this.slotGhostOutlines) {
+            if (!outline) continue;
+            this.scene.remove(outline);
+            outline.geometry.dispose();
+            outline.material.dispose();
+        }
+
+        this.slotGhostOutlines = [];
+    }
+
+    createSlotGhostOutlines() {
+        this.disposeSlotGhostOutlines();
+
+        for (let i = 0; i < this.voronoiPolygons.length; i++) {
+            const polygon = this.voronoiPolygons[i];
+            if (!polygon || polygon.length < 3) {
+                this.slotGhostOutlines[i] = null;
+                continue;
+            }
+
+            const shape = new THREE.Shape();
+            polygon.forEach(([x, y], vertexIndex) => {
+                if (vertexIndex === 0) {
+                    shape.moveTo(x, y);
+                } else {
+                    shape.lineTo(x, y);
+                }
+            });
+            shape.closePath();
+
+            const geometry = new THREE.EdgesGeometry(new THREE.ShapeGeometry(shape), 1);
+            const material = new THREE.LineBasicMaterial({
+                color: this.getThemeColor('slotOutline'),
+                transparent: true,
+                opacity: SLOT_GHOST_OPACITY,
+            });
+
+            const outline = new THREE.LineSegments(geometry, material);
+            outline.position.z = 0.05;
+            outline.visible = this.slots[i]?.state === 'empty';
+            this.scene.add(outline);
+            this.slotGhostOutlines[i] = outline;
+        }
+    }
+
+    updateSlotGhostOutlines() {
+        if (!this.slotGhostOutlines?.length) return;
+
+        for (let i = 0; i < this.slots.length; i++) {
+            const outline = this.slotGhostOutlines[i];
+            if (outline) {
+                outline.visible = this.slots[i].state === 'empty';
+            }
+        }
+    }
+
+    prepareUnsolvedGrid() {
+        for (let i = 0; i < this.pieces.length; i++) {
+            const piece = this.pieces[i];
+            piece.released = false;
+            piece.offset = { x: 0, y: 0 };
+            piece.state = 'solved';
+            piece.slotState = 'empty';
+            piece.isInSlot = false;
+            piece.autoSnapTimeout = null;
+
+            this.slots[i].state = 'empty';
+            this.slots[i].pieceId = null;
+            this.slots[i].isCorrect = false;
+
+            this.removeSeparatePiece(i);
+        }
+
+        this.updateConnectedMeshVisibility();
+        this.createSlotGhostOutlines();
+        this.isSolved = false;
+        this.onSolvedStateChanged(false);
+    }
+
+    releasePiece(index, offset) {
+        const piece = this.pieces[index];
+        if (!piece || piece.released) return;
+
+        piece.released = true;
+        this.updatePiecePosition(index, offset);
+        this.raiseLoosePieceLayer(index);
+        this.render();
+    }
+
+    raiseLoosePieceLayer(index) {
+        const nextZ = Math.max(...this.pieceZIndices, 0) + 1;
+        this.updatePieceZIndex(index, nextZ);
+    }
+
+    recoverOffscreenLoosePieces() {
+        if (!this.canvas) return 0;
+
+        const stageSize = {
+            width: this.canvas.width,
+            height: this.canvas.height,
+        };
+
+        const existingPlacements = [];
+        let recovered = 0;
+
+        for (let i = 0; i < this.pieces.length; i++) {
+            const piece = this.pieces[i];
+            if (!piece.released || piece.state !== 'unsolved' || this.slots[i].state === 'filled') {
+                continue;
+            }
+
+            const polygon = this.voronoiPolygons[i];
+            if (!polygon) continue;
+
+            const needsRecovery = !piece.mesh || !isPolygonWithinStage(polygon, piece.offset, stageSize);
+            if (!needsRecovery) {
+                const { centerX, centerY } = polygonCenter(polygon);
+                existingPlacements.push({
+                    x: centerX + piece.offset.x,
+                    y: centerY + piece.offset.y,
+                    radius: polygonRadius(polygon),
+                });
+                continue;
+            }
+
+            const offset = scatterPiece({
+                polygon,
+                stageSize,
+                existingPlacements,
+            });
+
+            this.updatePiecePosition(i, offset);
+            this.raiseLoosePieceLayer(i);
+
+            const { centerX, centerY } = polygonCenter(polygon);
+            existingPlacements.push({
+                x: centerX + offset.x,
+                y: centerY + offset.y,
+                radius: polygonRadius(polygon),
+            });
+            recovered++;
+        }
+
+        if (recovered > 0) {
+            this.render();
+        }
+
+        return recovered;
     }
     
     /**
@@ -1384,7 +1554,8 @@ class WebGLVoronoiRenderer {
         const position = getSeparatePieceMeshPosition(offset);
         mesh.position.x = position.x;
         mesh.position.y = position.y;
-        mesh.position.z = this.pieceZIndices[index] * 10;
+        mesh.position.z = this.getLoosePieceZ(this.pieceZIndices[index] ?? 0);
+        mesh.renderOrder = 10 + (this.pieceZIndices[index] ?? 0);
         
         // Force bounding box computation for hit detection
         geometry.computeBoundingBox();
@@ -1402,7 +1573,10 @@ class WebGLVoronoiRenderer {
         const outline = new THREE.LineSegments(boundaryGeometry, outlineMaterial);
         outline.position.copy(mesh.position);
         outline.position.z += 0.1; // Slightly above the piece
-        outline.visible = false; // Start hidden, only show on hover
+        outline.visible = this.pieces[index].state === 'unsolved';
+        if (outline.visible) {
+            this.updateOutlineState(outlineMaterial, 'normal');
+        }
         
         // Store and add to scene
         // Create neon glow outline - make it visible if this piece is currently being dragged
@@ -1605,6 +1779,8 @@ class WebGLVoronoiRenderer {
             this.connectedOutline.material.dispose();
             this.connectedOutline = null;
         }
+
+        this.disposeSlotGhostOutlines();
         
         // Clean up separate pieces using object system
         this.pieces.forEach(piece => {
@@ -1660,9 +1836,9 @@ class WebGLVoronoiRenderer {
         }
         
         // Update separate piece outline visibility using object system
-        this.pieces.forEach(piece => {
+        this.pieces.forEach((piece) => {
             if (piece.outline) {
-                piece.outline.visible = this.showGridOutlines;
+                piece.outline.visible = this.shouldShowSeparateOutline(piece, 'normal');
             }
         });
         
@@ -2209,26 +2385,34 @@ class WebGLVoronoiRenderer {
         if (!this.pieces || this.pieces.length === 0) {
             return false;
         }
-        
+
+        const unreleasedCount = this.pieces.filter((piece) => !piece.released).length;
+        if (unreleasedCount > 0) {
+            if (this.isSolved) {
+                this.isSolved = false;
+                this.onSolvedStateChanged(false);
+            }
+            return false;
+        }
+
         let solvedPieces = 0;
-        
+
         for (let i = 0; i < this.pieces.length; i++) {
             const offset = this.pieces[i].offset || { x: 0, y: 0 };
             const distance = Math.sqrt(offset.x * offset.x + offset.y * offset.y);
-            
+
             if (distance < this.solveThreshold) {
                 solvedPieces++;
             }
         }
-        
-        // Consider solved if all pieces are within the threshold
+
         const isSolved = solvedPieces === this.pieces.length;
-        
+
         if (isSolved !== this.isSolved) {
             this.isSolved = isSolved;
             this.onSolvedStateChanged(isSolved);
         }
-        
+
         return isSolved;
     }
     

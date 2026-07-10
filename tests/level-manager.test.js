@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { resolveLevelConfig } from '../js/animated-path.js';
+import { LevelManager } from '../js/level-manager.js';
 
 /**
  * Minimal level-manager logic tests for the config bug fix.
@@ -47,6 +48,35 @@ describe('level manager config application', () => {
 
         applyLevelConfig(levelConfig);
         expect(puzzleConfig.cellCount).toBe(60);
+    });
+});
+
+describe('LevelManager startup', () => {
+    beforeEach(() => {
+        document.body.innerHTML = `
+            <select id="levelSelector">
+                <option value="level-1">Level 1</option>
+                <option value="level-2">Level 2</option>
+            </select>
+        `;
+        localStorage.setItem('phantasm-level', 'level-2');
+        window.themeManager = { applyTheme: vi.fn() };
+    });
+
+    it('defaults to level-1 regardless of saved localStorage preference', () => {
+        const manager = new LevelManager();
+        expect(manager.currentLevel).toBe('level-1');
+    });
+
+    it('prepareForStartup sets selector to level-1 and applies level one theme', () => {
+        const manager = new LevelManager();
+        manager.currentLevel = 'level-2';
+
+        manager.prepareForStartup();
+
+        expect(manager.currentLevel).toBe('level-1');
+        expect(document.getElementById('levelSelector').value).toBe('level-1');
+        expect(window.themeManager.applyTheme).toHaveBeenCalledWith('levelOne');
     });
 });
 

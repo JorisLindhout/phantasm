@@ -205,10 +205,6 @@ class VoronoiPuzzleBase {
                 this.pieceZIndex = new Array(this.points.length).fill(0);
             }
         }
-        
-        // Initialize solved state (puzzle starts solved since all pieces are in place)
-        this.isSolved = true;
-        this.onSolvedStateChanged(true);
     }
 
     startAnimation() {
@@ -351,10 +347,6 @@ class VoronoiPuzzleBase {
                 this.snappedPieces.clear();
             }
         }
-        
-        // Reset solved state and check
-        this.isSolved = true;
-        this.onSolvedStateChanged(true);
     }
 
     toggleAnimation() {
