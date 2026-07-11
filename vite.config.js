@@ -12,7 +12,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: true, // Helpful for debugging WebGL issues
+    sourcemap: false, // Dev server still serves source maps; omit from production builds
     rollupOptions: {
       output: {
         // Keep asset names predictable for WebGL resources

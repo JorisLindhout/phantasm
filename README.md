@@ -2,9 +2,6 @@
 
 A web-based Voronoi puzzle with WebGL 3D rendering, staged piece release, level progression, and a unified theming system. Players start each level unsolved, release pieces in batches, and advance through levels by completing the puzzle.
 
-## TODO
-- [ ] **Remove array system leftovers** — Remove `separateGlowOutlines[]` and `pieceZIndices[]` fallback arrays in `webgl-renderer.js`; use object-based fields only (`this.pieces[index].glowOutline`, `this.pieces[index].zIndex`)
-
 ## 🐛 Debugging & Error Reporting
 
 The project uses a lightweight `js/logger.js` for app logging and console commands for manual diagnostics.
@@ -193,6 +190,13 @@ phantasm/
 ├── styles.css                    # Main CSS (imports modular styles)
 ├── package.json                  # Project dependencies
 ├── vite.config.js                # Vite configuration for development server
+├── public/                       # Static assets (copied to dist root as-is)
+│   ├── favicon.svg
+│   ├── favicon-96x96.png
+│   ├── apple-touch-icon.png
+│   ├── web-app-manifest-192x192.png
+│   ├── web-app-manifest-512x512.png
+│   └── site.webmanifest          # PWA manifest
 ├── .env.example                  # Documented environment variables
 ├── .env.development              # Local dev env (VITE_DEV_PANEL=true)
 ├── assets/                       # Game assets and images
