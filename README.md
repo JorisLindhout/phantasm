@@ -43,7 +43,6 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 - **Staged Release**: Tap the **+** button (top-right) to release more pieces in responsive batches
 - **Drag & Drop**: Move individual puzzle pieces around the canvas (mouse, touch, or keyboard)
 - **Smart Snapping**: Pieces automatically snap to their correct positions when within 25px threshold
-- **Audio Feedback**: Satisfying snap sound plays instantly when pieces lock into place (WebM Opus with MP3 fallback)
 - **Visual Feedback**: Hover effects, drag glows, loose-piece outlines, and snap confirmations
 - **Z-Index Management**: Clicked pieces always appear on top
 - **Hit Detection**: Accurate piece selection with expanded interaction areas
@@ -216,9 +215,9 @@ phantasm/
 │       ├── Level-1.svg           # Level 1 background (450×450)
 │       ├── Level-2.svg           # Level 2 background (450×450)
 │       ├── Phantasm.svg          # Legacy theme asset
-│       └── sounds/
-│           ├── snap.webm         # Snap sound (WebM Opus format, ~10KB)
-│           └── snap.mp3          # Snap sound fallback (MP3 format, ~15KB)
+│       └── sounds/               # Audio assets (snap sound not wired up yet)
+│           ├── snap.webm         # Placeholder
+│           └── snap.mp3          # Placeholder
 ├── .env.example                  # Documented environment variables
 ├── .env.development              # Local dev env (VITE_DEV_PANEL=true)
 ├── css/
@@ -376,7 +375,7 @@ Run `showDebugCommands()` in the console to see all available tools, including:
 - **Staged Release**: Initial batch keeps separate-mesh count low on load
 - **Hardware Acceleration**: GPU-accelerated rendering
 - **Responsive Stage**: Logical resolution locked at init; display size updates on resize without resetting puzzle state
-- **Resource Management**: WebGL disposal on level switch and regenerate
+- **Resource Management**: WebGL disposal on level switch and regenerate; event listener, animation loop, and object reference cleanup on teardown
 
 ## Dependencies
 
@@ -387,17 +386,9 @@ Run `showDebugCommands()` in the console to see all available tools, including:
 
 ### 🌐 Browser APIs
 - **WebGL**: Hardware-accelerated 3D graphics
-- **Web Audio API**: Low-latency audio playback for snap sounds
-- **HTML5 Audio**: Audio element with preloading for instant playback
+- **HTML5 Audio**: Snap playback hook in `playSnapSound()` (sound not finalized or wired to the `<audio>` element yet)
 - **Local Storage**: Unlock progress (`phantasm-unlocked-levels`); level preference on manual switch (`phantasm-level`)
 - **Modern JavaScript**: ES modules (Vite bundle)
-
-### 🔊 Audio System
-- **Format**: WebM (Opus codec) primary, MP3 fallback
-- **Trigger**: Plays instantly when piece snaps into place (magnetic snap)
-- **Performance**: Preloaded on page load, zero-latency playback
-- **Mobile Support**: Audio unlocked on first user interaction
-- **File Size**: ~10KB (WebM) / ~15KB (MP3)
 
 ## 🔍 Debug Utilities
 
@@ -422,33 +413,19 @@ Only snap / player placement marks a piece solved — recovery never auto-comple
 
 ## Future Development
 
-### **Save option** — Save in-progress piece positions within a level; optional random seed to regenerate the exact same layout
+### Gameplay & content
+- **Level development** — new artwork and manifest entries (see [Adding a New Level](#adding-a-new-level)); only two levels shipped so far
+- **Mid-level resume** — save in-progress piece positions within a level; optional random seed to restore the same Voronoi layout
 
-### **Enhanced visual piece handling feedback** — Additional hover/drag indicators beyond current outlines and glows
+### Audio
+- **Snap sound** — find or engineer the right sound for piece snapping, then wire it into the existing `playSnapSound()` hook
+- Pickup/hover sounds, volume controls, and puzzle-complete fanfare (later)
 
-### **Phase 2: Medium-Risk Resource Management (Planned)**
-- **Texture Memory Management**: Dispose of unused textures and geometries
-- **Geometry Caching & Cleanup**: Cache and reuse geometries, dispose unused ones
-- **Performance Monitoring**: Add memory and performance tracking with automatic cleanup triggers
+### UX & polish
+- **Enhanced visual piece handling feedback** — additional hover/drag indicators beyond current outlines and glows
 
-### **Phase 3: High-Risk Resource Management (Future Consideration)**
-- **Aggressive Resource Limits**: Implement strict limits on resources with automatic piece cleanup
-- **Dynamic Quality Adjustment**: Reduce quality under memory pressure
-- **Memory Pressure Detection**: Automatic quality reduction when system is under stress
+### Technical (when needed)
+- **Profiling & geometry reuse** — extend the existing dispose path with caching and runtime memory/FPS monitoring if piece counts or level count grow
 
-### **Current Resource Management Features**
-- **Event Listener Cleanup**: Proper cleanup of all event listeners
-- **Object Reference Nullification**: Explicit nullification of object references
-- **Animation Loop Cleanup**: Proper cancellation of animation loops
-- **WebGL Resource Disposal**: Complete cleanup of Three.js objects and textures
-
-### **Audio System** (implemented)
-- **Snap Sound**: WebM (Opus) with MP3 fallback, preloaded for zero-latency playback
-- **Future**: Pickup/hover sounds, volume controls, puzzle-complete fanfare
-
-### **Recently implemented**
-- **Unsolved start** with staged piece release (+ button) and ghost slot outlines
-- **Level progression** with unlock-on-solve, automatic crossfade transitions, and **done** completion screen
-- **Manifest-driven levels** (`js/levels.config.js`)
-- **Dev panel gating** via `VITE_DEV_PANEL`
-- **Responsive 1:1 square stage** (450×450 assets, scales to viewport)
+### Deferred (scale only)
+- Dynamic quality reduction and aggressive resource limits — only worth revisiting for much larger puzzles or long sessions on low-end devices
