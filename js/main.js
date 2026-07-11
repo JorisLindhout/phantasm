@@ -3,6 +3,7 @@
  */
 
 import { announce } from './accessibility.js';
+import { showLoadingOverlay, hideLoadingOverlay } from './loading-overlay.js';
 import { CoordinateUtils } from './coordinate-utils.js';
 import { computePieceOffsetFromDragDelta } from './drag-offset.js';
 import { alignCanvasDimensions } from './voronoi-coordinates.js';
@@ -147,21 +148,15 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
     /**
      * Show loading screen
      */
-    showLoadingScreen(message = 'Loading...') {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) {
-            overlay.classList.add('visible');
-        }
+    showLoadingScreen() {
+        showLoadingOverlay();
     }
 
     /**
-     * Hide loading screen
+     * Hide loading screen (respects minimum display duration).
      */
     hideLoadingScreen() {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) {
-            overlay.classList.remove('visible');
-        }
+        return hideLoadingOverlay({ announceLoaded: false });
     }
 
     // Getter for WebGL renderer access

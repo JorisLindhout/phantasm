@@ -182,7 +182,17 @@ h1 {
     z-index: 9999;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.9s ease-out, visibility 0.9s ease-out;
+}
+
+body.is-app-loading .container,
+body.is-app-loading #releasePiecesBtn,
+body.is-app-loading #completionOverlay {
+    visibility: hidden;
+}
+
+body.is-app-loading .skip-link {
+    visibility: hidden;
 }
 
 .loading-overlay.visible {
@@ -190,36 +200,92 @@ h1 {
     visibility: visible;
 }
 
-.loading-content {
-    text-align: center;
-    color: var(--text-color);
+.loading-overlay.is-fading-out .loading-gradient-heartbeat {
+    animation: none !important;
+    transform: scale(1);
+    opacity: 0.82;
 }
 
-.heartbeat-gradient {
-    animation: heartbeat 4s ease-in-out infinite;
-    filter: drop-shadow(0 0 20px rgba(0, 204, 255, 0.6));
+.loading-overlay.zoom-complete .loading-gradient-heartbeat {
+    animation: loading-heartbeat-glow 1s ease-in-out infinite;
 }
 
-@keyframes heartbeat {
-    0% { 
-        transform: scale(1);
-        opacity: 0.8;
+.loading-gradient-zoom {
+    --loading-gradient-end-size: min(68vmin, 72vw);
+    width: var(--loading-gradient-end-size);
+    height: var(--loading-gradient-end-size);
+    flex-shrink: 0;
+    transform: scale(0.32);
+    animation: loading-zoom 1.4s cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+}
+
+.loading-gradient-heartbeat {
+    width: 100%;
+    height: 100%;
+    display: block;
+    animation: loading-heartbeat 1s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(0, 204, 255, 0.55));
+}
+
+@keyframes loading-zoom {
+    from {
+        transform: scale(0.32);
     }
-    25% { 
-        transform: scale(1.1);
+
+    to {
+        transform: scale(0.82);
+    }
+}
+
+@keyframes loading-heartbeat {
+    0% {
+        transform: scale(1);
+        opacity: 0.82;
+    }
+
+    14% {
+        transform: scale(1.13);
         opacity: 1;
     }
-    50% { 
-        transform: scale(0.95);
-        opacity: 0.9;
+
+    28% {
+        transform: scale(1);
+        opacity: 0.86;
     }
-    75% { 
-        transform: scale(1.05);
+
+    42% {
+        transform: scale(1.07);
+        opacity: 0.94;
+    }
+
+    56% {
+        transform: scale(1);
+        opacity: 0.82;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.82;
+    }
+}
+
+@keyframes loading-heartbeat-glow {
+    0%,
+    56%,
+    100% {
+        opacity: 0.82;
+    }
+
+    14% {
         opacity: 1;
     }
-    100% { 
-        transform: scale(1);
-        opacity: 0.8;
+
+    28% {
+        opacity: 0.88;
+    }
+
+    42% {
+        opacity: 0.94;
     }
 }
 
@@ -251,20 +317,6 @@ h1 {
     top: 16px;
 }
 
-.loading-text {
-    color: var(--text-color, #ffffff);
-    margin-bottom: 12px;
-    font-size: 14px;
-}
-
-.loading-bar {
-    width: 120px;
-    height: 4px;
-    margin: 0 auto 16px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.15);
-}
-
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -275,7 +327,13 @@ h1 {
         scroll-behavior: auto !important;
     }
 
-    .heartbeat-gradient {
+    .loading-gradient-zoom {
         animation: none !important;
+        transform: scale(0.55);
+    }
+
+    .loading-gradient-heartbeat {
+        animation: none !important;
+        opacity: 0.9;
     }
 }

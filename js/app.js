@@ -12,6 +12,7 @@ import { isDevPanelEnabled, applyDevPanelVisibility } from './dev-panel.js';
 import { prefersReducedMotion, announce, updateRangeAriaValue, setDrawerExpanded } from './accessibility.js';
 import { configureLegacyColorPipeline } from './three-config.js';
 import { createLogger } from './logger.js';
+import { showLoadingOverlay, hideLoadingOverlay } from './loading-overlay.js';
 
 const log = createLogger('app');
 
@@ -29,14 +30,6 @@ import { VoronoiPuzzle } from './main.js';
 window.THREE = THREE;
 window.Delaunay = Delaunay;
 window.d3 = { Delaunay: { from: Delaunay.from.bind(Delaunay) } };
-
-function showLoadingOverlay() {
-    document.getElementById('loadingOverlay')?.classList.add('visible');
-}
-
-function hideLoadingOverlay() {
-    document.getElementById('loadingOverlay')?.classList.remove('visible');
-}
 
 function updateAnimationButtonLabel(isAnimating) {
     const button = document.querySelector('[data-action="toggle-animation"]');
@@ -140,11 +133,12 @@ async function initializeApp() {
         await import('./debug-utils.js');
     }
 
-    showLoadingOverlay();
-
     if (typeof VoronoiPuzzle === 'undefined') {
         log.error('VoronoiPuzzle class not found.');
-        hideLoadingOverlay();
+        await hideLoadingOverlay({
+            announceLoaded: { message: 'Failed to load puzzle.', priority: 'assertive' },
+            focusPuzzle: false,
+        });
         return;
     }
 
@@ -176,12 +170,13 @@ async function initializeApp() {
         setupViewportHandlers();
         updateAnimationButtonLabel(window.voronoiPuzzle.config.isAnimating);
 
-        window.voronoiPuzzle.hideLoadingScreen?.();
-        announce('Phantasm puzzle loaded.');
+        await hideLoadingOverlay({ announceLoaded: 'Phantasm puzzle loaded.' });
     } catch (error) {
         log.error('Failed to initialize Phantasm:', error);
-        hideLoadingOverlay();
-        announce('Failed to load puzzle.', 'assertive');
+        await hideLoadingOverlay({
+            announceLoaded: { message: 'Failed to load puzzle.', priority: 'assertive' },
+            focusPuzzle: false,
+        });
     }
 }
 

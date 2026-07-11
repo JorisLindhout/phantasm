@@ -54,30 +54,56 @@
     </script>
 
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Cover the stage before the bundle/CSS finishes loading */
+        body.is-app-loading {
+            background: #111;
+        }
+
+        body.is-app-loading .container,
+        body.is-app-loading #releasePiecesBtn,
+        body.is-app-loading #completionOverlay {
+            visibility: hidden;
+        }
+
+        body.is-app-loading .skip-link {
+            visibility: hidden;
+        }
+
+        #loadingOverlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(17, 17, 17, 0.991);
+        }
+    </style>
 </head>
-<body>
-    <a class="skip-link" href="#puzzleCanvas">Skip to puzzle</a>
+<body class="is-app-loading" aria-busy="true">
+    <script>window.__phantasmLoadingStart = performance.now();</script>
+    <a class="skip-link" href="#voronoiCanvas" aria-hidden="true" tabindex="-1">Skip to puzzle</a>
 
     <div id="a11yLiveRegion" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
 
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite" aria-busy="true">
-        <div class="loading-content">
-            <p class="loading-text">Loading Phantasm...</p>
-            <div class="loading-bar" aria-hidden="true"></div>
-            <svg class="heartbeat-gradient" width="238" height="232" viewBox="0 0 238 232" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <ellipse cx="119" cy="116" rx="119" ry="116" fill="url(#paint0_radial_1354_28)" fill-opacity="0.8"/>
+    <div id="loadingOverlay" class="loading-overlay visible" role="status" aria-busy="true">
+        <div class="loading-gradient-zoom">
+            <svg class="loading-gradient-heartbeat" viewBox="0 0 238 232" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <ellipse cx="119" cy="116" rx="119" ry="116" fill="url(#loadingGradient)" fill-opacity="0.8"/>
                 <defs>
-                    <radialGradient id="paint0_radial_1354_28" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(119 116) rotate(90) scale(116 119)">
+                    <radialGradient id="loadingGradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(119 116) rotate(90) scale(116 119)">
                         <stop stop-color="#00CCFF"/>
                         <stop offset="1" stop-opacity="0"/>
                     </radialGradient>
                 </defs>
             </svg>
         </div>
+        <span class="visually-hidden">Loading Phantasm</span>
     </div>
 
-    <div class="container">
+    <div class="container" aria-busy="true">
         <div class="puzzle-container">
             <div class="stage">
                 <canvas

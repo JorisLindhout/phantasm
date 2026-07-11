@@ -17,6 +17,7 @@ import {
     getLevelById,
 } from './levels.config.js';
 import { createLogger } from './logger.js';
+import { showLoadingOverlay, hideLoadingOverlay } from './loading-overlay.js';
 
 const log = createLogger('levels');
 
@@ -29,10 +30,6 @@ class LevelManager {
         this.isHandlingSolve = false;
         this.pendingLevelId = null;
         this.unlockedLevelIds = loadUnlockedLevelIds();
-
-        this.loadingOverlay = document.getElementById('loadingOverlay');
-        this.loadingText = document.querySelector('#loadingOverlay .loading-text');
-        this.loadingBar = document.querySelector('#loadingOverlay .loading-bar');
     }
 
     initializeLevelConfigurations() {
@@ -177,7 +174,7 @@ class LevelManager {
 
         try {
             if (!options.silent) {
-                this.showLoadingScreen(`Loading ${levelConfig.name}...`);
+                this.showLoadingScreen(levelConfig.name);
             }
 
             await this.completeReinitialization(levelConfig);
@@ -187,14 +184,14 @@ class LevelManager {
             this.saveLevelPreference(levelId);
 
             if (!options.silent) {
-                this.hideLoadingScreen();
+                await this.hideLoadingScreen();
             }
 
             return true;
         } catch (error) {
             log.error('Failed to switch level:', error);
             if (!options.silent) {
-                this.hideLoadingScreen();
+                await this.hideLoadingScreen();
             }
             return false;
         } finally {
@@ -341,26 +338,13 @@ class LevelManager {
         }
     }
 
-    showLoadingScreen(message = 'Loading Level...') {
-        const overlay = document.getElementById('loadingOverlay');
-        const text = overlay?.querySelector('.loading-text');
-
-        if (overlay) {
-            overlay.classList.add('visible');
-            overlay.setAttribute('aria-busy', 'true');
-        }
-
-        if (text) {
-            text.textContent = message;
-        }
+    showLoadingScreen(levelName) {
+        const message = levelName ? `Loading ${levelName}` : 'Loading Phantasm';
+        showLoadingOverlay({ message });
     }
 
     hideLoadingScreen() {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) {
-            overlay.classList.remove('visible');
-            overlay.setAttribute('aria-busy', 'false');
-        }
+        return hideLoadingOverlay({ announceLoaded: false });
     }
 
     rebuildLevelSelector() {
