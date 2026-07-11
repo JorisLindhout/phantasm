@@ -14,10 +14,9 @@ The project uses a lightweight `js/logger.js` for app logging and console comman
 
 ### 🎯 Available Debug Commands
 Run `showDebugCommands()` in the console to see all available debugging utilities:
-- `autoRecoverPieces()` — Auto-fix stuck/unreachable pieces
-- `debugLostPieces()` — Diagnose piece interaction issues
-- `checkGhostPieces()` — Detect invisible unresponsive pieces
-- `fixMispositionedPieces()` — Fix pieces positioned at origin
+- `autoRecoverPieces()` — Layout + interaction repair for released loose pieces
+- `debugLostPieces()` — Diagnose released pieces missing a mesh
+- `fixMispositionedPieces()` — Repair separate-piece mesh visibility/position
 - `testInteractionSystem()` — Run interaction diagnostics
 
 
@@ -277,10 +276,9 @@ Tests cover level manifest validation, unlock/progression logic, unsolved layout
 showDebugCommands()
 
 // Common debugging commands
-autoRecoverPieces()           // Fix stuck/unreachable pieces
-debugLostPieces()            // Diagnose piece issues
-checkGhostPieces()           // Find invisible pieces
-fixMispositionedPieces()     // Fix pieces at origin
+autoRecoverPieces()           // Layout + interaction repair (released pieces)
+debugLostPieces()            // Diagnose released pieces missing meshes
+fixMispositionedPieces()     // Repair separate-piece meshes
 testInteractionSystem()       // Run diagnostic tests
 
 // Theme system
@@ -315,15 +313,22 @@ pieces[index] = {
 
 ## Known Issues
 
+### Piece recovery (two policies)
 
+Automatic recovery uses two separate policies in [`js/webgl-renderer.js`](js/webgl-renderer.js):
+
+1. **Layout recovery** — `recoverOffscreenLoosePieces()` runs at piece-release boundaries. Re-scatters released loose pieces that have no mesh or are off-stage. Does not mark pieces solved.
+
+2. **Interaction repair** — `repairSeparatePiece()` runs only on click (`allowRepair: true` in hit detection). Restores mesh visibility, scene membership, and position for released loose pieces. Does not mark pieces solved.
+
+Only player snap / `autoSnapPieceToSlot()` promotes a piece to solved. Hover does not run repair or mutate piece state.
 
 #### Detection & Recovery Tools:
 Run `showDebugCommands()` in the console to see all available tools, including:
-- **Auto-Recovery**: `autoRecoverPieces()` - Automatically detects and restores unreachable pieces
-- **Lost Piece Diagnosis**: `debugLostPieces()` - Identifies pieces with interaction issues
-- **Ghost Piece Detection**: `checkGhostPieces()` - Finds invisible unresponsive pieces
-- **Scene Sync Fix**: `fixMispositionedPieces()` - Ensures pieces are properly positioned
-- **System Tests**: `testInteractionSystem()` - Run comprehensive diagnostics
+- **Manual recovery**: `autoRecoverPieces()` — runs layout recovery + interaction repair for all released pieces
+- **Lost piece diagnosis**: `debugLostPieces()` — lists released unsolved pieces with no mesh
+- **Mesh repair**: `fixMispositionedPieces()` — calls `repairSeparatePiece()` on each piece
+- **System tests**: `testInteractionSystem()` — scene sync and state validity checks
 
 #### Prevention Strategies:
 - **Object-Based Architecture**: Clean, maintainable code structure
@@ -388,11 +393,13 @@ Diagnostic commands are accessible via the browser console in development builds
 showDebugCommands()
 
 // Common troubleshooting
-autoRecoverPieces()           // Fix stuck pieces
-debugLostPieces()            // Diagnose interaction issues
-fixMispositionedPieces()     // Fix mispositioned pieces
+autoRecoverPieces()           // Layout + interaction repair
+debugLostPieces()            // Diagnose missing meshes
+fixMispositionedPieces()     // Repair separate-piece meshes
 testInteractionSystem()       // Run system diagnostics
 ```
+
+Only snap / player placement marks a piece solved — recovery never auto-completes the puzzle.
 
 `debug-utils.js` is loaded only when `import.meta.env.DEV` is true (via `app.js`).
 

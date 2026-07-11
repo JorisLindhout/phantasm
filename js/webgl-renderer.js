@@ -272,183 +272,6 @@ class WebGLVoronoiRenderer {
         }
     }
     
-    // NEW: Auto-recovery for unreachable pieces
-    autoRecoverUnreachablePieces() {
-        let recoveredCount = 0;
-        
-        // Safety check: Don't run auto-recovery too frequently
-        const now = Date.now();
-        if (this.lastAutoRecoveryTime && (now - this.lastAutoRecoveryTime) < 2000) {
-            return 0; // Don't run auto-recovery more than once every 2 seconds
-        }
-        this.lastAutoRecoveryTime = now;
-        
-        // Check all pieces for unreachable state
-        for (let i = 0; i < this.pieces.length; i++) {
-            const piece = this.pieces[i];
-            const slot = this.slots[i];
-            
-            // Skip if piece is already in correct slot
-            if (piece.isInSlot && slot.isCorrect) {
-                continue;
-            }
-            
-            // Check if piece is in an unreachable state
-            const isUnreachable = this.isPieceUnreachable(i);
-            
-            if (isUnreachable) {                
-                // Reset piece to connected state
-                this.resetPieceToConnected(i);
-                recoveredCount++;                
-            }
-        }
-        
-        return recoveredCount;
-    }
-    
-    // Check for pieces that are in a "ghost" state (solved but not detectable)
-    checkForGhostPieces() {
-        let ghostCount = 0;
-        
-        for (let i = 0; i < this.pieces.length; i++) {
-            const piece = this.pieces[i];
-            const slot = this.slots[i];
-            
-            // Only check pieces that should be detectable
-            if (piece.state === 'solved' && piece.isInSlot && slot.isCorrect) {
-                // Test if this piece is actually detectable at its expected position
-                const isDetectable = this.testPieceDetectability(i);
-                if (!isDetectable) {
-                    ghostCount++;
-                }
-            }
-        }
-
-        return ghostCount;
-    }
-    
-    // NEW: Test if a piece is detectable at its expected position
-    testPieceDetectability(pieceIndex) {
-        const piece = this.pieces[pieceIndex];
-        const slot = this.slots[pieceIndex];
-        
-        // Get the expected position of this piece
-        const expectedPosition = this.getPieceExpectedPosition(pieceIndex);
-        if (!expectedPosition) return false;
-        
-        // Convert world position to screen coordinates
-        const screenPos = this.worldToScreen(expectedPosition);
-        if (!screenPos) return false;
-        
-        // Test hit detection at this position
-        const hitPiece = this.findPieceAtPosition(screenPos.x, screenPos.y, true);
-        
-        return hitPiece === pieceIndex;
-    }
-    
-    // NEW: Get the expected position of a piece
-    getPieceExpectedPosition(pieceIndex) {
-        const piece = this.pieces[pieceIndex];
-        const slot = this.slots[pieceIndex];
-        
-        if (piece.isInSlot && slot.isCorrect) {
-            // Piece should be at its slot position
-            return slot.position || { x: 0, y: 0, z: 0 };
-        }
-        
-        return null;
-    }
-    
-    // Convert world position to screen coordinates using coordinate utilities
-    worldToScreen(worldPosition) {
-        return CoordinateUtils.webGLWorldToScreen(
-            worldPosition, 
-            this.camera, 
-            this.canvas.width, 
-            this.canvas.height
-        );
-    }
-    
-    // Check if a piece is in an unreachable state
-    isPieceUnreachable(pieceIndex) {
-        const piece = this.pieces[pieceIndex];
-        const slot = this.slots[pieceIndex];
-        
-        // Piece is unreachable if:
-        // 1. It's marked as unsolved but has no separate mesh (truly lost)
-        // 2. It's in an incorrect slot (wrong position)
-        // 3. It has a separate mesh but is not visible or not in scene
-        
-        const hasSeparateMesh = piece.mesh !== null;
-        const isUnsolved = piece.state === 'unsolved';
-        const isInCorrectSlot = piece.isInSlot && slot.isCorrect;
-        const isInWrongSlot = piece.isInSlot && !slot.isCorrect;
-        
-        // Case 1: Piece is unsolved but has no separate mesh (truly lost)
-        if (isUnsolved && !hasSeparateMesh) {
-            return true;
-        }
-        
-        // Case 2: Piece is in wrong slot (moved to incorrect position)
-        // Only auto-recover if it's been in wrong slot for a while
-        if (isInWrongSlot) {
-            // For now, let's be conservative and not auto-recover wrong slots
-            // This prevents the puzzle from "solving itself"
-            return false;
-        }
-        
-        // Case 3: Piece has separate mesh but is not visible or not in scene
-        if (hasSeparateMesh && piece.mesh) {
-            const isVisible = piece.mesh.visible;
-            const isInScene = this.scene.children.includes(piece.mesh);
-            if (!isVisible || !isInScene) {
-                return true;
-            }
-        }
-        
-        // Case 4: Piece appears to be in correct position but is not responding to hit detection
-        // This handles "ghost" pieces that are solved but not detectable
-        if (piece.state === 'solved' && piece.isInSlot && slot.isCorrect) {
-            // Check if the piece is actually visible and in the scene
-            const connectedMesh = this.connectedMesh;
-            if (connectedMesh && connectedMesh.visible) {
-                // Piece should be detectable - if it's not, it might be in a ghost state
-                // We'll let the hit detection system handle this case
-                return false;
-            }
-        }
-        
-        return false;
-    }
-    
-    // Reset a piece back to its connected state
-    resetPieceToConnected(pieceIndex) {
-        const piece = this.pieces[pieceIndex];
-        const slot = this.slots[pieceIndex];
-                
-        // Remove separate mesh if it exists
-        if (piece.mesh) {
-            this.removeSeparatePiece(pieceIndex);
-        }
-        
-        // Reset piece state to solved
-        piece.state = 'solved';
-        piece.slotState = 'filled';
-        piece.isInSlot = true;
-        piece.offset = { x: 0, y: 0 };
-        piece.zIndex = 0;
-        
-        // Reset slot state
-        slot.state = 'filled';
-        slot.pieceId = pieceIndex;
-        slot.isCorrect = true;
-        
-        // Update array system to match
-        
-        // Update connected mesh visibility
-        this.updateConnectedMeshVisibility();        
-    }
-    
     // Create a single mesh that contains all connected Voronoi pieces
     createConnectedMesh() {
         if (!this.voronoiPolygons.length || !this.backgroundTexture) return;
@@ -791,38 +614,36 @@ class WebGLVoronoiRenderer {
         }
     }
     
-    // Auto-snap a piece to its slot
-    autoSnapPieceToSlot(pieceIndex) {
+    // Reset a piece back to its connected (solved) state — snap path only.
+    resetPieceToConnected(pieceIndex) {
         const piece = this.pieces[pieceIndex];
         const slot = this.slots[pieceIndex];
-                
-        // Play snap sound
-        if (window.voronoiPuzzle && window.voronoiPuzzle.playSnapSound) {
-            window.voronoiPuzzle.playSnapSound();
-        }
-        
-        // Remove any separate mesh if it exists
+
         if (piece.mesh) {
             this.removeSeparatePiece(pieceIndex);
         }
-        
-        // Reset piece to connected state
+
         piece.state = 'solved';
         piece.slotState = 'filled';
         piece.isInSlot = true;
         piece.offset = { x: 0, y: 0 };
         piece.zIndex = 0;
-        
-        // Reset slot state
+
         slot.state = 'filled';
         slot.pieceId = pieceIndex;
         slot.isCorrect = true;
-        
-        // Update array system to match
-        
-        // Update connected mesh visibility
+
         this.updateConnectedMeshVisibility();
-    }   
+    }
+
+    // Auto-snap a piece to its slot
+    autoSnapPieceToSlot(pieceIndex) {
+        if (window.voronoiPuzzle && window.voronoiPuzzle.playSnapSound) {
+            window.voronoiPuzzle.playSnapSound();
+        }
+
+        this.resetPieceToConnected(pieceIndex);
+    }
     
     getLoosePieceZ(zIndex = 0) {
         return LOOSE_PIECE_Z_BASE + zIndex;
@@ -1480,6 +1301,96 @@ class WebGLVoronoiRenderer {
 
         return recovered;
     }
+
+    /**
+     * Repair a released loose piece's mesh without changing solved/slot state.
+     * @param {number} pieceIndex
+     * @returns {boolean}
+     */
+    repairSeparatePiece(pieceIndex) {
+        const piece = this.pieces[pieceIndex];
+        if (!piece || !piece.released || piece.state !== 'unsolved') {
+            return false;
+        }
+
+        const offset = piece.offset || { x: 0, y: 0 };
+
+        if (!piece.mesh) {
+            this.createSeparatePiece(pieceIndex, offset);
+            return piece.mesh !== null;
+        }
+
+        let repaired = false;
+        const mesh = piece.mesh;
+
+        if (!mesh.visible) {
+            mesh.visible = true;
+            repaired = true;
+        }
+
+        if (!this.scene.children.includes(mesh)) {
+            this.scene.add(mesh);
+            repaired = true;
+        }
+
+        const position = getSeparatePieceMeshPosition(offset);
+        if (mesh.position.x !== position.x || mesh.position.y !== position.y) {
+            mesh.position.set(position.x, position.y, mesh.position.z);
+            repaired = true;
+        }
+
+        if (piece.outline) {
+            if (!this.scene.children.includes(piece.outline)) {
+                this.scene.add(piece.outline);
+                repaired = true;
+            }
+            piece.outline.position.copy(mesh.position);
+            piece.outline.position.z = mesh.position.z + 0.1;
+        }
+
+        if (piece.glowOutline) {
+            piece.glowOutline.forEach((glowLayer) => {
+                if (glowLayer && !this.scene.children.includes(glowLayer)) {
+                    this.scene.add(glowLayer);
+                    repaired = true;
+                }
+                if (glowLayer) {
+                    glowLayer.position.copy(mesh.position);
+                }
+            });
+        }
+
+        const zIndex = piece.zIndex ?? this.pieceZIndices[pieceIndex];
+        if (zIndex === undefined || zIndex < 0) {
+            piece.zIndex = 0;
+            this.pieceZIndices[pieceIndex] = 0;
+            repaired = true;
+        }
+
+        if (!mesh.geometry || !mesh.geometry.attributes?.position) {
+            if (this.recreatePieceGeometry(pieceIndex)) {
+                repaired = true;
+            }
+        }
+
+        return repaired;
+    }
+
+    /**
+     * Layout + interaction recovery for released loose pieces (dev/manual use).
+     * @returns {number}
+     */
+    repairAllReleasedPieces() {
+        let count = this.recoverOffscreenLoosePieces();
+
+        for (let i = 0; i < this.pieces.length; i++) {
+            if (this.repairSeparatePiece(i)) {
+                count++;
+            }
+        }
+
+        return count;
+    }
     
     /**
      * Creates a standalone mesh when a piece is dragged away from its slot.
@@ -1912,80 +1823,52 @@ class WebGLVoronoiRenderer {
     }
     
     // Helper method to find piece at screen coordinates
-    findPieceAtPosition(x, y, skipDraggedPiece = false) {
-        // Convert canvas coordinates to normalized device coordinates
-        // Canvas: Y=0 at top, Y=height at bottom
-        // WebGL: Y=-1 at bottom, Y=+1 at top
+    findPieceAtPosition(x, y, options = {}) {
+        const opts = typeof options === 'boolean'
+            ? { skipDraggedPiece: options, allowRepair: false }
+            : { skipDraggedPiece: false, allowRepair: false, ...options };
+        const { skipDraggedPiece, allowRepair } = opts;
+
         const mouse = new THREE.Vector2(
             (x / this.canvas.width) * 2 - 1,
-            -(y / this.canvas.height) * 2 + 1  // Y-flip needed - mouse coords are in screen coordinates
+            -(y / this.canvas.height) * 2 + 1
         );
 
-        // Create raycaster with more generous settings
         const raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(mouse, this.camera);
-        
-        // Make raycaster more generous for better hit detection
         raycaster.params.Points.threshold = 10;
         raycaster.params.Line.threshold = 5;
-        
-        // Ensure raycaster has reasonable near/far planes for hit detection
         raycaster.near = 0.1;
         raycaster.far = 1000;
-        
-        // Use object system for hit detection
-        // First check separate pieces (they have higher priority)
-        // Sort by z-index (highest first) for proper hit detection
+
         const separatePieces = this.pieces
             .map((piece, index) => ({ piece: piece.mesh, index, pieceObj: piece }))
             .filter(({ piece }) => piece !== null)
             .sort((a, b) => {
-                // Use object z-index, fallback to array
                 const aZ = a.pieceObj.zIndex || this.pieceZIndices[a.index] || 0;
                 const bZ = b.pieceObj.zIndex || this.pieceZIndices[b.index] || 0;
-                
-                // CRITICAL FIX: If z-indices are equal, use piece index as tiebreaker
-                // This prevents random selection when pieces have same z-index
+
                 if (aZ === bZ) {
-                    return b.index - a.index; // Higher index first (more recently created)
+                    return b.index - a.index;
                 }
-                
-                return bZ - aZ; // Highest z-index first
+
+                return bZ - aZ;
             });
-        
-        // Try raycaster first for all separate pieces
-        for (const { piece, index } of separatePieces) {
-            // Skip the dragged piece if we're looking for slots during drag
+
+        for (const { index } of separatePieces) {
             if (skipDraggedPiece && index === this.draggedPieceIndex) {
                 continue;
             }
-            
-            // Ensure piece is valid and has proper geometry
+
+            if (allowRepair) {
+                this.repairSeparatePiece(index);
+            }
+
+            const piece = this.pieces[index].mesh;
             if (!piece || !piece.geometry) {
                 continue;
             }
-            
-        // CRITICAL FIX: Ensure piece is in the scene
-        if (!this.scene.children.includes(piece)) {
-            this.scene.add(piece);
-        }
-        
-        // Reposition for hit test: offset only — NOT positionManager.getMeshPosition()
-        // (that adds seed coords and has caused off-screen / skin-disappear regressions).
-        if (piece && piece.position) {
-            const pieceObj = this.pieces[index];
-            if (pieceObj && pieceObj.mesh === piece) {
-                piece.visible = true;
-                if (pieceObj.offset) {
-                    const position = getSeparatePieceMeshPosition(pieceObj.offset);
-                    piece.position.set(position.x, position.y, piece.position.z);
-                }
-            }
-        }
-            
-            // Ensure piece visibility and fix any issues
-            this.ensurePieceVisibility(index);
-            
+
             try {
                 const intersects = raycaster.intersectObject(piece);
                 if (intersects.length > 0) {
@@ -1995,116 +1878,79 @@ class WebGLVoronoiRenderer {
                 log.error(`Raycaster error for piece ${index}:`, error);
             }
         }
-        
-        // If raycaster failed for all pieces, try expanded hit detection
-        for (const { piece, index } of separatePieces) {
-            // Skip the dragged piece if we're looking for slots during drag
+
+        for (const { index } of separatePieces) {
             if (skipDraggedPiece && index === this.draggedPieceIndex) {
                 continue;
             }
-            
-            // Ensure piece is valid and has proper geometry
+
+            if (allowRepair) {
+                this.repairSeparatePiece(index);
+            }
+
+            const piece = this.pieces[index].mesh;
             if (!piece || !piece.geometry) {
                 continue;
             }
-            
-            // Ensure piece visibility and fix any issues
-            this.ensurePieceVisibility(index);
-            
-            // Try expanded hit detection with multiple offset positions
+
             const offsets = [
-                { x: 0, y: 0 },      // Original position
-                { x: -20, y: 0 },    // Left
-                { x: 20, y: 0 },     // Right
-                { x: 0, y: -20 },    // Up
-                { x: 0, y: 20 },     // Down
-                { x: -10, y: -10 },  // Top-left
-                { x: 10, y: -10 },   // Top-right
-                { x: -10, y: 10 },   // Bottom-left
-                { x: 10, y: 10 }     // Bottom-right
+                { x: 0, y: 0 },
+                { x: -20, y: 0 },
+                { x: 20, y: 0 },
+                { x: 0, y: -20 },
+                { x: 0, y: 20 },
+                { x: -10, y: -10 },
+                { x: 10, y: -10 },
+                { x: -10, y: 10 },
+                { x: 10, y: 10 },
             ];
-            
+
             for (const offset of offsets) {
                 const testX = x + offset.x;
                 const testY = y + offset.y;
-                
-                // Convert test coordinates to NDC
+
                 const testMouse = new THREE.Vector2(
                     (testX / this.canvas.width) * 2 - 1,
                     -((testY / this.canvas.height) * 2 - 1)
                 );
-                
-                // Create new raycaster for this test position
+
                 const testRaycaster = new THREE.Raycaster();
                 testRaycaster.setFromCamera(testMouse, this.camera);
                 testRaycaster.near = 0.1;
                 testRaycaster.far = 1000;
-                
+
                 try {
                     const intersects = testRaycaster.intersectObject(piece);
                     if (intersects.length > 0) {
                         return index;
                     }
-                } catch (error) {
+                } catch {
                     // Continue to next offset
                 }
             }
-            
-            // Final fallback: try both bounds and polygon checks
+
             if (this.isPointInPieceBounds(x, y, index) || this.isPointInPiecePolygon(x, y, index)) {
                 return index;
             }
         }
-        
-        // Then check connected mesh
+
         if (this.connectedMesh) {
             const connectedIntersects = raycaster.intersectObject(this.connectedMesh);
             if (connectedIntersects.length > 0) {
-                // Find which piece was hit based on the intersection point
                 const intersectionPoint = connectedIntersects[0].point;
                 const pieceIndex = this.findPieceIndexAtPoint(intersectionPoint.x, intersectionPoint.y);
                 if (pieceIndex !== -1) {
-                    // NEW: Use object system for slot state check
                     const slot = this.slots[pieceIndex];
-                    const piece = this.pieces[pieceIndex];
-                    
-                    // Return piece if visible, or slot if empty (for slot hover)
+
                     if (slot && slot.state === 'filled') {
                         return pieceIndex;
-                    } else {
-                        return { type: 'slot', index: pieceIndex }; // Return slot info
                     }
+
+                    return { type: 'slot', index: pieceIndex };
                 }
             }
         }
-        
-        // Check for and fix any lost pieces
-        const fixedCount = this.checkAndFixLostPieces();
-        if (fixedCount > 0) {
-            return this.findPieceAtPosition(x, y, skipDraggedPiece);
-        }
-        
-        // NEW: Auto-recovery for unreachable pieces
-        const recoveredCount = this.autoRecoverUnreachablePieces();
-        if (recoveredCount > 0) {
-            return this.findPieceAtPosition(x, y, skipDraggedPiece);
-        }
 
-        // NEW: Check for state inconsistencies that could cause waterfall effect
-        const inconsistentPieces = this.pieces.filter((piece, index) => {
-            return piece.mesh !== null && !this.scene.children.includes(piece.mesh);
-        });
-        
-        // NEW: Check for pieces that are in scene but not positioned correctly
-        const mispositionedPieces = this.pieces.filter((piece, index) => {
-            if (piece.mesh && this.scene.children.includes(piece.mesh)) {
-                // Check if piece is positioned at origin (0,0,0) when it should be elsewhere
-                const pos = piece.mesh.position;
-                return pos.x === 0 && pos.y === 0 && piece.offset && (piece.offset.x !== 0 || piece.offset.y !== 0);
-            }
-            return false;
-        });
-        
         return -1;
     }
     
@@ -2180,44 +2026,6 @@ class WebGLVoronoiRenderer {
         return isInside;
     }
     
-    // Method to ensure a piece is properly positioned and visible
-    ensurePieceVisibility(pieceIndex) {
-        // NEW: Use object system for piece checking
-        const pieceObj = this.pieces[pieceIndex];
-        // Array backup removed - using object system only
-        const piece = pieceObj.mesh;
-        if (!piece) {
-            return false;
-        }
-        
-        // Ensure piece is visible
-        if (!piece.visible) {
-            piece.visible = true;
-        }
-        
-        // Ensure piece has proper z-index (use object system)
-        const zIndex = pieceObj ? pieceObj.zIndex : this.pieceZIndices[pieceIndex];
-        if (zIndex === undefined || zIndex < 0) {
-            const newZIndex = 0;
-            if (pieceObj) {
-                pieceObj.zIndex = newZIndex;
-            }
-            this.pieceZIndices[pieceIndex] = newZIndex;
-        }
-        
-        // Ensure piece is in the scene
-        if (!this.scene.children.includes(piece)) {
-            this.scene.add(piece);
-        }
-        
-        // Ensure piece has proper geometry
-        if (!piece.geometry || !piece.geometry.attributes.position) {
-            this.recreatePieceGeometry(pieceIndex);
-        }
-        
-        return true;
-    }
-    
     // Method to recreate piece geometry if it's corrupted
     recreatePieceGeometry(pieceIndex) {
         // Array backup removed - using object system only
@@ -2281,32 +2089,6 @@ class WebGLVoronoiRenderer {
             return false;
         }
     }
-    
-    // Method to check and fix any lost pieces (using object system)
-    checkAndFixLostPieces() {
-        let fixedCount = 0;
-        
-        for (let i = 0; i < this.pieces.length; i++) {
-            const pieceObj = this.pieces[i];
-            // Array backup removed - using object system only
-            const piece = pieceObj.mesh;
-            if (!piece) continue;
-            
-            // Check if piece is lost (not visible, not in scene, or has invalid geometry)
-            const isLost = !piece.visible || 
-                          !this.scene.children.includes(piece) || 
-                          !piece.geometry || 
-                          !piece.geometry.attributes.position;
-            
-            if (isLost) {
-                if (this.ensurePieceVisibility(i)) {
-                    fixedCount++;
-                }
-            }
-        }
-        
-        return fixedCount;
-    }
    
     // Check if the puzzle is solved (all pieces are in correct positions)
     checkSolvedState() {
@@ -2369,6 +2151,7 @@ class WebGLVoronoiRenderer {
 // Export for use in main script
 window.WebGLVoronoiRenderer = WebGLVoronoiRenderer;
 window.isWebGLSupported = isWebGLSupported;
+export { WebGLVoronoiRenderer, isWebGLSupported };
 
 // Enhanced dispose method for proper cleanup
 WebGLVoronoiRenderer.prototype.dispose = function() {

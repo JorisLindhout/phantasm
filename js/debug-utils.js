@@ -18,18 +18,10 @@ function withRenderer(callback, fallbackMessage = 'WebGL renderer not available'
 
 window.autoRecoverPieces = function() {
     return withRenderer((renderer) => {
-        const recoveredCount = renderer.autoRecoverUnreachablePieces?.() ?? 0;
-        console.log(`🔄 Manually recovered ${recoveredCount} unreachable pieces`);
+        const recoveredCount = renderer.repairAllReleasedPieces?.() ?? 0;
+        console.log(`🔄 Repaired ${recoveredCount} released piece issues (layout + interaction)`);
         return recoveredCount;
-    }, 'WebGL renderer not available for auto-recovery') ?? 0;
-};
-
-window.checkGhostPieces = function() {
-    return withRenderer((renderer) => {
-        const ghostCount = renderer.checkForGhostPieces?.() ?? 0;
-        console.log(`👻 Found ${ghostCount} ghost pieces`);
-        return ghostCount;
-    }, 'WebGL renderer not available for ghost piece detection') ?? 0;
+    }, 'WebGL renderer not available for recovery') ?? 0;
 };
 
 window.autoSnapPiece = function(pieceIndex) {
@@ -68,11 +60,10 @@ window.debugLostPieces = function() {
 window.showDebugCommands = function() {
     console.log('🛠️ Available Debug Commands:');
     console.log('  showDebugCommands() - Show this help');
-    console.log('  autoRecoverPieces() - Manually recover unreachable pieces');
+    console.log('  autoRecoverPieces() - Layout + interaction repair for released pieces');
     console.log('  debugLostPieces() - Debug lost pieces');
-    console.log('  checkGhostPieces() - Check for ghost pieces');
     console.log('  autoSnapPiece(pieceIndex) - Manually snap a piece to its slot');
-    console.log('  fixMispositionedPieces() - Fix pieces positioned at origin');
+    console.log('  fixMispositionedPieces() - Repair released loose piece meshes');
     console.log('  testInteractionSystem() - Test interaction system with multiple pieces');
 };
 
@@ -80,17 +71,13 @@ window.fixMispositionedPieces = function() {
     return withRenderer((renderer) => {
         let fixedCount = 0;
 
-        renderer.pieces.forEach((piece) => {
-            if (piece.mesh && renderer.scene.children.includes(piece.mesh)) {
-                const pos = piece.mesh.position;
-                if (pos.x === 0 && pos.y === 0 && piece.offset && (piece.offset.x !== 0 || piece.offset.y !== 0)) {
-                    piece.mesh.position.set(piece.offset.x, piece.offset.y, pos.z);
-                    fixedCount++;
-                }
+        renderer.pieces.forEach((piece, index) => {
+            if (renderer.repairSeparatePiece?.(index)) {
+                fixedCount++;
             }
         });
 
-        console.log(`✅ Fixed ${fixedCount} mispositioned pieces`);
+        console.log(`✅ Repaired ${fixedCount} separate pieces`);
         return fixedCount;
     }, 'WebGL renderer not available') ?? 0;
 };

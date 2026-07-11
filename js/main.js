@@ -632,44 +632,42 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         }
     }
 
-    findCellAtPosition(x, y) {
-        // Use WebGL hit detection
+    findCellAtPosition(x, y, { allowRepair = false } = {}) {
         if (this.webglRenderer) {
-            return this.webglRenderer.findPieceAtPosition(x, y);
+            return this.webglRenderer.findPieceAtPosition(x, y, { allowRepair });
         }
         return -1;
     }
     
-    findCellAtPositionImproved(x, y) {
-        // Use WebGL renderer's hit detection if available (for better slot detection)
+    findCellAtPositionImproved(x, y, { allowRepair = false } = {}) {
         if (this.webglRenderer) {
-            // Skip the dragged piece when looking for slots during drag
             const skipDraggedPiece = this.isDragging;
-            const webglResult = this.webglRenderer.findPieceAtPosition(x, y, skipDraggedPiece);
+            const webglResult = this.webglRenderer.findPieceAtPosition(x, y, {
+                skipDraggedPiece,
+                allowRepair,
+            });
             if (webglResult !== -1) {
                 return webglResult;
             }
         }
         
-        // Fallback to standard hit detection
-        let cellIndex = this.findCellAtPosition(x, y);
+        let cellIndex = this.findCellAtPosition(x, y, { allowRepair });
         
         if (cellIndex !== -1) {
             return cellIndex;
         }
         
-        // If that fails, try expanded hit detection with larger tolerance
-        const tolerance = 20; // pixels
+        const tolerance = 20;
         const searchPoints = [
-            [x, y], // Original point
-            [x - tolerance, y], [x + tolerance, y], // Left/right
-            [x, y - tolerance], [x, y + tolerance], // Up/down
-            [x - tolerance/2, y - tolerance/2], [x + tolerance/2, y - tolerance/2], // Diagonals
-            [x - tolerance/2, y + tolerance/2], [x + tolerance/2, y + tolerance/2]
+            [x, y],
+            [x - tolerance, y], [x + tolerance, y],
+            [x, y - tolerance], [x, y + tolerance],
+            [x - tolerance / 2, y - tolerance / 2], [x + tolerance / 2, y - tolerance / 2],
+            [x - tolerance / 2, y + tolerance / 2], [x + tolerance / 2, y + tolerance / 2],
         ];
         
         for (const [testX, testY] of searchPoints) {
-            cellIndex = this.findCellAtPosition(testX, testY);
+            cellIndex = this.findCellAtPosition(testX, testY, { allowRepair });
             if (cellIndex !== -1) {
                 return cellIndex;
             }
@@ -690,7 +688,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         const y = webglCoords.y;
                 
         // Find which cell was clicked with improved hit detection
-        const hitResult = this.findCellAtPositionImproved(x, y);
+        const hitResult = this.findCellAtPositionImproved(x, y, { allowRepair: true });
         
         // Only activate if we hit a piece (not a slot)
         const isSlot = hitResult && typeof hitResult === 'object' && hitResult.type === 'slot';

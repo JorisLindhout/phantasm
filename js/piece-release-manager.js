@@ -188,7 +188,6 @@ class PieceReleaseManager {
 
         if (renderer) {
             this.reconcilePool(renderer);
-            renderer.recoverOffscreenLoosePieces?.();
         }
 
         const remaining = renderer ? this.countUnreleased(renderer) : this.pool.length;
