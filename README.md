@@ -415,7 +415,7 @@ Only snap / player placement marks a piece solved — recovery never auto-comple
 
 ### Gameplay & content
 - **Level development** — new artwork and manifest entries (see [Adding a New Level](#adding-a-new-level)); only two levels shipped so far
-- **Mid-level resume** — save in-progress piece positions within a level; optional random seed to restore the same Voronoi layout
+
 
 ### Audio
 - **Snap sound** — find or engineer the right sound for piece snapping, then wire it into the existing `playSnapSound()` hook
