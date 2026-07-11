@@ -117,6 +117,8 @@ class LevelTransitionManager {
 
         try {
             window.levelManager.resetProgression();
+            // Completion leaves isTransitioning true; clear before reload so piece release runs.
+            this.isTransitioning = false;
             await window.levelManager.setLevel('level-1', { silent: true });
         } finally {
             this.hideCompletionOverlay();

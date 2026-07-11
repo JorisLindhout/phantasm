@@ -143,6 +143,24 @@ describe('LevelTransitionManager', () => {
         expect(transitioningDuringRelease).toBe(false);
         expect(window.pieceReleaseManager.releaseInitialBatch).toHaveBeenCalled();
     });
+
+    it('clears transitioning before play again reloads level 1', async () => {
+        manager.isTransitioning = true;
+
+        let transitioningDuringSetLevel = null;
+        window.levelManager.setLevel = vi.fn(async () => {
+            transitioningDuringSetLevel = manager.isTransitioning;
+            return true;
+        });
+
+        await manager.handlePlayAgain();
+
+        expect(window.levelManager.resetProgression).toHaveBeenCalled();
+        expect(transitioningDuringSetLevel).toBe(false);
+        expect(window.levelManager.setLevel).toHaveBeenCalledWith('level-1', { silent: true });
+        expect(manager.isTransitioning).toBe(false);
+        expect(document.getElementById('completionOverlay').hidden).toBe(true);
+    });
 });
 
 describe('LevelManager progression hook', () => {
