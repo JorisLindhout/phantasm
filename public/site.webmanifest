@@ -1,7 +1,7 @@
 {
   "name": "Phantasm",
   "short_name": "Phantasm",
-  "description": "A web-based Voronoi puzzle with WebGL 3D rendering, staged piece release, and level progression.",
+  "description": "Phantasm is a spectral puzzle of shifting shapes. Pieces drift in from the dark, snap into place, until the hidden image finally holds.",
   "start_url": "/",
   "scope": "/",
   "id": "/",
