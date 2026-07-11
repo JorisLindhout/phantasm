@@ -98,10 +98,13 @@ export const THEMES = {
             opacityHover: 0.8,
             opacityDragging: 0.9,
             opacitySnapped: 1.0
-        }
+        },
+        levelGradient: {
+            gradientStart: COLORS.fluidBlue,
+            gradientEnd: COLORS.fluidGreen,
+            angle: '135deg',
+        },
     },
-
-    // Level One theme
     levelOne: {
         name: 'Level 1',
         baseImage: './assets/Level-1.svg',
@@ -139,7 +142,12 @@ export const THEMES = {
             opacityHover: 0.8,
             opacityDragging: 0.9,
             opacitySnapped: 1.0
-        }
+        },
+        levelGradient: {
+            gradientStart: LEVEL1_COLORS.keppel,
+            gradientEnd: LEVEL1_COLORS.neonBlue,
+            angle: '135deg',
+        },
     },
 
     // Level Two theme
@@ -180,7 +188,12 @@ export const THEMES = {
             opacityHover: 0.8,
             opacityDragging: 0.9,
             opacitySnapped: 1.0
-        }
+        },
+        levelGradient: {
+            gradientStart: LEVEL2_COLORS.cornflowerBlue,
+            gradientEnd: LEVEL2_COLORS.majorelleBlue,
+            angle: '135deg',
+        },
     }
 };
 

@@ -75,7 +75,36 @@
         id="releasePiecesBtn"
         class="release-pieces-btn"
         aria-label="Release more puzzle pieces"
-    >+</button>
+    >
+        <svg class="release-pieces-btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <defs>
+                <linearGradient id="releasePiecesGradV" gradientUnits="userSpaceOnUse" x1="12" y1="5" x2="12" y2="19">
+                    <stop offset="0%" style="stop-color: var(--level-gradient-start, #888888)" />
+                    <stop offset="100%" style="stop-color: var(--level-gradient-end, #aaaaaa)" />
+                </linearGradient>
+                <linearGradient id="releasePiecesGradH" gradientUnits="userSpaceOnUse" x1="5" y1="12" x2="19" y2="12">
+                    <stop offset="0%" style="stop-color: var(--level-gradient-start, #888888)" />
+                    <stop offset="100%" style="stop-color: var(--level-gradient-end, #aaaaaa)" />
+                </linearGradient>
+            </defs>
+            <path
+                class="release-pieces-btn__glyph release-pieces-btn__glyph--vertical"
+                d="M12 5v14"
+                fill="none"
+                stroke="url(#releasePiecesGradV)"
+                stroke-width="3"
+                stroke-linecap="round"
+            />
+            <path
+                class="release-pieces-btn__glyph release-pieces-btn__glyph--horizontal"
+                d="M5 12h14"
+                fill="none"
+                stroke="url(#releasePiecesGradH)"
+                stroke-width="3"
+                stroke-linecap="round"
+            />
+        </svg>
+    </button>
 
     <div id="completionOverlay" class="completion-overlay" hidden>
         <div class="completion-gradient" aria-hidden="true"></div>

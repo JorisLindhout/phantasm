@@ -112,7 +112,17 @@ class ThemeManager {
             '--stage-glow',
             ThemeUtils.getColorWithAlpha(UNSOLVED_STAGE_GLOW, UNSOLVED_STAGE_GLOW_ALPHA),
         );
-        
+
+        if (theme.levelGradient) {
+            const { gradientStart, gradientEnd, angle } = theme.levelGradient;
+            root.style.setProperty('--level-gradient-angle', angle);
+            root.style.setProperty('--level-gradient-start', gradientStart.css);
+            root.style.setProperty('--level-gradient-end', gradientEnd.css);
+            root.style.setProperty(
+                '--level-gradient',
+                `linear-gradient(${angle}, ${gradientStart.css}, ${gradientEnd.css})`,
+            );
+        }
 
         // Effects
         root.style.setProperty('--transition-speed', `${effects.animationSpeed}s`);

@@ -269,22 +269,35 @@
     border-radius: 50%;
     border: 1px solid var(--cell-border);
     background: var(--control-bg);
-    color: var(--text-muted);
-    font-size: 1.5rem;
-    line-height: 1;
+    padding: 0;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color var(--transition-speed) ease, border-color var(--transition-speed) ease, background var(--transition-speed) ease;
+    transition: border-color var(--transition-speed) ease, background var(--transition-speed) ease;
+}
+
+.release-pieces-btn__icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    display: block;
+    pointer-events: none;
+}
+
+.release-pieces-btn__glyph {
+    transition: stroke var(--transition-speed) ease;
 }
 
 .release-pieces-btn:hover,
 .release-pieces-btn:focus-visible {
-    color: var(--controls-primary-color);
     border-color: var(--controls-primary-color);
     background: var(--canvas-background);
     outline: none;
+}
+
+.release-pieces-btn:hover .release-pieces-btn__glyph,
+.release-pieces-btn:focus-visible .release-pieces-btn__glyph {
+    stroke: var(--controls-primary-color);
 }
 
 .release-pieces-btn:disabled,
