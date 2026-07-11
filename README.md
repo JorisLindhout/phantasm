@@ -28,6 +28,7 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 - [File Structure](#file-structure)
 - [Usage & Controls](#usage--controls)
 - [Development](#development)
+- [Deployment](#deployment-cloudflare)
 - [Known Issues](#known-issues)
 - [Browser Compatibility](#browser-compatibility)
 - [Performance](#performance)
@@ -84,8 +85,8 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 | Level 2 | 60 | 0.8× | 15px | 2 / 10 |
 
 #### Adding a New Level
-1. Add `assets/Level-N.svg`
-2. Add a theme block in `js/theme.js` (palette + `baseImage`)
+1. Add `public/assets/Level-N.svg`
+2. Add a theme block in `js/theme.js` (palette + `baseImage` pointing at `./assets/Level-N.svg`)
 3. Append one entry to `LEVEL_MANIFEST` in `js/levels.config.js`
 
 ## Quick Start
@@ -122,6 +123,20 @@ npm run build        # Build optimized version to dist/
 npm run preview      # Preview production build locally
 npm test             # Run unit tests (Vitest)
 ```
+
+### Deployment (Cloudflare)
+
+Production builds are static files in `dist/`. Game images and audio must live in `public/assets/` so Vite copies them into `dist/assets/` — runtime paths like `./assets/Level-1.svg` resolve from there.
+
+The repo includes `wrangler.jsonc` for Cloudflare Workers static assets:
+
+| Setting | Value |
+|---------|-------|
+| Build command | `npm run build` |
+| Output directory | `dist` |
+| Deploy command | `npx wrangler deploy` |
+
+`wrangler.jsonc` serves `dist/` as static assets with SPA fallback for unknown routes. Live site: [phantasm.joris.wtf](https://phantasm.joris.wtf/).
 
 ## Architecture
 
@@ -189,22 +204,23 @@ phantasm/
 ├── styles.css                    # Main CSS (imports modular styles)
 ├── package.json                  # Project dependencies
 ├── vite.config.js                # Vite configuration for development server
+├── wrangler.jsonc                # Cloudflare static assets deploy config
 ├── public/                       # Static assets (copied to dist root as-is)
 │   ├── favicon.svg
 │   ├── favicon-96x96.png
 │   ├── apple-touch-icon.png
 │   ├── web-app-manifest-192x192.png
 │   ├── web-app-manifest-512x512.png
-│   └── site.webmanifest          # PWA manifest
+│   ├── site.webmanifest          # PWA manifest
+│   └── assets/                   # Game images and audio (served at /assets/…)
+│       ├── Level-1.svg           # Level 1 background (450×450)
+│       ├── Level-2.svg           # Level 2 background (450×450)
+│       ├── Phantasm.svg          # Legacy theme asset
+│       └── sounds/
+│           ├── snap.webm         # Snap sound (WebM Opus format, ~10KB)
+│           └── snap.mp3          # Snap sound fallback (MP3 format, ~15KB)
 ├── .env.example                  # Documented environment variables
 ├── .env.development              # Local dev env (VITE_DEV_PANEL=true)
-├── assets/                       # Game assets and images
-│   ├── Level-1.svg               # Level 1 background (450×450)
-│   ├── Level-2.svg               # Level 2 background (450×450)
-│   ├── Phantasm.svg              # Legacy theme asset
-│   └── sounds/                   # Audio assets
-│       ├── snap.webm             # Snap sound (WebM Opus format, ~10KB)
-│       └── snap.mp3              # Snap sound fallback (MP3 format, ~15KB)
 ├── css/
 │   ├── base.css                  # Base colors, stage glow, loading overlay
 │   ├── controls.css              # UI controls + release button
