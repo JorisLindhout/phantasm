@@ -3,6 +3,7 @@
  */
 
 import { announce } from './accessibility.js';
+import { CoordinateUtils } from './coordinate-utils.js';
 import { computePieceOffsetFromDragDelta } from './drag-offset.js';
 import { alignCanvasDimensions } from './voronoi-coordinates.js';
 import {

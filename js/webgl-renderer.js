@@ -14,6 +14,7 @@ import { LEVEL_HEIGHT, LEVEL_WIDTH } from './stage-constants.js';
 import { SLOT_GHOST_OPACITY, LOOSE_PIECE_Z_BASE, isPolygonWithinStage, scatterPiece, polygonRadius } from './unsolved-layout.js';
 import { polygonCenter } from './polygon-geometry.js';
 import { createLogger } from './logger.js';
+import { PositionManager } from './position-manager.js';
 
 const log = createLogger('webgl');
 

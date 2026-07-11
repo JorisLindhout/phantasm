@@ -11,7 +11,7 @@
 
 import { resolvePuzzlePoints } from './voronoi-coordinates.js';
 
-class PositionManager {
+export class PositionManager {
     constructor(originalPoints, canvasHeight) {
         this.originalPoints = originalPoints;
         this.canvasHeight = canvasHeight;
@@ -184,11 +184,4 @@ class PositionManager {
     updateOriginalPoints(newOriginalPoints) {
         this.originalPoints = newOriginalPoints;
     }
-}
-
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = PositionManager;
-} else {
-    window.PositionManager = PositionManager;
 }

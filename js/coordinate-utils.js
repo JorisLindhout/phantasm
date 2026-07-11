@@ -9,7 +9,7 @@
  * with conversions happening only at the boundaries (mouse input and display output).
  */
 
-class CoordinateUtils {
+export class CoordinateUtils {
     /**
      * Convert screen coordinates (mouse) to WebGL coordinates
      * Screen: Y increases downward (0 at top, height at bottom)
@@ -130,11 +130,4 @@ class CoordinateUtils {
         return x >= 0 && x <= canvasWidth && y >= 0 && y <= canvasHeight;
     }
     
-}
-
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CoordinateUtils;
-} else {
-    window.CoordinateUtils = CoordinateUtils;
 }
