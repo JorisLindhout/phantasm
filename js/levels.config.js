@@ -1,0 +1,120 @@
+/**
+ * Ordered level manifest — single source of truth for progression.
+ * Add Level-N.svg, theme entry, and one row here to register a new level.
+ */
+
+export const LEVEL_MANIFEST = [
+    {
+        id: 'level-1',
+        name: 'Level 1',
+        theme: 'levelOne',
+        asset: './assets/Level-1.svg',
+        difficulty: { cellCount: 40, animationSpeed: 1.0, noiseAmplitude: 10 },
+        release: { phone: 3, tablet: 5, desktop: 8, large: 12 },
+        unlockedByDefault: true,
+    },
+    {
+        id: 'level-2',
+        name: 'Level 2',
+        theme: 'levelTwo',
+        asset: './assets/Level-2.svg',
+        difficulty: { cellCount: 60, animationSpeed: 0.8, noiseAmplitude: 15 },
+        release: { phone: 2, tablet: 4, desktop: 6, large: 10 },
+        unlockedByDefault: false,
+    },
+];
+
+const UNLOCK_STORAGE_KEY = 'phantasm-unlocked-levels';
+
+/**
+ * @param {string} levelId
+ * @returns {object | undefined}
+ */
+export function getLevelById(levelId) {
+    return LEVEL_MANIFEST.find((level) => level.id === levelId);
+}
+
+/**
+ * @param {string} levelId
+ * @returns {number}
+ */
+export function getLevelIndex(levelId) {
+    return LEVEL_MANIFEST.findIndex((level) => level.id === levelId);
+}
+
+/**
+ * @param {string} levelId
+ * @returns {string | null}
+ */
+export function getNextLevelId(levelId) {
+    const index = getLevelIndex(levelId);
+    if (index < 0 || index >= LEVEL_MANIFEST.length - 1) {
+        return null;
+    }
+    return LEVEL_MANIFEST[index + 1].id;
+}
+
+/**
+ * @param {string} levelId
+ * @returns {boolean}
+ */
+export function isFinalLevel(levelId) {
+    return getLevelIndex(levelId) === LEVEL_MANIFEST.length - 1;
+}
+
+/**
+ * @returns {string[]}
+ */
+export function loadUnlockedLevelIds() {
+    try {
+        const saved = localStorage.getItem(UNLOCK_STORAGE_KEY);
+        if (!saved) return [];
+
+        const parsed = JSON.parse(saved);
+        if (!Array.isArray(parsed)) return [];
+
+        const validIds = new Set(LEVEL_MANIFEST.map((level) => level.id));
+        return parsed.filter((id) => validIds.has(id));
+    } catch {
+        return [];
+    }
+}
+
+/**
+ * @param {string[]} unlockedIds
+ */
+export function saveUnlockedLevelIds(unlockedIds) {
+    try {
+        localStorage.setItem(UNLOCK_STORAGE_KEY, JSON.stringify(unlockedIds));
+    } catch (error) {
+        console.warn('Failed to save unlocked levels:', error);
+    }
+}
+
+/**
+ * @param {string} levelId
+ * @param {string[]} unlockedIds
+ * @returns {string[]}
+ */
+export function unlockLevelId(levelId, unlockedIds) {
+    if (!getLevelById(levelId) || unlockedIds.includes(levelId)) {
+        return unlockedIds;
+    }
+    return [...unlockedIds, levelId];
+}
+
+/**
+ * @param {object} entry
+ * @returns {object}
+ */
+export function manifestEntryToLevelConfig(entry) {
+    return {
+        id: entry.id,
+        name: entry.name,
+        theme: entry.theme,
+        asset: entry.asset,
+        config: entry.difficulty,
+        release: entry.release,
+        unlockedByDefault: entry.unlockedByDefault,
+    };
+}

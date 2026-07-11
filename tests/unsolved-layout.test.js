@@ -20,6 +20,12 @@ describe('calculateReleaseBatchSize', () => {
         expect(calculateReleaseBatchSize(900)).toBe(8);
         expect(calculateReleaseBatchSize(1400)).toBe(12);
     });
+
+    it('uses level release config when provided', () => {
+        const release = { phone: 2, tablet: 4, desktop: 6, large: 10 };
+        expect(calculateReleaseBatchSize(320, release)).toBe(2);
+        expect(calculateReleaseBatchSize(1400, release)).toBe(10);
+    });
 });
 
 describe('computeScatterBounds', () => {
@@ -160,5 +166,47 @@ describe('PieceReleaseManager', () => {
         expect(released).toBe(8);
         expect(releasePiece).toHaveBeenCalledTimes(8);
         expect(manager.getRemainingCount()).toBe(2);
+    });
+
+    it('calls bringPieceToFront on the active renderer, not the disposed outer puzzle', () => {
+        const manager = new PieceReleaseManager();
+        const stage = document.querySelector('.stage');
+        stage.getBoundingClientRect = () => ({
+            width: 900,
+            height: 900,
+            top: 0,
+            left: 0,
+            right: 900,
+            bottom: 900,
+        });
+
+        const bringPieceToFront = vi.fn();
+        window.voronoiPuzzle = {
+            pieceZIndex: null,
+            bringPieceToFront: vi.fn(),
+            currentRenderer: { bringPieceToFront },
+        };
+
+        const webglRenderer = {
+            canvas: document.querySelector('canvas'),
+            voronoiPolygons: [
+                [
+                    [200, 200],
+                    [250, 200],
+                    [250, 250],
+                    [200, 250],
+                ],
+            ],
+            releasePiece: vi.fn(),
+            recoverOffscreenLoosePieces: vi.fn(),
+        };
+
+        manager.reset(1);
+        manager.releaseNextBatch(webglRenderer);
+
+        expect(bringPieceToFront).toHaveBeenCalledWith(0);
+        expect(window.voronoiPuzzle.bringPieceToFront).not.toHaveBeenCalled();
+
+        delete window.voronoiPuzzle;
     });
 });

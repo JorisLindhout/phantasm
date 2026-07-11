@@ -1,0 +1,143 @@
+/* Level progression overlays — transition and completion */
+
+.level-transition-overlay,
+.completion-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+    background: rgba(17, 17, 17, 0.92);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.level-transition-overlay.visible,
+.completion-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.transition-gradient,
+.completion-gradient {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+        circle at 50% 45%,
+        rgba(0, 221, 255, 0.35) 0%,
+        rgba(55, 104, 254, 0.15) 35%,
+        rgba(17, 17, 17, 0) 70%
+    );
+    animation: phantasmVeilPulse 4s ease-in-out infinite;
+}
+
+.completion-gradient {
+    background: radial-gradient(
+        circle at 50% 50%,
+        rgba(0, 204, 255, 0.45) 0%,
+        rgba(122, 78, 223, 0.2) 40%,
+        rgba(17, 17, 17, 0) 75%
+    );
+}
+
+@keyframes phantasmVeilPulse {
+    0%, 100% {
+        opacity: 0.85;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.04);
+    }
+}
+
+.transition-title {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 1.5rem;
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--text-color, #ffffff);
+    text-align: center;
+}
+
+.completion-word {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 2rem;
+    font-size: clamp(3rem, 12vw, 5rem);
+    font-weight: 200;
+    letter-spacing: 0.35em;
+    text-transform: lowercase;
+    color: var(--text-color, #ffffff);
+    text-indent: 0.35em;
+}
+
+.transition-continue,
+.completion-play-again {
+    position: relative;
+    z-index: 1;
+    min-width: 160px;
+    min-height: 44px;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--cell-border, rgba(255, 255, 255, 0.2));
+    border-radius: var(--border-radius-small, 4px);
+    background: rgba(17, 17, 17, 0.6);
+    color: var(--controls-primary-color, #00ddff);
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.transition-continue:hover,
+.transition-continue:focus-visible,
+.completion-play-again:hover,
+.completion-play-again:focus-visible {
+    border-color: var(--controls-primary-color, #00ddff);
+    background: rgba(0, 221, 255, 0.08);
+    outline: none;
+}
+
+.stage.level-celebrating {
+    animation: celebratePulse 1.2s ease-in-out forwards;
+}
+
+@keyframes celebratePulse {
+    0% {
+        transform: scale(1);
+    }
+    40% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .transition-gradient,
+    .completion-gradient {
+        animation: none;
+    }
+
+    .stage.level-celebrating {
+        animation: none;
+    }
+
+    .level-transition-overlay,
+    .completion-overlay {
+        transition: none;
+    }
+}
+
+body:not(.dev-panel-enabled) .controls-drawer,
+body:not(.dev-panel-enabled) .drawer-toggle {
+    display: none !important;
+}

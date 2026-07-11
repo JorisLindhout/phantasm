@@ -107,8 +107,9 @@ class PieceReleaseManager {
         }
 
         const stageDisplayWidth = this.getStageDisplayWidth(webglRenderer.canvas);
+        const releaseConfig = window.levelManager?.getCurrentLevel()?.release ?? null;
         const batchSize = Math.min(
-            calculateReleaseBatchSize(stageDisplayWidth),
+            calculateReleaseBatchSize(stageDisplayWidth, releaseConfig),
             this.pool.length
         );
 
@@ -136,7 +137,7 @@ class PieceReleaseManager {
             });
 
             webglRenderer.releasePiece(pieceIndex, offset);
-            window.voronoiPuzzle?.bringPieceToFront?.(pieceIndex);
+            window.voronoiPuzzle?.currentRenderer?.bringPieceToFront?.(pieceIndex);
 
             const { centerX, centerY } = polygonCenter(polygon);
             this.placedCenters.push({

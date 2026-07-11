@@ -7,6 +7,8 @@ import { Delaunay } from 'd3-delaunay';
 import { themeManager } from './theme-manager.js';
 import { levelManager } from './level-manager.js';
 import { pieceReleaseManager } from './piece-release-manager.js';
+import { levelTransitionManager } from './level-transition.js';
+import { isDevPanelEnabled, applyDevPanelVisibility } from './dev-panel.js';
 import { prefersReducedMotion, announce, updateRangeAriaValue, setDrawerExpanded } from './accessibility.js';
 import { configureLegacyColorPipeline } from './three-config.js';
 
@@ -49,6 +51,10 @@ function debounce(fn, wait) {
 }
 
 function setupControlHandlers() {
+    if (!isDevPanelEnabled()) {
+        return;
+    }
+
     document.querySelector('[data-action="regenerate"]')?.addEventListener('click', () => {
         window.voronoiPuzzle?.regeneratePuzzle();
     });
@@ -65,13 +71,6 @@ function setupControlHandlers() {
         }
     });
 
-    const handleStageResize = debounce(() => {
-        const canvas = document.getElementById('voronoiCanvas');
-        window.responsiveCanvas?.handleViewportResize(canvas);
-    }, 150);
-
-    window.addEventListener('resize', handleStageResize);
-
     document.getElementById('drawerToggle')?.addEventListener('click', toggleDrawer);
 
     document.getElementById('levelSelector')?.addEventListener('change', async (event) => {
@@ -80,6 +79,15 @@ function setupControlHandlers() {
             await window.levelManager.setLevel(selectedLevel);
         }
     });
+}
+
+function setupViewportHandlers() {
+    const handleStageResize = debounce(() => {
+        const canvas = document.getElementById('voronoiCanvas');
+        window.responsiveCanvas?.handleViewportResize(canvas);
+    }, 150);
+
+    window.addEventListener('resize', handleStageResize);
 }
 
 function toggleDrawer() {
@@ -101,6 +109,10 @@ function toggleDrawer() {
 }
 
 function bindRangeAccessibility() {
+    if (!isDevPanelEnabled()) {
+        return;
+    }
+
     const bindings = [
         ['cellCount', 'cellCountValue'],
         ['animationSpeed', 'animationSpeedValue'],
@@ -119,6 +131,8 @@ function bindRangeAccessibility() {
 }
 
 async function initializeApp() {
+    applyDevPanelVisibility();
+
     if (import.meta.env.DEV) {
         await import('./debug-utils.js');
     }
@@ -138,6 +152,9 @@ async function initializeApp() {
         window.levelManager = levelManager;
         levelManager.prepareForStartup();
 
+        window.levelTransitionManager = levelTransitionManager;
+        levelTransitionManager.init();
+
         window.pieceReleaseManager = pieceReleaseManager;
         pieceReleaseManager.bindButton();
 
@@ -153,6 +170,7 @@ async function initializeApp() {
 
         bindRangeAccessibility();
         setupControlHandlers();
+        setupViewportHandlers();
         updateAnimationButtonLabel(window.voronoiPuzzle.config.isAnimating);
 
         window.voronoiPuzzle.hideLoadingScreen?.();
@@ -178,5 +196,6 @@ export {
     VoronoiPuzzle,
     themeManager,
     levelManager,
+    levelTransitionManager,
     toggleDrawer,
 };

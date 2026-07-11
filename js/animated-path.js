@@ -43,7 +43,7 @@ export function isWithinSnapThreshold(offset, threshold) {
  * @returns {{ cellCount: number, animationSpeed: number, noiseAmplitude: number }}
  */
 export function resolveLevelConfig(levelConfig) {
-    const config = levelConfig?.config ?? levelConfig;
+    const config = levelConfig?.config ?? levelConfig?.difficulty ?? levelConfig;
     return {
         cellCount: config.cellCount,
         animationSpeed: config.animationSpeed,

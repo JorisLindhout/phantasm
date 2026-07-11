@@ -103,6 +103,7 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
                 try {
                     // Create WebGL renderer
                     this.currentRenderer = new WebGLRenderer();
+                    Object.assign(this.currentRenderer.config, this.config);
                     await this.currentRenderer.init();
                     
                     // WebGL renderer is accessible via getter
@@ -197,6 +198,14 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
         if (this.currentRenderer && this.currentRenderer.render) {
             this.currentRenderer.render();
         }
+    }
+
+    bringPieceToFront(cellIndex) {
+        if (this.currentRenderer?.bringPieceToFront) {
+            this.currentRenderer.bringPieceToFront(cellIndex);
+            return;
+        }
+        super.bringPieceToFront(cellIndex);
     }
     
     dispose() {

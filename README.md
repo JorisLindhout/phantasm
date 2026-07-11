@@ -1,10 +1,9 @@
 # Phantasm - WebGL Version
 
-A high-performance web-based puzzle prototype featuring animated Voronoi cells with WebGL 3D rendering, advanced visual effects, and a unified theming system.
+A web-based Voronoi puzzle with WebGL 3D rendering, staged piece release, level progression, and a unified theming system. Players start each level unsolved, release pieces in batches, and advance through levels by completing the puzzle.
 
 ## TODO
-- [] **Fix unreachable pieces issue** - Some pieces become unresponsive to interaction - this seems fixed, but leaving here since we might need to do some more rigorous testing
-- [] **Remove array system leftovers** - Remove `separateGlowOutlines[]` (22 uses) and `pieceZIndices[]` (23 uses) arrays in webgl-renderer.js and convert all references to use object-based system only (`this.pieces[index].glowOutline` and `this.pieces[index].zIndex`). Comment on line 39 says "Array backup system removed" but arrays are still being used with fallback logic.
+- [ ] **Remove array system leftovers** — Remove `separateGlowOutlines[]` and `pieceZIndices[]` fallback arrays in `webgl-renderer.js`; use object-based fields only (`this.pieces[index].glowOutline`, `this.pieces[index].zIndex`)
 
 ## 🐛 Debugging & Error Reporting
 
@@ -44,20 +43,22 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 ## Features
 
 ### 🧩 Interactive Puzzle Gameplay
-- **Drag & Drop**: Move individual puzzle pieces around the canvas
+- **Unsolved Start**: Puzzle begins with empty slots, ghost outlines, and a small batch of scattered pieces
+- **Staged Release**: Tap the **+** button (top-right) to release more pieces in responsive batches
+- **Drag & Drop**: Move individual puzzle pieces around the canvas (mouse, touch, or keyboard)
 - **Smart Snapping**: Pieces automatically snap to their correct positions when within 25px threshold
 - **Audio Feedback**: Satisfying snap sound plays instantly when pieces lock into place (WebM Opus with MP3 fallback)
-- **Visual Feedback**: Hover effects, drag glows, and snap confirmations
+- **Visual Feedback**: Hover effects, drag glows, loose-piece outlines, and snap confirmations
 - **Z-Index Management**: Clicked pieces always appear on top
 - **Hit Detection**: Accurate piece selection with expanded interaction areas
-- **Auto-Recovery System**: Automatically detects and restores unreachable pieces
-- **Responsive Canvas**: Optional responsive mode adapts to screen width while maintaining 16:9 aspect ratio, or fixed 1200x675 pixels mode
+- **Auto-Recovery System**: Automatically detects and restores unreachable or off-screen pieces
+- **Responsive Stage**: 1:1 square stage (450×450 logical) scales to viewport; max display width 1200px
 
 ### 🎨 WebGL 3D Rendering
 - **Hardware Acceleration**: GPU-accelerated rendering with Three.js
 - **True Z-Layering**: Proper depth testing for accurate piece stacking
 - **Advanced Materials**: Dynamic textures and lighting effects
-- **High Performance**: Optimized for 30+ pieces with smooth animation
+- **High Performance**: Optimized for 40–60 pieces with smooth animation
 
 ### ✨ Advanced Visual Effects
 - **Animated Boundaries**: Smooth Perlin noise animation of cell edges
@@ -70,19 +71,27 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 - **Multiple Themes**: Level-specific themes with distinct visual styles
 - **Dev Tools Integration**: Console-based theme switching for development
 - **Dynamic Color Updates**: Real-time theme changes via theme manager
-- **Persistent Preferences**: Theme and level choices saved between sessions
+- **Persistent Preferences**: Unlock progress saved between sessions; manual level choice saved when using the dev panel
 
-### 🎮 Level System
-- **Multiple Levels**: Two distinct levels with increasing difficulty
-- **Dynamic Difficulty**: Different cell counts, animation speeds, and noise amplitudes per level
-- **Theme Integration**: Each level has its own visual theme and background image
-- **Complete Reinitialization**: Clean state management with loading screen during transitions
-- **Persistent Progress**: Level preferences saved in localStorage (`phantasm-level`)
-- **Loading Screen**: Visual feedback during level transitions
+### 🎮 Level System & Progression
+- **Manifest-Driven Levels**: Ordered level list in `js/levels.config.js` (theme, SVG, difficulty, release batches)
+- **Unlock on Solve**: Level 2 unlocks when Level 1 is completed; progress saved in `phantasm-unlocked-levels`
+- **Phantasm Bloom Transition**: Tap **Continue** on a gradient overlay between levels
+- **Completion Screen**: After the final level, a **done** screen with **Play again**
+- **Always Starts at Level 1**: Cold start loads Level 1 regardless of saved preferences
+- **Per-Level Difficulty**: Cell count, animation speed, and noise amplitude defined per level
+- **Per-Level Release Batches**: Fewer pieces released per tap on harder levels and smaller screens
 
 #### Level Configurations
-- **Level 1**: 40 pieces, normal speed (1.0x), moderate noise (10px)
-- **Level 2**: 60 pieces, faster speed (0.8x), higher noise (15px)
+| Level | Pieces | Speed | Noise | Release (phone / desktop) |
+|-------|--------|-------|-------|-------------------------|
+| Level 1 | 40 | 1.0× | 10px | 3 / 12 |
+| Level 2 | 60 | 0.8× | 15px | 2 / 10 |
+
+#### Adding a New Level
+1. Add `assets/Level-N.svg`
+2. Add a theme block in `js/theme.js` (palette + `baseImage`)
+3. Append one entry to `LEVEL_MANIFEST` in `js/levels.config.js`
 
 ## Quick Start
 
@@ -99,13 +108,24 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
    ```
 4. **Browser will auto-open** to `http://localhost:8080`
 5. **Interact** with puzzle pieces by clicking and dragging
-6. **Adjust settings** using the control panel (click the caret icon)
-7. **Switch levels** using the level selector in the controls panel
+6. **Release more pieces** with the **+** button (top-right)
+7. **Dev tuning panel** (local dev only): click the caret at the bottom to adjust cell count, speed, noise, and switch levels manually
+
+### Environment Variables
+
+Copy `.env.example` to `.env.development` for local tuning:
+
+| Variable | Default (production) | Effect |
+|----------|----------------------|--------|
+| `VITE_DEV_PANEL` | `false` | Shows the bottom controls drawer (level selector, sliders, regenerate) |
+
+Local development sets `VITE_DEV_PANEL=true` in `.env.development`. Production builds hide the drawer — players advance only by solving levels.
 
 ### Building for Production
 ```bash
 npm run build        # Build optimized version to dist/
 npm run preview      # Preview production build locally
+npm test             # Run unit tests (Vitest)
 ```
 
 ## Architecture
@@ -113,18 +133,34 @@ npm run preview      # Preview production build locally
 ### 🏗️ Clean Modular Structure
 ```
 js/
-├── utils.js              # Voronoi diagram utilities
-├── noise.js              # Perlin noise implementation
+├── app.js                # Vite entry point, bootstrapping, dev panel gating
+├── main.js               # VoronoiPuzzle + WebGLRenderer controller
 ├── base.js               # Base puzzle logic
-├── coordinate-utils.js   # Coordinate system utilities
-├── position-manager.js   # Position and coordinate management
-├── responsive-canvas.js  # Responsive canvas system
+├── webgl-renderer.js     # WebGL 3D renderer (Three.js)
+├── levels.config.js      # Level manifest (order, difficulty, release batches)
+├── level-manager.js      # Level switching, unlock, progression
+├── level-transition.js   # Phantasm Bloom transitions + completion screen
+├── piece-release-manager.js  # Staged piece release (+ button)
+├── unsolved-layout.js    # Scatter placement and batch sizing
+├── dev-panel.js          # VITE_DEV_PANEL visibility helper
 ├── theme.js              # Theme definitions and utilities
 ├── theme-manager.js      # Dynamic theme management
-├── level-manager.js      # Level switching and configuration
-├── webgl-renderer.js     # WebGL 3D renderer (Three.js)
-├── debug-utils.js        # Debug utilities and console commands
-└── main.js               # Main application controller
+├── responsive-canvas.js  # Responsive 1:1 stage layout
+├── stage-constants.js    # Stage dimensions and padding
+├── coordinate-utils.js   # Coordinate system utilities
+├── position-manager.js   # Position and coordinate management
+├── drag-offset.js        # Separate-piece positioning invariants
+├── piece-material.js     # Unsolved piece texture invariants
+├── pointer-input.js      # Mouse/touch/keyboard input
+├── voronoi-coordinates.js
+├── three-config.js       # Three.js renderer setup
+├── polygon-geometry.js
+├── animated-path.js      # Animated polygon + level config resolution
+├── accessibility.js      # Screen reader + reduced motion helpers
+├── constants.js          # Snap/solve thresholds
+├── utils.js              # Voronoi diagram utilities
+├── noise.js              # Perlin noise implementation
+└── debug-utils.js        # Debug utilities (dev only)
 ```
 
 ### 🔧 Core Technologies
@@ -158,51 +194,46 @@ phantasm/
 ├── styles.css                    # Main CSS (imports modular styles)
 ├── package.json                  # Project dependencies
 ├── vite.config.js                # Vite configuration for development server
+├── .env.example                  # Documented environment variables
+├── .env.development              # Local dev env (VITE_DEV_PANEL=true)
 ├── assets/                       # Game assets and images
-│   ├── Level-1.svg               # Level 1 background image
-│   ├── Level-2.svg               # Level 2 background image
-│   ├── Phantasm.svg              # Additional background image
+│   ├── Level-1.svg               # Level 1 background (450×450)
+│   ├── Level-2.svg               # Level 2 background (450×450)
+│   ├── Phantasm.svg              # Legacy theme asset
 │   └── sounds/                   # Audio assets
 │       ├── snap.webm             # Snap sound (WebM Opus format, ~10KB)
 │       └── snap.mp3              # Snap sound fallback (MP3 format, ~15KB)
-├── css/                          # Modular CSS architecture
-│   ├── base.css                  # Base colors and layout
-│   ├── controls.css              # UI controls styling
+├── css/
+│   ├── base.css                  # Base colors, stage glow, loading overlay
+│   ├── controls.css              # UI controls + release button
+│   ├── progression.css           # Level transition + completion overlays
 │   ├── responsive.css            # Responsive design
 │   └── webgl.css                 # WebGL 3D specific styles
-├── js/                           # JavaScript modules
-│   ├── utils.js                  # Voronoi diagram utilities
-│   ├── noise.js                  # Perlin noise implementation
-│   ├── base.js                   # Core puzzle logic
-│   ├── coordinate-utils.js       # Coordinate system conversion utilities
-│   ├── position-manager.js       # Centralized position management
-│   ├── responsive-canvas.js      # Responsive canvas system
-│   ├── theme.js                  # Theme system definitions
-│   ├── theme-manager.js          # Dynamic theme management
-│   ├── level-manager.js          # Level switching and configuration
-│   ├── webgl-renderer.js         # WebGL 3D renderer (Three.js)
-│   ├── debug-utils.js            # Debug utilities and console commands
-│   └── main.js                   # Main application controller
+├── js/                           # JavaScript modules (see Architecture)
+├── tests/                        # Vitest unit tests
 └── README.md                     # This documentation
 ```
 
 ## Usage & Controls
 
-### 🎮 Basic Controls
-1. **Click and drag** any piece to move it around
-2. **Hover** over pieces or slots for visual feedback
-3. **Auto-snap** occurs when pieces are within 25px of their correct position
+### Player Controls (production)
+1. **Click and drag** (or touch / keyboard) any loose piece to move it
+2. **Tap +** (top-right) to release more pieces from the pool
+3. **Auto-snap** when a piece is within 25px of its slot
+4. **Complete a level** → tap **Continue** on the transition overlay
+5. **Complete all levels** → **done** screen → **Play again**
 
-### 🎛️ Control Panel
-Access the control panel by clicking the caret icon (^) in the top-right corner:
+Ghost slot outlines show where pieces belong. Loose pieces show a default outline so they remain visible on the dark background.
 
-- **Level**: Select between Level 1 and Level 2 (auto-adjusts cell count, animation speed, and noise amplitude)
-- **Cell Count**: Number of Voronoi pieces (5-50) - overridden by level selection
-- **Animation Speed**: Speed of boundary animation (0.1-2.0x) - overridden by level selection
-- **Noise Amplitude**: Intensity of boundary deformation (0-50) - overridden by level selection
-- **Regenerate Puzzle**: Create a new puzzle layout
-- **Toggle Animation**: Enable/disable boundary animation
-- **Toggle Grid Outlines**: Show/hide piece outlines
+### Dev Tuning Panel (`VITE_DEV_PANEL=true` only)
+Access by clicking the caret at the bottom of the screen:
+
+- **Level**: Jump between levels (all levels selectable in dev; locked levels disabled in production builds with panel enabled)
+- **Cell Count**: Number of Voronoi pieces (5–60)
+- **Animation Speed**: Boundary animation speed (0.1–2.0×)
+- **Noise Amplitude**: Boundary deformation intensity (0–50)
+- **Regenerate Puzzle**: Create a new layout (returns to unsolved start)
+- **Toggle Animation** / **Toggle Grid Outlines**
 
 ### 🎨 Theme Development (Console Commands)
 ```javascript
@@ -219,12 +250,23 @@ themeManager.currentTheme.colors     // Access all color definitions
 
 ## Development
 
+### 🧪 Testing
+```bash
+npm test              # Run all tests once
+npm run test:watch    # Watch mode during development
+```
+
+Tests cover level manifest validation, unlock/progression logic, unsolved layout batch sizing, responsive stage layout, reduced-motion behavior, and core geometry/coordinate invariants.
+
+### ♿ Accessibility
+- Screen reader announcements for level completion and game completion (`js/accessibility.js`)
+- Reduced motion: level transitions skip celebrate/veil animation and show **Continue** immediately
+
 ### 🛠️ Development Tools
-- **Theme System**: Use browser console for theme switching
-- **Debug Utilities**: Global functions for troubleshooting (see `debug-utils.js`)
-- **Hot Reload**: No build step - just refresh browser after changes
-- **Modular Architecture**: Easy to modify individual components
-- **Vite Dev Server**: Fast development server with hot module replacement
+- **Dev Panel**: Enable with `VITE_DEV_PANEL=true` in `.env.development`
+- **Theme System**: Browser console theme switching via `themeManager`
+- **Debug Utilities**: Global functions in `debug-utils.js` (loaded in dev only)
+- **Hot Reload**: Vite dev server with HMR
 
 ### 🔧 Debug Utilities (Console Commands)
 ```javascript
@@ -307,29 +349,29 @@ Run `showDebugCommands()` in the console to see all available tools, including:
 ### 🎯 Recommended
 - **Desktop browsers** with WebGL support for best performance
 - **Hardware acceleration** enabled for smooth 3D rendering
-- **16GB+ RAM** for larger puzzle sizes (50+ pieces)
+- **16GB+ RAM** recommended for development with larger cell counts (60 pieces)
 
 ## Performance
 
-- **WebGL Rendering**: Optimized for 30+ pieces with excellent performance
-- **Hardware Acceleration**: GPU-accelerated rendering for smooth animations
-- **Animation**: Can be toggled off for better performance on slower devices
-- **Fixed Canvas Size**: 1200x675 pixel canvas prevents memory bloat from resizing
-- **Resource Management**: Enhanced cleanup and disposal system for better memory management
+- **WebGL Rendering**: Optimized for 40–60 pieces with smooth animation
+- **Staged Release**: Initial batch keeps separate-mesh count low on load
+- **Hardware Acceleration**: GPU-accelerated rendering
+- **Responsive Stage**: Logical resolution locked at init; display size updates on resize without resetting puzzle state
+- **Resource Management**: WebGL disposal on level switch and regenerate
 
 ## Dependencies
 
 ### 📦 Core Libraries
 - **d3-delaunay** `^5.3.0`: Efficient Voronoi diagram generation
-- **Three.js** `r128`: WebGL 3D graphics library
+- **Three.js** `^0.185`: WebGL 3D graphics library
 - **Custom Perlin Noise**: Smooth boundary animation implementation
 
 ### 🌐 Browser APIs
 - **WebGL**: Hardware-accelerated 3D graphics
 - **Web Audio API**: Low-latency audio playback for snap sounds
 - **HTML5 Audio**: Audio element with preloading for instant playback
-- **Local Storage**: Theme preference persistence
-- **Modern JavaScript**: ES6+ features for optimal performance
+- **Local Storage**: Unlock progress (`phantasm-unlocked-levels`); level preference on manual switch (`phantasm-level`)
+- **Modern JavaScript**: ES modules (Vite bundle)
 
 ### 🔊 Audio System
 - **Format**: WebM (Opus codec) primary, MP3 fallback
@@ -362,43 +404,33 @@ All debug utilities are defined in `js/debug-utils.js` and are automatically loa
 
 ## Future Development
 
-### **Enhanced visual piece handling feedback** - Add improved visual feedback for piece interactions (hover effects, drag indicators, etc.)
+### **Save option** — Save in-progress piece positions within a level; optional random seed to regenerate the exact same layout
 
-### **Phase 1: Responsive Design (Planned)**
-- **Responsive Canvas on Load**: Implement canvas sizing that adapts to screen width while maintaining 16:9 aspect ratio on initial load
-- **Mobile Optimization**: Ensure game is playable on tablets and mobile devices without horizontal scrolling
-- **Viewport Adaptation**: Canvas should scale appropriately for different screen sizes while preserving gameplay experience
+### **Enhanced visual piece handling feedback** — Additional hover/drag indicators beyond current outlines and glows
 
 ### **Phase 2: Medium-Risk Resource Management (Planned)**
 - **Texture Memory Management**: Dispose of unused textures and geometries
 - **Geometry Caching & Cleanup**: Cache and reuse geometries, dispose unused ones
 - **Performance Monitoring**: Add memory and performance tracking with automatic cleanup triggers
-- **Risk Level**: Medium - Requires testing to ensure no visual glitches
 
 ### **Phase 3: High-Risk Resource Management (Future Consideration)**
 - **Aggressive Resource Limits**: Implement strict limits on resources with automatic piece cleanup
-- **Dynamic Quality Adjustment**: Reduce quality under memory pressure (texture resolution, geometry complexity)
+- **Dynamic Quality Adjustment**: Reduce quality under memory pressure
 - **Memory Pressure Detection**: Automatic quality reduction when system is under stress
-- **Risk Level**: High - Could cause visual degradation or unexpected behavior
-
-### **Start puzle from unsolved state** - Start the puzzle with it being completely apart. Find a way to give the user an 'inventory' and 'workspace', similar to how you would solve an analogue jigsaw. Perhaps pieces in the inventory are smaller? Progressive reveal: reveal a few images at the start (3) and once one of those is solved, show another. Newly shown pieces have a different outline that only disappears after they have been dragged (so the dark pieces are recognizible on dark bg). How many pieces are shown at once is a level feature: a higher number is making the puzzle more difficult.
-
 
 ### **Current Resource Management Features**
 - **Event Listener Cleanup**: Proper cleanup of all event listeners
 - **Object Reference Nullification**: Explicit nullification of object references
 - **Animation Loop Cleanup**: Proper cancellation of animation loops
 - **WebGL Resource Disposal**: Complete cleanup of Three.js objects and textures
-- **Memory Leak Prevention**: Comprehensive disposal system prevents memory leaks
 
-### **Audio System** ✅ **IMPLEMENTED**
-- **Snap Sound**: Satisfying audio feedback when pieces lock into place
-- **Format**: WebM (Opus) with MP3 fallback for universal browser support
-- **Performance**: Preloaded, zero-latency playback
-- **Mobile Compatible**: Automatic audio unlock on first user interaction
-- **Future Enhancements**: 
-  - Additional sounds (pickup, hover, puzzle complete)
-  - Volume controls
-  - Spatial audio based on piece position
+### **Audio System** (implemented)
+- **Snap Sound**: WebM (Opus) with MP3 fallback, preloaded for zero-latency playback
+- **Future**: Pickup/hover sounds, volume controls, puzzle-complete fanfare
 
-### **Save option** - Save progress within a level. Use Random Seed value to be able to regenerate the exact same puzzle
+### **Recently implemented**
+- **Unsolved start** with staged piece release (+ button) and ghost slot outlines
+- **Level progression** with unlock-on-solve, Phantasm Bloom transitions, and **done** completion screen
+- **Manifest-driven levels** (`js/levels.config.js`)
+- **Dev panel gating** via `VITE_DEV_PANEL`
+- **Responsive 1:1 square stage** (450×450 assets, scales to viewport)

@@ -292,6 +292,12 @@ class VoronoiPuzzleBase {
     }
 
     bringPieceToFront(cellIndex) {
+        if (!this.pieceZIndex) {
+            const length = this.points?.length ?? 0;
+            if (length === 0) return;
+            this.pieceZIndex = new Array(length).fill(0);
+        }
+
         // Find the highest current z-index
         const maxZIndex = Math.max(...this.pieceZIndex, 0);
         
@@ -306,6 +312,8 @@ class VoronoiPuzzleBase {
     }
     
     normalizeZIndices() {
+        if (!this.pieceZIndex?.length) return;
+
         // Find the current maximum z-index
         const maxZ = Math.max(...this.pieceZIndex, 0);
         

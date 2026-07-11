@@ -22,9 +22,17 @@ const MAX_SCATTER_ATTEMPTS = 48;
 /**
  * Responsive batch size from stage display width (never shown in UI).
  * @param {number} stageDisplayWidth
+ * @param {{ phone?: number, tablet?: number, desktop?: number, large?: number } | null | undefined} [releaseConfig]
  * @returns {number}
  */
-export function calculateReleaseBatchSize(stageDisplayWidth) {
+export function calculateReleaseBatchSize(stageDisplayWidth, releaseConfig = null) {
+    if (releaseConfig) {
+        if (stageDisplayWidth < 400) return releaseConfig.phone ?? 3;
+        if (stageDisplayWidth < 768) return releaseConfig.tablet ?? 5;
+        if (stageDisplayWidth < 1200) return releaseConfig.desktop ?? 8;
+        return releaseConfig.large ?? 12;
+    }
+
     if (stageDisplayWidth < 400) return 3;
     if (stageDisplayWidth < 768) return 5;
     if (stageDisplayWidth < 1200) return 8;

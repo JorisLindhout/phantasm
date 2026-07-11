@@ -51,6 +51,18 @@
         aria-label="Release more puzzle pieces"
     >+</button>
 
+    <div id="levelTransitionOverlay" class="level-transition-overlay" hidden>
+        <div class="transition-gradient" aria-hidden="true"></div>
+        <p class="transition-title"></p>
+        <button type="button" class="transition-continue">Continue</button>
+    </div>
+
+    <div id="completionOverlay" class="completion-overlay" hidden>
+        <div class="completion-gradient" aria-hidden="true"></div>
+        <h1 class="completion-word">done</h1>
+        <button type="button" id="playAgainBtn" class="completion-play-again">Play again</button>
+    </div>
+
     <!-- Audio elements (optional - add assets/sounds/snap.webm and snap.mp3 to enable) -->
     <audio id="snapSound" preload="none"></audio>
 
@@ -72,10 +84,7 @@
         <div class="controls-content" id="controlsContent">
             <div class="control-group">
                 <label for="levelSelector">Level:</label>
-                <select id="levelSelector">
-                    <option value="level-1" selected>Level 1</option>
-                    <option value="level-2">Level 2</option>
-                </select>
+                <select id="levelSelector"></select>
             </div>
             <div class="control-group">
                 <label for="cellCount">Cell Count:</label>

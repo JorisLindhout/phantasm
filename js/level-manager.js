@@ -6,39 +6,37 @@
  */
 
 import { resolveLevelConfig } from './animated-path.js';
+import {
+    LEVEL_MANIFEST,
+    getNextLevelId,
+    isFinalLevel,
+    loadUnlockedLevelIds,
+    saveUnlockedLevelIds,
+    unlockLevelId,
+    manifestEntryToLevelConfig,
+    getLevelById,
+} from './levels.config.js';
 
 class LevelManager {
     constructor() {
-        // Initialize level configurations first
         this.initializeLevelConfigurations();
         this.currentLevel = 'level-1';
         this.puzzle = null;
         this.isChangingLevel = false;
-        
+        this.isHandlingSolve = false;
+        this.unlockedLevelIds = loadUnlockedLevelIds();
+
         this.loadingOverlay = document.getElementById('loadingOverlay');
         this.loadingText = document.querySelector('#loadingOverlay .loading-text');
         this.loadingBar = document.querySelector('#loadingOverlay .loading-bar');
-        this.isChangingLevel = false; // Debounce flag
     }
 
     initializeLevelConfigurations() {
-        // Level configurations
-        this.levelConfigurations = {
-            'level-1': {
-                id: 'level-1',
-                name: 'Level 1',
-                config: { cellCount: 40, animationSpeed: 1.0, noiseAmplitude: 10 },
-                theme: 'levelOne',
-                unlocked: true
-            },
-            'level-2': {
-                id: 'level-2', 
-                name: 'Level 2',
-                config: { cellCount: 60, animationSpeed: 0.8, noiseAmplitude: 15 },
-                theme: 'levelTwo',
-                unlocked: true
-            }
-        };
+        this.levelConfigurations = {};
+
+        for (const entry of LEVEL_MANIFEST) {
+            this.levelConfigurations[entry.id] = manifestEntryToLevelConfig(entry);
+        }
     }
 
     /**
@@ -52,7 +50,7 @@ class LevelManager {
             window.themeManager.applyTheme(levelConfig.theme);
         }
 
-        this.updateLevelSelector();
+        this.rebuildLevelSelector();
     }
 
     /**
@@ -85,9 +83,78 @@ class LevelManager {
     }
 
     /**
-     * Set level with complete reinitialization
+     * @param {string} levelId
+     * @returns {boolean}
      */
-    async setLevel(levelId) {
+    isLevelUnlocked(levelId) {
+        const entry = getLevelById(levelId);
+        if (!entry) return false;
+        if (entry.unlockedByDefault) return true;
+        return this.unlockedLevelIds.includes(levelId);
+    }
+
+    /**
+     * @param {string} levelId
+     * @returns {boolean}
+     */
+    canSelectLevel(levelId) {
+        if (import.meta.env.DEV) return true;
+        return this.isLevelUnlocked(levelId);
+    }
+
+    /**
+     * @param {string} levelId
+     */
+    unlockLevel(levelId) {
+        const next = unlockLevelId(levelId, this.unlockedLevelIds);
+        if (next.length === this.unlockedLevelIds.length) return;
+
+        this.unlockedLevelIds = next;
+        saveUnlockedLevelIds(this.unlockedLevelIds);
+        this.rebuildLevelSelector();
+        console.log(`🔓 Unlocked level: ${levelId}`);
+    }
+
+    resetProgression() {
+        this.unlockedLevelIds = [];
+        saveUnlockedLevelIds(this.unlockedLevelIds);
+        this.rebuildLevelSelector();
+    }
+
+    /**
+     * Called when the puzzle is solved — triggers transition or completion.
+     */
+    handlePuzzleSolved() {
+        if (this.isHandlingSolve || this.isChangingLevel) return;
+        if (window.levelTransitionManager?.isTransitioning) return;
+
+        this.isHandlingSolve = true;
+
+        try {
+            const currentConfig = this.getCurrentLevel();
+            if (!currentConfig) return;
+
+            if (isFinalLevel(this.currentLevel)) {
+                window.levelTransitionManager?.showCompletion();
+                return;
+            }
+
+            const nextLevelId = getNextLevelId(this.currentLevel);
+            if (!nextLevelId) return;
+
+            this.unlockLevel(nextLevelId);
+            window.levelTransitionManager?.showLevelComplete(this.currentLevel, nextLevelId);
+        } finally {
+            this.isHandlingSolve = false;
+        }
+    }
+
+    /**
+     * Set level with complete reinitialization
+     * @param {string} levelId
+     * @param {{ silent?: boolean }} [options]
+     */
+    async setLevel(levelId, options = {}) {
         if (this.isChangingLevel) {
             console.log(`⚠️ Level change already in progress, ignoring request for: ${levelId}`);
             return false;
@@ -98,7 +165,7 @@ class LevelManager {
             return false;
         }
 
-        if (!this.levelConfigurations[levelId].unlocked) {
+        if (!this.canSelectLevel(levelId)) {
             console.warn(`Level "${levelId}" is locked`);
             return false;
         }
@@ -109,34 +176,29 @@ class LevelManager {
         this.isChangingLevel = true;
 
         try {
-            // Show loading screen
-            this.showLoadingScreen(`Loading ${levelConfig.name}...`);
+            if (!options.silent) {
+                this.showLoadingScreen(`Loading ${levelConfig.name}...`);
+            }
 
-            // Complete reinitialization
             await this.completeReinitialization(levelConfig);
 
-            // Update current level
             this.currentLevel = levelId;
-
-            // Update UI
-            this.updateLevelSelector();
-
-            // Save level preference
+            this.rebuildLevelSelector();
             this.saveLevelPreference(levelId);
 
-            // Hide loading screen
-            this.hideLoadingScreen();
+            if (!options.silent) {
+                this.hideLoadingScreen();
+            }
 
             console.log(`✅ Successfully switched to ${levelConfig.name}`);
             return true;
-
         } catch (error) {
             console.error('Failed to switch level:', error);
-            this.hideLoadingScreen();
+            if (!options.silent) {
+                this.hideLoadingScreen();
+            }
             return false;
-
         } finally {
-            // Allow next level change after a short delay
             setTimeout(() => {
                 this.isChangingLevel = false;
             }, 500);
@@ -153,23 +215,18 @@ class LevelManager {
 
         console.log(`🔄 Complete reinitialization for ${levelConfig.name}`);
 
-        // 1. Update puzzle configuration
         const resolved = resolveLevelConfig(levelConfig);
         this.puzzle.config.cellCount = resolved.cellCount;
         this.puzzle.config.animationSpeed = resolved.animationSpeed;
         this.puzzle.config.noiseAmplitude = resolved.noiseAmplitude;
 
-        // 2. Dispose current puzzle state
         await this.disposePuzzle();
 
-        // 3. Apply theme first so background image loads correctly
         if (window.themeManager) {
             window.themeManager.applyTheme(levelConfig.theme);
         }
 
-        // 4. Reinitialize puzzle from scratch (now with correct theme)
         await this.puzzle.init();
-
         console.log(`✅ Reinitialization complete for ${levelConfig.name}`);
     }
 
@@ -181,22 +238,18 @@ class LevelManager {
 
         console.log('🗑️ Disposing current puzzle state...');
 
-        // Stop animations before disposal to prevent render loop errors
         if (this.puzzle.stopAnimation) {
             this.puzzle.stopAnimation();
         }
 
-        // Reset interaction state
         if (this.puzzle.resetInteractionState) {
             this.puzzle.resetInteractionState();
         }
 
-        // Dispose WebGL renderer if available (via currentRenderer)
         if (this.puzzle.currentRenderer && this.puzzle.currentRenderer.dispose) {
             this.puzzle.currentRenderer.dispose();
         }
 
-        // Clear puzzle state
         if (this.puzzle.dispose) {
             this.puzzle.dispose();
         }
@@ -204,9 +257,6 @@ class LevelManager {
         console.log('✅ Puzzle state disposed');
     }
 
-    /**
-     * Show loading screen
-     */
     showLoadingScreen(message = 'Loading Level...') {
         const overlay = document.getElementById('loadingOverlay');
         const text = overlay?.querySelector('.loading-text');
@@ -221,9 +271,6 @@ class LevelManager {
         }
     }
 
-    /**
-     * Hide loading screen
-     */
     hideLoadingScreen() {
         const overlay = document.getElementById('loadingOverlay');
         if (overlay) {
@@ -232,19 +279,30 @@ class LevelManager {
         }
     }
 
-    /**
-     * Update level selector UI
-     */
-    updateLevelSelector() {
+    rebuildLevelSelector() {
         const selector = document.getElementById('levelSelector');
-        if (selector) {
-            selector.value = this.currentLevel;
+        if (!selector) return;
+
+        selector.innerHTML = '';
+
+        for (const entry of LEVEL_MANIFEST) {
+            const level = this.levelConfigurations[entry.id];
+            const option = document.createElement('option');
+            option.value = entry.id;
+
+            const selectable = this.canSelectLevel(entry.id);
+            option.textContent = selectable ? level.name : `${level.name} (locked)`;
+            option.disabled = !selectable;
+            selector.appendChild(option);
         }
+
+        selector.value = this.currentLevel;
     }
 
-    /**
-     * Save level preference to localStorage
-     */
+    updateLevelSelector() {
+        this.rebuildLevelSelector();
+    }
+
     saveLevelPreference(levelId) {
         try {
             localStorage.setItem('phantasm-level', levelId);
@@ -254,9 +312,6 @@ class LevelManager {
         }
     }
 
-    /**
-     * Load level preference from localStorage
-     */
     loadLevelPreference() {
         try {
             const saved = localStorage.getItem('phantasm-level');
@@ -270,31 +325,17 @@ class LevelManager {
         return null;
     }
 
-    /**
-     * Get available levels
-     */
     getAvailableLevels() {
-        return Object.values(this.levelConfigurations).filter(level => level.unlocked);
-    }
-
-    /**
-     * Unlock a level (for future use)
-     */
-    unlockLevel(levelId) {
-        if (this.levelConfigurations[levelId]) {
-            this.levelConfigurations[levelId].unlocked = true;
-            console.log(`🔓 Unlocked level: ${levelId}`);
-        }
+        return LEVEL_MANIFEST
+            .map((entry) => this.levelConfigurations[entry.id])
+            .filter((level) => this.isLevelUnlocked(level.id));
     }
 }
 
-// Create global instance
 const levelManager = new LevelManager();
 
-// Export for use in other modules
 export { LevelManager, levelManager };
 
-// Also make available globally for dev tools
 if (typeof window !== 'undefined') {
     window.LevelManager = LevelManager;
     window.levelManager = levelManager;

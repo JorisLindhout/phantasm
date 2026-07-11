@@ -2420,7 +2420,6 @@ class WebGLVoronoiRenderer {
     onSolvedStateChanged(isSolved) {
         console.log(`🎉 Puzzle ${isSolved ? 'SOLVED' : 'UNSOLVED'}!`);
         
-        // Add/remove solved class to canvas container
         const container = this.canvas.parentElement;
         if (container) {
             if (isSolved) {
@@ -2429,8 +2428,10 @@ class WebGLVoronoiRenderer {
                 container.classList.remove('puzzle-solved');
             }
         }
-        
-        // Glow is handled by .stage.puzzle-solved CSS on the parent element.
+
+        if (isSolved && window.levelManager?.handlePuzzleSolved) {
+            window.levelManager.handlePuzzleSolved();
+        }
     }
 
     // Update canvas outline based on solved state
