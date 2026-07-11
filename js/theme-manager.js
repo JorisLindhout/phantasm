@@ -28,7 +28,19 @@ class ThemeManager {
      */
     setWebGLRenderer(webglRenderer) {
         this.webglRenderer = webglRenderer;
-        this.updateWebGLColors(this.currentTheme);
+        this.syncRendererTheme(webglRenderer);
+    }
+
+    /**
+     * Push the active theme onto a WebGL renderer before outlines/meshes are built.
+     * @param {import('./webgl-renderer.js').WebGLVoronoiRenderer | null} [renderer]
+     */
+    syncRendererTheme(renderer = this.webglRenderer) {
+        if (!renderer?.updateTheme || !this.currentTheme) {
+            return;
+        }
+
+        renderer.updateTheme(this.currentTheme);
     }
 
     /**

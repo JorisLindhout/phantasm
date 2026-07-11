@@ -1791,23 +1791,31 @@ class WebGLVoronoiRenderer {
      * Update outline colors
      */
     updateOutlineColors() {
-        // Update connected outline
-        if (this.connectedOutline && this.connectedOutline.material) {
-            const outlineColor = this.getThemeColor('outlineNormal');
-            this.connectedOutline.material.color.setHex(outlineColor);
+        const gridColor = this.getThemeColor('outlineNormal');
+
+        if (this.connectedOutline?.material) {
+            this.connectedOutline.material.color.setHex(gridColor);
         }
-        
-        // Update separate outlines using object system
+
+        if (this.slotGhostOutlines?.length) {
+            const slotColor = this.getThemeColor('slotOutline');
+            for (const outline of this.slotGhostOutlines) {
+                if (outline?.material) {
+                    outline.material.color.setHex(slotColor);
+                    outline.material.opacity = SLOT_GHOST_OPACITY;
+                }
+            }
+        }
+
         if (!this.pieces || !Array.isArray(this.pieces)) {
-            // This is expected during disposal/reinitialization, no need to warn
             return;
         }
-        this.pieces.forEach(piece => {
-            if (piece.outline && piece.outline.material) {
-                const outlineColor = this.getThemeColor('outlineNormal');
-                piece.outline.material.color.setHex(outlineColor);
+
+        for (const piece of this.pieces) {
+            if (piece.outline?.material) {
+                piece.outline.material.color.setHex(gridColor);
             }
-        });
+        }
     }
     
     /**

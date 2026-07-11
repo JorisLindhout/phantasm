@@ -12,7 +12,8 @@ export const SCATTER_MIN_DISTANCE = WEBGL_SNAP_THRESHOLD + 35;
 /** Minimum center-to-center distance between scattered pieces. */
 export const SCATTER_MIN_SEPARATION = 40;
 
-export const SLOT_GHOST_OPACITY = 0.35;
+// Shared slot edges can overlap, so visual opacity reads higher on internal grid lines.
+export const SLOT_GHOST_OPACITY = 0.0875;
 
 /** Separate loose pieces render above the connected mesh (z=0). */
 export const LOOSE_PIECE_Z_BASE = 5;

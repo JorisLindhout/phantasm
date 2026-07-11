@@ -263,6 +263,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             
             // Initialize WebGL renderer with config
             this.webglRenderer = new WebGLVoronoiRenderer(this.canvas, this.config);
+            window.themeManager?.syncRendererTheme(this.webglRenderer);
             await this.webglRenderer.loadBackgroundTexture(window.themeManager ? window.themeManager.getCurrentBaseImage() : './assets/Level-1.svg');
             
             // Order matters: generateVoronoi → setupDragAndDrop → syncWebGLPositionData
