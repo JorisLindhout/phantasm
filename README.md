@@ -422,6 +422,7 @@ Only snap / player placement marks a piece solved — recovery never auto-comple
 - Pickup/hover sounds, volume controls, and puzzle-complete fanfare (later)
 
 ### UX & polish
+- **Completion screen** — design a fitting ending screen after the final level (replacing the current minimal **done** + Play again)
 - **Enhanced visual piece handling feedback** — additional hover/drag indicators beyond current outlines and glows
 
 ### Technical (when needed)
