@@ -2,19 +2,25 @@
  * Responsive stage sizing for the puzzle canvas.
  *
  * - Display size scales to fit the viewport (fixed 1:1 level aspect ratio, max width).
- * - Logical canvas pixels are locked for the session so mid-game resize preserves state.
+ * - Logical canvas is locked to level artwork size (450×450) so background UVs stay 1:1.
+ * - Mid-game resize updates display only; logical coordinates are preserved.
  * - Pointer input maps through CSS scale via CoordinateUtils.normalizeMouseCoordinates.
  */
 
 import {
     LEVEL_ASPECT_RATIO,
-    STAGE_GLOW_PADDING,
-    STAGE_HORIZONTAL_PADDING,
+    LEVEL_HEIGHT,
+    LEVEL_WIDTH,
     STAGE_MAX_WIDTH,
     STAGE_MIN_HEIGHT,
     STAGE_MIN_WIDTH,
     STAGE_VERTICAL_CHROME,
+    getStageGlowPadding,
+    getStageHorizontalPadding,
 } from './stage-constants.js';
+
+/** Logical render resolution — matches level SVG assets. */
+export const STAGE_LOGICAL_SIZE = { width: LEVEL_WIDTH, height: LEVEL_HEIGHT };
 
 /**
  * @param {{ width: number, height: number }} viewport
@@ -26,7 +32,8 @@ export function calculateDisplaySize(viewport, options = {}) {
     const maxWidth = options.maxWidth ?? STAGE_MAX_WIDTH;
     const minWidth = options.minWidth ?? STAGE_MIN_WIDTH;
     const minHeight = options.minHeight ?? STAGE_MIN_HEIGHT;
-    const horizontalPadding = options.horizontalPadding ?? STAGE_HORIZONTAL_PADDING;
+    const horizontalPadding = options.horizontalPadding
+        ?? getStageHorizontalPadding(viewport.width);
     const verticalChrome = options.verticalChrome ?? STAGE_VERTICAL_CHROME;
 
     const availableWidth = Math.max(
@@ -93,8 +100,8 @@ class ResponsiveCanvas {
      * @param {HTMLCanvasElement} canvas
      * @returns {{ width: number, height: number }}
      */
-    getAvailableBounds(canvas) {
-        const glowInset = STAGE_GLOW_PADDING * 2;
+    getAvailableBounds(canvas, viewport = getViewportSize()) {
+        const glowInset = getStageGlowPadding(viewport.width) * 2;
         const container = canvas?.closest('.puzzle-container');
         if (container) {
             const rect = container.getBoundingClientRect();
@@ -104,9 +111,11 @@ class ResponsiveCanvas {
             };
         }
 
-        const viewport = getViewportSize();
         return {
-            width: Math.max(0, viewport.width - STAGE_HORIZONTAL_PADDING - glowInset),
+            width: Math.max(
+                0,
+                viewport.width - getStageHorizontalPadding(viewport.width) - glowInset,
+            ),
             height: Math.max(0, viewport.height - STAGE_VERTICAL_CHROME - glowInset),
         };
     }
@@ -116,10 +125,12 @@ class ResponsiveCanvas {
      * @returns {{ width: number, height: number }}
      */
     computeDisplaySize(canvas) {
-        const bounds = this.getAvailableBounds(canvas);
-        return calculateDisplaySize(getViewportSize(), {
+        const viewport = getViewportSize();
+        const bounds = this.getAvailableBounds(canvas, viewport);
+        return calculateDisplaySize(viewport, {
             availableWidth: bounds.width,
             availableHeight: bounds.height,
+            horizontalPadding: getStageHorizontalPadding(viewport.width),
         });
     }
 
@@ -133,7 +144,7 @@ class ResponsiveCanvas {
         const displaySize = this.computeDisplaySize(canvas);
 
         if (options.resetLogical || !this.logicalSize) {
-            this.logicalSize = { ...displaySize };
+            this.logicalSize = { ...STAGE_LOGICAL_SIZE };
         }
 
         canvas.width = this.logicalSize.width;

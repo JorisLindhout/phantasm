@@ -25,3 +25,38 @@ export const STAGE_VERTICAL_CHROME = 80;
  * Applied on all sides when fitting the stage inside the puzzle container.
  */
 export const STAGE_GLOW_PADDING = 48;
+
+/** Viewports below this width use tighter layout padding (iPhone 8 portrait = 375). */
+export const NARROW_VIEWPORT_BREAKPOINT = 400;
+
+/** Horizontal padding budget on narrow viewports. */
+export const STAGE_HORIZONTAL_PADDING_NARROW = 24;
+
+/** Glow inset on narrow viewports (still clears 40px solved-state blur). */
+export const STAGE_GLOW_PADDING_NARROW = 32;
+
+/**
+ * @param {number} viewportWidth
+ * @returns {boolean}
+ */
+export function isNarrowViewport(viewportWidth) {
+    return viewportWidth < NARROW_VIEWPORT_BREAKPOINT;
+}
+
+/**
+ * @param {number} viewportWidth
+ * @returns {number}
+ */
+export function getStageHorizontalPadding(viewportWidth) {
+    return isNarrowViewport(viewportWidth)
+        ? STAGE_HORIZONTAL_PADDING_NARROW
+        : STAGE_HORIZONTAL_PADDING;
+}
+
+/**
+ * @param {number} viewportWidth
+ * @returns {number}
+ */
+export function getStageGlowPadding(viewportWidth) {
+    return isNarrowViewport(viewportWidth) ? STAGE_GLOW_PADDING_NARROW : STAGE_GLOW_PADDING;
+}

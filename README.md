@@ -48,7 +48,7 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 - **Z-Index Management**: Clicked pieces always appear on top
 - **Hit Detection**: Accurate piece selection with expanded interaction areas
 - **Auto-Recovery System**: Automatically detects and restores unreachable or off-screen pieces
-- **Responsive Stage**: 1:1 square stage (450×450 logical) scales to viewport; max display width 1200px
+- **Responsive Stage**: 1:1 square stage; logical canvas locked to 450×450 (level artwork size), display scales to viewport (min display ~280px, min viewport 375px; tighter padding below 400px)
 
 ### 🎨 WebGL 3D Rendering
 - **Hardware Acceleration**: GPU-accelerated rendering with Three.js
