@@ -80,19 +80,19 @@ describe('LevelManager progression', () => {
         window.themeManager = { applyTheme: vi.fn() };
         window.levelTransitionManager = {
             isTransitioning: false,
-            showLevelComplete: vi.fn(),
+            runAutoTransition: vi.fn(),
             showCompletion: vi.fn(),
         };
     });
 
-    it('unlocks level 2 on solve and shows transition', async () => {
+    it('unlocks level 2 on solve and starts auto transition', async () => {
         const { LevelManager } = await import('../js/level-manager.js');
         const manager = new LevelManager();
 
         manager.handlePuzzleSolved();
 
         expect(manager.unlockedLevelIds).toContain('level-2');
-        expect(window.levelTransitionManager.showLevelComplete).toHaveBeenCalledWith('level-1', 'level-2');
+        expect(window.levelTransitionManager.runAutoTransition).toHaveBeenCalledWith('level-1', 'level-2');
     });
 
     it('shows completion on final level solve', async () => {

@@ -88,13 +88,28 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
         }
     }
 
-    async initializeRenderer() {
-        // Clean up existing renderer
+    async initializeRenderer(options = {}) {
+        const { preserveOutgoing = false, deferPieceRelease = false } = options;
+
         if (this.currentRenderer) {
-            if (this.currentRenderer.dispose) {
-                this.currentRenderer.dispose();
+            if (preserveOutgoing) {
+                this.outgoingRenderer = this.currentRenderer;
+                const outgoingCanvas = this.outgoingRenderer.webglRenderer?.canvas;
+                if (outgoingCanvas) {
+                    outgoingCanvas.classList.add('transition-outgoing');
+                    outgoingCanvas.dataset.transitionRole = 'outgoing';
+                }
+                this.currentRenderer = null;
+            } else {
+                if (this.outgoingRenderer) {
+                    this.outgoingRenderer.dispose?.();
+                    this.outgoingRenderer = null;
+                }
+                if (this.currentRenderer.dispose) {
+                    this.currentRenderer.dispose();
+                }
+                this.currentRenderer = null;
             }
-            this.currentRenderer = null;
         }
 
         // Use WebGL renderer for 3D puzzle rendering
@@ -104,7 +119,7 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
                     // Create WebGL renderer
                     this.currentRenderer = new WebGLRenderer();
                     Object.assign(this.currentRenderer.config, this.config);
-                    await this.currentRenderer.init();
+                    await this.currentRenderer.init({ deferPieceRelease });
                     
                     // WebGL renderer is accessible via getter
                     
@@ -209,6 +224,11 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
     }
     
     dispose() {
+        if (this.outgoingRenderer) {
+            this.outgoingRenderer.dispose?.();
+            this.outgoingRenderer = null;
+        }
+
         // Clean up WebGL renderer (via currentRenderer)
         if (this.currentRenderer) {
             if (this.currentRenderer.dispose) {
@@ -240,7 +260,9 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         return window.voronoiPuzzle || null;
     }
 
-    async init() {
+    async init(options = {}) {
+        const { deferPieceRelease = false } = options;
+
         try {
             await this.loadBackgroundImage();
             this.setupCanvas({ resetLogical: true });
@@ -254,13 +276,26 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             this.generateVoronoi();
             this.setupDragAndDrop();
             this.syncWebGLPositionData();
-            this.startUnsolvedLayout();
+            this.startUnsolvedLayout({ deferPieceRelease });
 
             this.setupControls();
             this.startAnimation();
+            this.render();
         } catch (error) {
             console.error('Error initializing WebGL hybrid renderer:', error);
             throw error;
+        }
+    }
+
+    freezeForHold() {
+        this.stopAnimation();
+        this.config.isAnimating = false;
+    }
+
+    resumeAfterHold() {
+        if (!this.config.isAnimating) {
+            this.config.isAnimating = true;
+            this.startAnimation();
         }
     }
 
@@ -454,7 +489,9 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         this.startUnsolvedLayout();
     }
 
-    startUnsolvedLayout() {
+    startUnsolvedLayout(options = {}) {
+        const { deferPieceRelease = false } = options;
+
         if (!this.webglRenderer) return;
 
         this.isSolved = false;
@@ -464,8 +501,10 @@ class WebGLRenderer extends VoronoiPuzzleBase {
 
         if (window.pieceReleaseManager) {
             window.pieceReleaseManager.reset(this.webglRenderer.pieces.length);
-            window.pieceReleaseManager.releaseInitialBatch(this.webglRenderer);
-            this.webglRenderer.recoverOffscreenLoosePieces?.();
+            if (!deferPieceRelease) {
+                window.pieceReleaseManager.releaseInitialBatch(this.webglRenderer);
+                this.webglRenderer.recoverOffscreenLoosePieces?.();
+            }
             window.pieceReleaseManager.updateButtonVisibility(this.webglRenderer);
         }
     }

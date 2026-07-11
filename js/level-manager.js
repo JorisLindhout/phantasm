@@ -24,6 +24,7 @@ class LevelManager {
         this.puzzle = null;
         this.isChangingLevel = false;
         this.isHandlingSolve = false;
+        this.pendingLevelId = null;
         this.unlockedLevelIds = loadUnlockedLevelIds();
 
         this.loadingOverlay = document.getElementById('loadingOverlay');
@@ -143,7 +144,7 @@ class LevelManager {
             if (!nextLevelId) return;
 
             this.unlockLevel(nextLevelId);
-            window.levelTransitionManager?.showLevelComplete(this.currentLevel, nextLevelId);
+            window.levelTransitionManager?.runAutoTransition(this.currentLevel, nextLevelId);
         } finally {
             this.isHandlingSolve = false;
         }
@@ -203,6 +204,102 @@ class LevelManager {
                 this.isChangingLevel = false;
             }, 500);
         }
+    }
+
+    /**
+     * Preload the next level behind the outgoing solved canvas.
+     * @param {string} levelId
+     */
+    async preloadLevelForTransition(levelId) {
+        if (!this.levelConfigurations[levelId]) {
+            throw new Error(`Level "${levelId}" not found`);
+        }
+
+        if (!this.canSelectLevel(levelId)) {
+            throw new Error(`Level "${levelId}" is locked`);
+        }
+
+        if (!this.puzzle) {
+            throw new Error('Puzzle not initialized');
+        }
+
+        const levelConfig = this.levelConfigurations[levelId];
+        console.log(`🔄 Preloading ${levelConfig.name} for transition`);
+
+        const resolved = resolveLevelConfig(levelConfig);
+        this.puzzle.config.cellCount = resolved.cellCount;
+        this.puzzle.config.animationSpeed = resolved.animationSpeed;
+        this.puzzle.config.noiseAmplitude = resolved.noiseAmplitude;
+
+        this.isChangingLevel = true;
+        this.pendingLevelId = levelId;
+
+        if (window.themeManager) {
+            window.themeManager.applyTheme(levelConfig.theme);
+        }
+
+        await this.puzzle.initializeRenderer({
+            preserveOutgoing: true,
+            deferPieceRelease: true,
+        });
+
+        console.log(`✅ Preload ready for ${levelConfig.name}`);
+    }
+
+    /**
+     * Dispose outgoing renderer and commit the preloaded level.
+     */
+    async finalizeLevelTransition() {
+        if (!this.puzzle) {
+            throw new Error('Puzzle not initialized');
+        }
+
+        if (this.puzzle.outgoingRenderer) {
+            this.puzzle.outgoingRenderer.dispose?.();
+            this.puzzle.outgoingRenderer = null;
+        }
+
+        if (this.pendingLevelId) {
+            this.currentLevel = this.pendingLevelId;
+            this.pendingLevelId = null;
+            this.rebuildLevelSelector();
+            this.saveLevelPreference(this.currentLevel);
+        }
+
+        if (window.themeManager) {
+            window.themeManager.init(this.puzzle.webglRenderer);
+        }
+
+        this.isChangingLevel = false;
+        console.log('✅ Level transition finalized');
+    }
+
+    /**
+     * Restore the outgoing level if preload fails.
+     */
+    async abortLevelTransition() {
+        if (!this.puzzle) return;
+
+        console.warn('⚠️ Aborting level transition');
+
+        if (this.puzzle.currentRenderer) {
+            this.puzzle.currentRenderer.dispose?.();
+            this.puzzle.currentRenderer = null;
+        }
+
+        if (this.puzzle.outgoingRenderer) {
+            this.puzzle.currentRenderer = this.puzzle.outgoingRenderer;
+            this.puzzle.outgoingRenderer = null;
+
+            const canvas = this.puzzle.currentRenderer.webglRenderer?.canvas;
+            canvas?.classList.remove('transition-outgoing', 'is-fading');
+            delete canvas?.dataset.transitionRole;
+
+            this.puzzle.currentRenderer.resumeAfterHold?.();
+        }
+
+        this.pendingLevelId = null;
+        this.isChangingLevel = false;
     }
 
     /**

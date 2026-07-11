@@ -29,6 +29,10 @@ class PieceReleaseManager {
 
         this.button.dataset.bound = 'true';
         this.button.addEventListener('click', () => {
+            if (window.levelTransitionManager?.isTransitioning) {
+                return;
+            }
+
             const renderer = window.voronoiPuzzle?.webglRenderer;
             if (renderer) {
                 this.releaseNextBatch(renderer);
@@ -93,7 +97,7 @@ class PieceReleaseManager {
      * @returns {number}
      */
     releaseNextBatch(webglRenderer) {
-        if (!webglRenderer) {
+        if (!webglRenderer || window.levelTransitionManager?.isTransitioning) {
             this.updateButtonVisibility();
             return 0;
         }
@@ -172,6 +176,13 @@ class PieceReleaseManager {
      */
     updateButtonVisibility(webglRenderer = null) {
         if (!this.button) return;
+
+        if (window.levelTransitionManager?.isTransitioning) {
+            this.button.hidden = true;
+            this.button.disabled = true;
+            this.button.setAttribute('aria-hidden', 'true');
+            return;
+        }
 
         const renderer = webglRenderer ?? window.voronoiPuzzle?.webglRenderer ?? null;
 

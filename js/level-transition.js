@@ -1,50 +1,81 @@
 /**
- * Level-complete and game-complete overlays (Phantasm Bloom).
+ * Level transitions — automatic crossfade between levels and completion overlay.
  */
 
 import { announce, prefersReducedMotion } from './accessibility.js';
 import { getLevelById } from './levels.config.js';
 
+export const SOLVED_HOLD_MS = 2000;
+export const CROSSFADE_MS = 800;
+const REDUCED_MOTION_FADE_MS = 200;
+
 class LevelTransitionManager {
     constructor() {
-        this.transitionOverlay = null;
         this.completionOverlay = null;
         this.isTransitioning = false;
-        this.pendingNextLevelId = null;
     }
 
     init() {
-        this.transitionOverlay = document.getElementById('levelTransitionOverlay');
         this.completionOverlay = document.getElementById('completionOverlay');
-
-        const continueBtn = this.transitionOverlay?.querySelector('.transition-continue');
-        continueBtn?.addEventListener('click', () => this.handleContinue());
 
         const playAgainBtn = document.getElementById('playAgainBtn');
         playAgainBtn?.addEventListener('click', () => this.handlePlayAgain());
     }
 
     /**
+     * Automatic crossfade from solved level to the next.
      * @param {string} completedLevelId
      * @param {string} nextLevelId
      */
-    async showLevelComplete(completedLevelId, nextLevelId) {
-        if (this.isTransitioning || !this.transitionOverlay) return;
+    async runAutoTransition(completedLevelId, nextLevelId) {
+        if (this.isTransitioning) return;
 
         this.isTransitioning = true;
-        this.pendingNextLevelId = nextLevelId;
 
-        const completed = getLevelById(completedLevelId);
-        const title = this.transitionOverlay.querySelector('.transition-title');
-        if (title) {
-            title.textContent = `${completed?.name ?? 'Level'} complete`;
+        const reducedMotion = prefersReducedMotion();
+        const holdMs = reducedMotion ? 0 : SOLVED_HOLD_MS;
+        const fadeMs = reducedMotion ? REDUCED_MOTION_FADE_MS : CROSSFADE_MS;
+
+        try {
+            const puzzle = window.voronoiPuzzle;
+            if (!puzzle || !window.levelManager) {
+                throw new Error('Puzzle or level manager not available');
+            }
+
+            puzzle.currentRenderer?.freezeForHold?.();
+            this.blockInput();
+            document.documentElement.style.setProperty('--crossfade-duration', `${fadeMs}ms`);
+
+            await Promise.all([
+                this.delay(holdMs),
+                window.levelManager.preloadLevelForTransition(nextLevelId),
+            ]);
+
+            await this.fadeOutOutgoingCanvas(puzzle, fadeMs);
+            await window.levelManager.finalizeLevelTransition();
+
+            // Clear before piece release — releaseNextBatch and updateButtonVisibility no-op while transitioning
+            this.isTransitioning = false;
+
+            const renderer = puzzle.webglRenderer;
+            if (renderer && window.pieceReleaseManager) {
+                window.pieceReleaseManager.releaseInitialBatch(renderer);
+                renderer.recoverOffscreenLoosePieces?.();
+                window.pieceReleaseManager.updateButtonVisibility(renderer);
+            }
+
+            this.unblockInput();
+
+            const nextLevel = getLevelById(nextLevelId);
+            announce(nextLevel ? `${nextLevel.name} ready.` : 'Next level ready.');
+        } catch (error) {
+            console.error('Level transition failed:', error);
+            await window.levelManager?.abortLevelTransition?.();
+            this.unblockInput();
+            announce('Failed to load next level.', 'assertive');
+        } finally {
+            this.isTransitioning = false;
         }
-
-        await this.playCelebration();
-
-        this.transitionOverlay.hidden = false;
-        this.transitionOverlay.classList.add('visible');
-        announce(`${completed?.name ?? 'Level'} complete. Press Continue for the next level.`, 'assertive');
     }
 
     async showCompletion() {
@@ -66,30 +97,8 @@ class LevelTransitionManager {
         }
 
         stage.classList.add('level-celebrating');
-        await new Promise((resolve) => setTimeout(resolve, 1200));
+        await this.delay(1200);
         stage.classList.remove('level-celebrating');
-    }
-
-    async handleContinue() {
-        const nextLevelId = this.pendingNextLevelId;
-        if (!nextLevelId || !window.levelManager) {
-            this.hideTransitionOverlay();
-            return;
-        }
-
-        const continueBtn = this.transitionOverlay?.querySelector('.transition-continue');
-        if (continueBtn) {
-            continueBtn.disabled = true;
-        }
-
-        try {
-            await window.levelManager.setLevel(nextLevelId, { silent: true });
-        } finally {
-            this.hideTransitionOverlay();
-            if (continueBtn) {
-                continueBtn.disabled = false;
-            }
-        }
     }
 
     async handlePlayAgain() {
@@ -114,13 +123,63 @@ class LevelTransitionManager {
         }
     }
 
-    hideTransitionOverlay() {
-        this.transitionOverlay?.classList.remove('visible');
-        if (this.transitionOverlay) {
-            this.transitionOverlay.hidden = true;
+    blockInput() {
+        const stage = document.querySelector('.stage');
+        stage?.classList.add('transition-locked', 'transition-hold');
+
+        const releaseBtn = document.getElementById('releasePiecesBtn');
+        if (releaseBtn) {
+            releaseBtn.hidden = true;
+            releaseBtn.disabled = true;
         }
-        this.pendingNextLevelId = null;
-        this.isTransitioning = false;
+    }
+
+    unblockInput() {
+        const stage = document.querySelector('.stage');
+        stage?.classList.remove('transition-locked', 'transition-hold');
+
+        const releaseBtn = document.getElementById('releasePiecesBtn');
+        if (releaseBtn) {
+            releaseBtn.disabled = false;
+        }
+    }
+
+    /**
+     * @param {object} puzzle
+     * @param {number} fadeMs
+     */
+    async fadeOutOutgoingCanvas(puzzle, fadeMs) {
+        const canvas = puzzle.outgoingRenderer?.webglRenderer?.canvas;
+        if (!canvas) return;
+
+        await new Promise((resolve) => {
+            let settled = false;
+            const finish = () => {
+                if (settled) return;
+                settled = true;
+                canvas.removeEventListener('transitionend', onTransitionEnd);
+                resolve();
+            };
+
+            const onTransitionEnd = (event) => {
+                if (event.target === canvas && event.propertyName === 'opacity') {
+                    finish();
+                }
+            };
+
+            canvas.addEventListener('transitionend', onTransitionEnd);
+            requestAnimationFrame(() => {
+                canvas.classList.add('is-fading');
+            });
+            setTimeout(finish, fadeMs + 100);
+        });
+    }
+
+    /**
+     * @param {number} ms
+     */
+    delay(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     hideCompletionOverlay() {

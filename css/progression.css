@@ -1,6 +1,5 @@
-/* Level progression overlays — transition and completion */
+/* Level progression — crossfade transitions and completion overlay */
 
-.level-transition-overlay,
 .completion-overlay {
     position: fixed;
     inset: 0;
@@ -16,33 +15,22 @@
     transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
-.level-transition-overlay.visible,
 .completion-overlay.visible {
     opacity: 1;
     visibility: visible;
 }
 
-.transition-gradient,
 .completion-gradient {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: radial-gradient(
-        circle at 50% 45%,
-        rgba(0, 221, 255, 0.35) 0%,
-        rgba(55, 104, 254, 0.15) 35%,
-        rgba(17, 17, 17, 0) 70%
-    );
-    animation: phantasmVeilPulse 4s ease-in-out infinite;
-}
-
-.completion-gradient {
     background: radial-gradient(
         circle at 50% 50%,
         rgba(0, 204, 255, 0.45) 0%,
         rgba(122, 78, 223, 0.2) 40%,
         rgba(17, 17, 17, 0) 75%
     );
+    animation: phantasmVeilPulse 4s ease-in-out infinite;
 }
 
 @keyframes phantasmVeilPulse {
@@ -54,17 +42,6 @@
         opacity: 1;
         transform: scale(1.04);
     }
-}
-
-.transition-title {
-    position: relative;
-    z-index: 1;
-    margin: 0 0 1.5rem;
-    font-size: clamp(1.25rem, 4vw, 1.75rem);
-    font-weight: 300;
-    letter-spacing: 0.08em;
-    color: var(--text-color, #ffffff);
-    text-align: center;
 }
 
 .completion-word {
@@ -79,7 +56,6 @@
     text-indent: 0.35em;
 }
 
-.transition-continue,
 .completion-play-again {
     position: relative;
     z-index: 1;
@@ -96,13 +72,36 @@
     transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-.transition-continue:hover,
-.transition-continue:focus-visible,
 .completion-play-again:hover,
 .completion-play-again:focus-visible {
     border-color: var(--controls-primary-color, #00ddff);
     background: rgba(0, 221, 255, 0.08);
     outline: none;
+}
+
+/* Automatic level crossfade — outgoing solved canvas over incoming grid */
+canvas.webgl-canvas.transition-outgoing {
+    z-index: 11 !important;
+    pointer-events: none !important;
+    transition: opacity var(--crossfade-duration, 0.8s) ease;
+}
+
+canvas.webgl-canvas.transition-outgoing.is-fading {
+    opacity: 0;
+}
+
+.stage.transition-locked {
+    pointer-events: none;
+}
+
+.stage.transition-locked ~ .release-pieces-btn,
+body:has(.stage.transition-locked) .release-pieces-btn {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.stage.transition-hold.puzzle-solved {
+    animation: none;
 }
 
 .stage.level-celebrating {
@@ -122,7 +121,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .transition-gradient,
     .completion-gradient {
         animation: none;
     }
@@ -131,8 +129,11 @@
         animation: none;
     }
 
-    .level-transition-overlay,
     .completion-overlay {
+        transition: none;
+    }
+
+    canvas.webgl-canvas.transition-outgoing {
         transition: none;
     }
 }

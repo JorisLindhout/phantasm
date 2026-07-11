@@ -76,7 +76,7 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 ### 🎮 Level System & Progression
 - **Manifest-Driven Levels**: Ordered level list in `js/levels.config.js` (theme, SVG, difficulty, release batches)
 - **Unlock on Solve**: Level 2 unlocks when Level 1 is completed; progress saved in `phantasm-unlocked-levels`
-- **Phantasm Bloom Transition**: Tap **Continue** on a gradient overlay between levels
+- **Automatic Level Transition**: Solved puzzle holds 2s, then crossfades into the next level's grid
 - **Completion Screen**: After the final level, a **done** screen with **Play again**
 - **Always Starts at Level 1**: Cold start loads Level 1 regardless of saved preferences
 - **Per-Level Difficulty**: Cell count, animation speed, and noise amplitude defined per level
@@ -220,7 +220,7 @@ phantasm/
 1. **Click and drag** (or touch / keyboard) any loose piece to move it
 2. **Tap +** (top-right) to release more pieces from the pool
 3. **Auto-snap** when a piece is within 25px of its slot
-4. **Complete a level** → tap **Continue** on the transition overlay
+4. **Complete a level** — solved image holds briefly, then crossfades into the next level automatically
 5. **Complete all levels** → **done** screen → **Play again**
 
 Ghost slot outlines show where pieces belong. Loose pieces show a default outline so they remain visible on the dark background.
@@ -260,7 +260,7 @@ Tests cover level manifest validation, unlock/progression logic, unsolved layout
 
 ### ♿ Accessibility
 - Screen reader announcements for level completion and game completion (`js/accessibility.js`)
-- Reduced motion: level transitions skip celebrate/veil animation and show **Continue** immediately
+- Reduced motion: level transitions skip the 2s hold and use a shorter crossfade
 
 ### 🛠️ Development Tools
 - **Dev Panel**: Enable with `VITE_DEV_PANEL=true` in `.env.development`
@@ -430,7 +430,7 @@ All debug utilities are defined in `js/debug-utils.js` and are automatically loa
 
 ### **Recently implemented**
 - **Unsolved start** with staged piece release (+ button) and ghost slot outlines
-- **Level progression** with unlock-on-solve, Phantasm Bloom transitions, and **done** completion screen
+- **Level progression** with unlock-on-solve, automatic crossfade transitions, and **done** completion screen
 - **Manifest-driven levels** (`js/levels.config.js`)
 - **Dev panel gating** via `VITE_DEV_PANEL`
 - **Responsive 1:1 square stage** (450×450 assets, scales to viewport)
