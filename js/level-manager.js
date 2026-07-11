@@ -262,7 +262,7 @@ class LevelManager {
         }
 
         if (window.themeManager) {
-            window.themeManager.init(this.puzzle.webglRenderer);
+            window.themeManager.setWebGLRenderer(this.puzzle.webglRenderer);
         }
 
         this.isChangingLevel = false;

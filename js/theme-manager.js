@@ -24,6 +24,14 @@ class ThemeManager {
     }
 
     /**
+     * Attach a WebGL renderer without resetting the active theme.
+     */
+    setWebGLRenderer(webglRenderer) {
+        this.webglRenderer = webglRenderer;
+        this.updateWebGLColors(this.currentTheme);
+    }
+
+    /**
      * Subscribe to theme changes
      */
     subscribe(callback) {

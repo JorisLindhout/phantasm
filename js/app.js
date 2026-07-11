@@ -168,7 +168,7 @@ async function initializeApp() {
             announce('Animations reduced based on your system settings.');
         }
 
-        themeManager.init(window.voronoiPuzzle?.webglRenderer);
+        themeManager.setWebGLRenderer(window.voronoiPuzzle?.webglRenderer);
         levelManager.init(window.voronoiPuzzle);
 
         bindRangeAccessibility();

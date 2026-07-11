@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { themeManager } from '../js/theme-manager.js';
 
 describe('level gradient CSS variable', () => {
@@ -43,5 +43,17 @@ describe('level gradient CSS variable', () => {
         expect(gradient).toContain('135deg');
         expect(gradient.toLowerCase()).toContain('#00ddff');
         expect(gradient.toLowerCase()).toContain('#00ff64');
+    });
+
+    it('setWebGLRenderer keeps the active theme', () => {
+        themeManager.applyTheme('levelTwo');
+
+        const applyThemeSpy = vi.spyOn(themeManager, 'applyTheme');
+        themeManager.setWebGLRenderer({ updateTheme: vi.fn() });
+
+        expect(applyThemeSpy).not.toHaveBeenCalled();
+        expect(
+            document.documentElement.style.getPropertyValue('--level-gradient-start').trim().toLowerCase(),
+        ).toBe('#659be9');
     });
 });
