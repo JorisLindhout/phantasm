@@ -14,6 +14,9 @@ import {
     isPrimaryMouseButton,
     supportsPointerEvents,
 } from './pointer-input.js';
+import { createLogger } from './logger.js';
+
+const log = createLogger('main');
 
 class VoronoiPuzzle extends VoronoiPuzzleBase {
     constructor() {
@@ -35,10 +38,8 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
         // Get audio element reference (might be null if called before DOM ready)
         this.snapSound = document.getElementById('snapSound');
         
-        if (this.snapSound) {
-            console.log('initialization', '🔊 Audio element found and initialized');
-        } else {
-            console.warn('⚠️ Audio element not found - will retry on first play');
+        if (!this.snapSound) {
+            log.warn('Audio element not found - will retry on first play');
         }
         
         // Unlock audio on first user interaction (for mobile browsers)
@@ -63,11 +64,10 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
             // Reset and play to allow overlapping sounds
             this.snapSound.currentTime = 0;
             this.snapSound.play().catch(e => {
-                // Silent fail - audio might be blocked by browser
-                console.warn('⚠️ Audio play blocked:', e.message);
+                log.warn('Audio play blocked:', e.message);
             });
         } else {
-            console.warn('⚠️ snapSound element not found - check if audio element exists in HTML');
+            log.warn('snapSound element not found - check if audio element exists in HTML');
         }
     }
 
@@ -83,7 +83,7 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
             // Initialize with the appropriate renderer
             await this.initializeRenderer();
         } catch (error) {
-            console.error('Error initializing Phantasm:', error);
+            log.error('Error initializing Phantasm:', error);
             throw error; // Re-throw to be handled by the HTML initialization script
         }
     }
@@ -121,10 +121,6 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
                     Object.assign(this.currentRenderer.config, this.config);
                     await this.currentRenderer.init({ deferPieceRelease });
                     
-                    // WebGL renderer is accessible via getter
-                    
-                    // KEEP: User-facing success message
-                    console.log('✅ Using WebGL renderer for proper z-index layering');
                     this.updateRendererStatus('WebGL (with true z-index layering)');
                     
                     // Add WebGL mode class to container
@@ -133,7 +129,7 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
                         container.classList.add('webgl-mode');
                     }
                 } catch (error) {
-                    console.error('❌ WebGL initialization failed:', error.message);
+                    log.error('WebGL initialization failed:', error.message);
                     throw new Error('WebGL is required for this puzzle. Please use a modern browser with WebGL support.');
                 }
             } else {
@@ -239,9 +235,6 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
         
         // Call base class dispose
         super.dispose();
-        
-        // KEEP: User-facing success message
-        console.log('✅ Main puzzle disposed and cleaned up');
     }
 }
 
@@ -282,7 +275,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
             this.startAnimation();
             this.render();
         } catch (error) {
-            console.error('Error initializing WebGL hybrid renderer:', error);
+            log.error('Error initializing WebGL hybrid renderer:', error);
             throw error;
         }
     }
@@ -627,9 +620,6 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         
         // Initialize the connected Voronoi system
         this.webglRenderer.initializeVoronoi(polygons);
-        
-        // KEEP: User-facing success message
-        console.log(`✅ Initialized WebGL Voronoi with ${polygons.length} pieces`);
     }
 
     render() {
@@ -720,8 +710,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     activatePiece(cellIndex, x, y) {
         // Safety check: ensure points array exists and has the right index
         if (!this.points || !this.points[cellIndex]) {
-            console.error(`❌ Cannot activate piece ${cellIndex}: points array not properly initialized`);
-            console.error(`❌ this.points:`, this.points);
+            log.error(`Cannot activate piece ${cellIndex}: points array not properly initialized`, this.points);
             return;
         }
         

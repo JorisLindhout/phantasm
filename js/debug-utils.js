@@ -16,80 +16,12 @@ function withRenderer(callback, fallbackMessage = 'WebGL renderer not available'
     return null;
 }
 
-window.validateObjectArraySync = function() {
-    withRenderer((renderer) => renderer.validateObjectArraySync?.());
-};
-
 window.autoRecoverPieces = function() {
     return withRenderer((renderer) => {
         const recoveredCount = renderer.autoRecoverUnreachablePieces?.() ?? 0;
         console.log(`🔄 Manually recovered ${recoveredCount} unreachable pieces`);
         return recoveredCount;
     }, 'WebGL renderer not available for auto-recovery') ?? 0;
-};
-
-window.toggleInteractionDebug = function() {
-    return withRenderer((renderer) => {
-        renderer.debugLogging.interactionDebug = !renderer.debugLogging.interactionDebug;
-        console.log(`🖱️ Interaction debug: ${renderer.debugLogging.interactionDebug ? 'ON' : 'OFF'}`);
-        return renderer.debugLogging.interactionDebug;
-    }, 'WebGL renderer not available for interaction debug toggle') ?? false;
-};
-
-window.toggleMaterialUpdates = function() {
-    return withRenderer((renderer) => {
-        renderer.debugLogging.materialUpdates = !renderer.debugLogging.materialUpdates;
-        console.log(`🎨 Material updates: ${renderer.debugLogging.materialUpdates ? 'ON' : 'OFF'}`);
-        return renderer.debugLogging.materialUpdates;
-    }, 'WebGL renderer not available for material updates toggle') ?? false;
-};
-
-window.toggleHoverEffects = function() {
-    return withRenderer((renderer) => {
-        renderer.debugLogging.hoverEffects = !renderer.debugLogging.hoverEffects;
-        console.log(`✨ Hover effects: ${renderer.debugLogging.hoverEffects ? 'ON' : 'OFF'}`);
-        return renderer.debugLogging.hoverEffects;
-    }, 'WebGL renderer not available for hover effects toggle') ?? false;
-};
-
-window.toggleNeonGlow = function() {
-    return withRenderer((renderer) => {
-        renderer.debugLogging.neonGlow = !renderer.debugLogging.neonGlow;
-        console.log(`🌟 Neon glow: ${renderer.debugLogging.neonGlow ? 'ON' : 'OFF'}`);
-        return renderer.debugLogging.neonGlow;
-    }, 'WebGL renderer not available for neon glow toggle') ?? false;
-};
-
-window.toggleInitialization = function() {
-    return withRenderer((renderer) => {
-        renderer.debugLogging.initialization = !renderer.debugLogging.initialization;
-        console.log(`🔍 Initialization: ${renderer.debugLogging.initialization ? 'ON' : 'OFF'}`);
-        return renderer.debugLogging.initialization;
-    }, 'WebGL renderer not available for initialization toggle') ?? false;
-};
-
-window.toggleCoordinates = function() {
-    return withRenderer((renderer) => {
-        renderer.debugLogging.coordinates = !renderer.debugLogging.coordinates;
-        console.log(`🎯 Coordinates: ${renderer.debugLogging.coordinates ? 'ON' : 'OFF'}`);
-        return renderer.debugLogging.coordinates;
-    }, 'WebGL renderer not available for coordinates toggle') ?? false;
-};
-
-window.toggleRendererSwitching = function() {
-    return withRenderer((renderer) => {
-        renderer.debugLogging.rendererSwitching = !renderer.debugLogging.rendererSwitching;
-        console.log(`🔄 Renderer switching: ${renderer.debugLogging.rendererSwitching ? 'ON' : 'OFF'}`);
-        return renderer.debugLogging.rendererSwitching;
-    }, 'WebGL renderer not available for renderer switching toggle') ?? false;
-};
-
-window.toggleCanvasSetup = function() {
-    return withRenderer((renderer) => {
-        renderer.debugLogging.canvasSetup = !renderer.debugLogging.canvasSetup;
-        console.log(`🎨 Canvas setup: ${renderer.debugLogging.canvasSetup ? 'ON' : 'OFF'}`);
-        return renderer.debugLogging.canvasSetup;
-    }, 'WebGL renderer not available for canvas setup toggle') ?? false;
 };
 
 window.checkGhostPieces = function() {
@@ -135,22 +67,13 @@ window.debugLostPieces = function() {
 
 window.showDebugCommands = function() {
     console.log('🛠️ Available Debug Commands:');
-    console.log('  toggleInteractionDebug() - Toggle interaction debugging');
-    console.log('  toggleMaterialUpdates() - Toggle material update logs');
-    console.log('  toggleHoverEffects() - Toggle hover effect logs');
-    console.log('  toggleNeonGlow() - Toggle neon glow logs');
-    console.log('  toggleInitialization() - Toggle WebGL initialization logs');
-    console.log('  toggleCoordinates() - Toggle coordinate transformation logs');
-    console.log('  toggleRendererSwitching() - Toggle renderer switching logs');
-    console.log('  toggleCanvasSetup() - Toggle canvas setup logs');
-    console.log('  fixMispositionedPieces() - Fix pieces positioned at origin');
-    console.log('  autoRecoverPieces() - Manually recover unreachable pieces');
-    console.log('  checkGhostPieces() - Check for ghost pieces');
-    console.log('  debugLostPieces() - Debug lost pieces');
-    console.log('  autoSnapPiece(pieceIndex) - Manually snap a piece to its slot');
-    console.log('  validateObjectArraySync() - Validate object-array synchronization');
-    console.log('  testInteractionSystem() - Test interaction system with multiple pieces');
     console.log('  showDebugCommands() - Show this help');
+    console.log('  autoRecoverPieces() - Manually recover unreachable pieces');
+    console.log('  debugLostPieces() - Debug lost pieces');
+    console.log('  checkGhostPieces() - Check for ghost pieces');
+    console.log('  autoSnapPiece(pieceIndex) - Manually snap a piece to its slot');
+    console.log('  fixMispositionedPieces() - Fix pieces positioned at origin');
+    console.log('  testInteractionSystem() - Test interaction system with multiple pieces');
 };
 
 window.fixMispositionedPieces = function() {
@@ -195,5 +118,3 @@ window.testInteractionSystem = function() {
         return true;
     }, 'WebGL renderer not available for testing') ?? false;
 };
-
-console.log('🛠️ Debug utilities loaded - type showDebugCommands() for help');

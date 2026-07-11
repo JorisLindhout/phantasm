@@ -4,6 +4,9 @@
  */
 
 import { THEMES, DEFAULT_THEME, ThemeUtils, UNSOLVED_STAGE_GLOW, UNSOLVED_STAGE_GLOW_ALPHA } from './theme.js';
+import { createLogger } from './logger.js';
+
+const log = createLogger('theme');
 
 class ThemeManager {
     constructor() {
@@ -36,7 +39,7 @@ class ThemeManager {
             try {
                 callback(theme);
             } catch (error) {
-                console.error('Theme subscriber error:', error);
+                log.error('Theme subscriber error:', error);
             }
         });
     }
@@ -47,13 +50,10 @@ class ThemeManager {
     applyTheme(themeName) {
         const theme = ThemeUtils.getTheme(themeName);
         if (!theme) {
-            console.error(`Theme "${themeName}" not found`);
+            log.error(`Theme "${themeName}" not found`);
             return false;
         }
 
-        // KEEP: User-facing theme change message
-        console.log(`🎨 Applying theme: ${theme.name}`);
-        
         this.currentTheme = theme;
         this.updateCSSVariables(theme);
         this.updateWebGLColors(theme);
@@ -129,8 +129,6 @@ class ThemeManager {
      */
     updateWebGLColors(theme) {
         if (!this.webglRenderer || typeof this.webglRenderer.updateTheme !== 'function') {
-            // KEEP: User-facing warning message
-            console.log('⚠️ WebGL renderer not available or doesn\'t support theming');
             return;
         }
 
@@ -139,7 +137,7 @@ class ThemeManager {
                 this.webglRenderer.updateTheme(theme);
             }
         } catch (error) {
-            console.error('Error updating WebGL theme:', error);
+            log.error('Error updating WebGL theme:', error);
         }
     }
 
@@ -179,7 +177,7 @@ class ThemeManager {
         try {
             localStorage.setItem('phantasm-theme', themeName);
         } catch (error) {
-            console.warn('Could not save theme preference:', error);
+            log.warn('Could not save theme preference:', error);
         }
     }
 
@@ -194,7 +192,7 @@ class ThemeManager {
                 return saved;
             }
         } catch (error) {
-            console.warn('Could not load theme preference:', error);
+            log.warn('Could not load theme preference:', error);
         }
         return this.currentTheme.name;
     }

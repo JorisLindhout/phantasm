@@ -382,10 +382,6 @@ class VoronoiPuzzleBase {
     
     // Called when solved state changes
     onSolvedStateChanged(isSolved) {
-        // KEEP: User-facing success message
-        console.log(`🎉 Puzzle ${isSolved ? 'SOLVED' : 'UNSOLVED'}!`);
-        
-        // Add/remove solved class to canvas container
         const container = this.canvas.parentElement;
         if (container) {
             if (isSolved) {
@@ -439,9 +435,6 @@ class VoronoiPuzzleBase {
         this.voronoi = null;
         this.points = null;
         this.originalPoints = null;
-        
-        // KEEP: User-facing success message
-        console.log('✅ Base class disposed and cleaned up');
     }
 
     // Abstract methods to be implemented by subclasses

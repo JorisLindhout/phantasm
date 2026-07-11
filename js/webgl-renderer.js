@@ -13,17 +13,18 @@ import { configureRendererColors, configureTextureColors } from './three-config.
 import { LEVEL_HEIGHT, LEVEL_WIDTH } from './stage-constants.js';
 import { SLOT_GHOST_OPACITY, LOOSE_PIECE_Z_BASE, isPolygonWithinStage, scatterPiece, polygonRadius } from './unsolved-layout.js';
 import { polygonCenter } from './polygon-geometry.js';
+import { createLogger } from './logger.js';
+
+const log = createLogger('webgl');
 
 // Check if WebGL is supported
 function isWebGLSupported() {
     try {
         const canvas = document.createElement('canvas');
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        const supported = !!gl;
-        console.log('🔍 WebGL support check:', supported);
-        return supported;
+        return !!gl;
     } catch (e) {
-        console.error('🔍 WebGL support check failed:', e);
+        log.error('WebGL support check failed:', e);
         return false;
     }
 }
@@ -81,17 +82,6 @@ class WebGLVoronoiRenderer {
         this.isSolved = false;
         this.solveThreshold = SOLVE_THRESHOLD;
 
-        this.debugLogging = {
-            interactionDebug: false,
-            materialUpdates: false,
-            hoverEffects: false,
-            neonGlow: false,
-            initialization: false,
-            coordinates: false,
-            rendererSwitching: false,
-            canvasSetup: false,
-        };
-        
         this.init();
     }
     
@@ -154,8 +144,7 @@ class WebGLVoronoiRenderer {
                 failIfMajorPerformanceCaveat: false,
             });
         } catch (error) {
-            console.error('❌ WebGL context creation failed:', error);
-            console.error('❌ Error details:', error.message);
+            log.error('WebGL context creation failed:', error.message);
             throw new Error('WebGL not supported or context creation failed: ' + error.message);
         }
         this.renderer.setSize(width, height, false); // false = don't update CSS size
@@ -168,18 +157,14 @@ class WebGLVoronoiRenderer {
 
         this.canvas.addEventListener('webglcontextlost', (event) => {
             event.preventDefault();
-            console.warn('WebGL context lost');
+            log.warn('WebGL context lost');
         });
 
         this.canvas.addEventListener('webglcontextrestored', () => {
-            console.log('WebGL context restored');
             if (this.voronoiPolygons.length > 0) {
                 this.createConnectedMesh();
             }
         });
-        
-        // KEEP: User-facing success message
-        console.log('✅ WebGL renderer initialized');
     }
     
     // Initialize position manager when originalPoints are available
@@ -189,9 +174,6 @@ class WebGLVoronoiRenderer {
         } else {
             this.positionManager = new PositionManager(originalPoints, this.canvas.height);
         }
-        
-        // KEEP: User-facing success message
-        console.log('✅ Position manager initialized with', originalPoints.length, 'points');
     }
     
     loadBackgroundTexture(imageUrl) {
@@ -205,13 +187,11 @@ class WebGLVoronoiRenderer {
                     texture.wrapT = THREE.ClampToEdgeWrapping;
                     texture.minFilter = THREE.LinearFilter;
                     texture.magFilter = THREE.LinearFilter;
-                    // KEEP: User-facing success message
-                    console.log('✅ Background texture loaded');
                     resolve(texture);
                 },
                 undefined,
                 (error) => {
-                    console.error('❌ Error loading background texture:', error);
+                    log.error('Error loading background texture:', error);
                     reject(error);
                 }
             );
@@ -288,26 +268,8 @@ class WebGLVoronoiRenderer {
         this.pieceZIndices = new Array(polygons.length).fill(0);
 
         if (this.originalPoints && this.originalPoints.length > 0) {
-            // KEEP: User-facing success message
-            console.log('✅ Initializing position manager with', this.originalPoints.length, 'points');
             this.initPositionManager(this.originalPoints);
-        } else {
-            // KEEP: User-facing warning message
-            console.log('⚠️ Position manager not initialized - originalPoints not available');
         }
-    }
-    
-    // NEW: Debug method to validate object-array sync
-    validateObjectArraySync() {        
-        for (let i = 0; i < this.pieces.length; i++) {
-            const piece = this.pieces[i];
-            const slot = this.slots[i];
-            
-            
-            // Check mesh sync (object system only)
-            const objectHasMesh = piece.mesh !== null;
-
-        }        
     }
     
     // NEW: Auto-recovery for unreachable pieces
@@ -927,8 +889,6 @@ class WebGLVoronoiRenderer {
                         glowLayer.visible = showGlow;
                     }
                 });
-            } else {
-                console.log(`❌ No neon glow found for piece ${index}`);
             }
         }
         
@@ -1132,8 +1092,6 @@ class WebGLVoronoiRenderer {
     // Remove neon glow outline layers
     removeNeonGlowOutline(glowLayers) {
         if (!glowLayers) return;
-        
-        console.log(`🗑️ Removing ${glowLayers.length} glow layers`);
         
         glowLayers.forEach(glowOutline => {
             if (glowOutline) {
@@ -1643,7 +1601,6 @@ class WebGLVoronoiRenderer {
                 const y = polygon.reduce((sum, p) => sum + p[1], 0) / polygon.length;
                 label.position.set(x, y, 5);
                 label.visible = true;
-                console.log(`🏷️ Updated label for connected piece ${index} at (${x.toFixed(1)}, ${y.toFixed(1)})`);
             }
         }
     }
@@ -1822,8 +1779,6 @@ class WebGLVoronoiRenderer {
         if (this.canvas && this.canvas.parentNode) {
             this.canvas.parentNode.removeChild(this.canvas);
         }
-        
-        console.log('✅ WebGL renderer disposed');
     }
     
     // Toggle grid outline visibility
@@ -1842,7 +1797,6 @@ class WebGLVoronoiRenderer {
             }
         });
         
-        console.log(`🔗 Grid outlines: ${this.showGridOutlines ? 'ON' : 'OFF'}`);
         return this.showGridOutlines;
     }
     
@@ -1852,7 +1806,6 @@ class WebGLVoronoiRenderer {
      * Update theme - called by ThemeManager
      */
     updateTheme(theme) {
-        console.log(`🎨 WebGL renderer updating to theme: ${theme.name}`);
         this.currentTheme = theme;
         
         // Update all existing materials
@@ -2039,8 +1992,7 @@ class WebGLVoronoiRenderer {
                     return index;
                 }
             } catch (error) {
-                console.log('piece-states',`⚠️ Raycaster error for piece ${index}:`, error);
-                console.log('hit-detection', `🖱️ INTERACTION DEBUG: Raycaster error for piece ${index}:`, error);
+                log.error(`Raycaster error for piece ${index}:`, error);
             }
         }
         
@@ -2129,16 +2081,12 @@ class WebGLVoronoiRenderer {
         // Check for and fix any lost pieces
         const fixedCount = this.checkAndFixLostPieces();
         if (fixedCount > 0) {
-            console.log(`🔄 Retrying hit detection after fixing ${fixedCount} lost pieces...`);
-            // Try one more time with the fixed pieces
             return this.findPieceAtPosition(x, y, skipDraggedPiece);
         }
         
         // NEW: Auto-recovery for unreachable pieces
         const recoveredCount = this.autoRecoverUnreachablePieces();
         if (recoveredCount > 0) {
-            console.log(`🔄 Auto-recovered ${recoveredCount} unreachable pieces...`);
-            // Try one more time with the recovered pieces
             return this.findPieceAtPosition(x, y, skipDraggedPiece);
         }
 
@@ -2204,10 +2152,6 @@ class WebGLVoronoiRenderer {
             y <= pieceY + height/2 + tolerance
         );
         
-        if (isWithinBounds) {
-            console.log(`🔍 Bounds check for piece ${pieceIndex}: point (${x}, ${y}) within bounds of piece at (${pieceX.toFixed(1)}, ${pieceY.toFixed(1)})`);
-        }
-        
         return isWithinBounds;
     }
     
@@ -2233,10 +2177,6 @@ class WebGLVoronoiRenderer {
         // Check if point is within the Voronoi polygon (use object system)
         const isInside = VoronoiUtils.pointInPolygon(localX, localY, polygon);
         
-        if (isInside) {
-            console.log(`🔍 Polygon check for piece ${pieceIndex}: point (${x}, ${y}) within polygon of piece at (${pieceX.toFixed(1)}, ${pieceY.toFixed(1)})`);
-        }
-        
         return isInside;
     }
     
@@ -2253,7 +2193,6 @@ class WebGLVoronoiRenderer {
         // Ensure piece is visible
         if (!piece.visible) {
             piece.visible = true;
-            console.log(`👁️ Made piece ${pieceIndex} visible`);
         }
         
         // Ensure piece has proper z-index (use object system)
@@ -2264,13 +2203,11 @@ class WebGLVoronoiRenderer {
                 pieceObj.zIndex = newZIndex;
             }
             this.pieceZIndices[pieceIndex] = newZIndex;
-            console.log(`📐 Reset z-index for piece ${pieceIndex} to 0`);
         }
         
         // Ensure piece is in the scene
         if (!this.scene.children.includes(piece)) {
             this.scene.add(piece);
-            console.log(`➕ Added piece ${pieceIndex} back to scene`);
         }
         
         // Ensure piece has proper geometry
@@ -2338,10 +2275,9 @@ class WebGLVoronoiRenderer {
             piece.geometry = geometry;
             piece.material = material;
             
-            console.log(`🔧 Recreated geometry for piece ${pieceIndex}`);
             return true;
         } catch (error) {
-            console.error(`❌ Failed to recreate geometry for piece ${pieceIndex}:`, error);
+            log.error(`Failed to recreate geometry for piece ${pieceIndex}:`, error);
             return false;
         }
     }
@@ -2363,18 +2299,10 @@ class WebGLVoronoiRenderer {
                           !piece.geometry.attributes.position;
             
             if (isLost) {
-                console.log(`🔧 Found lost piece ${i}, attempting to fix...`);
                 if (this.ensurePieceVisibility(i)) {
                     fixedCount++;
-                    console.log(`✅ Fixed lost piece ${i}`);
-                } else {
-                    console.log('piece-states',`❌ Failed to fix lost piece ${i}`);
                 }
             }
-        }
-        
-        if (fixedCount > 0) {
-            console.log(`🔧 Fixed ${fixedCount} lost pieces`);
         }
         
         return fixedCount;
@@ -2418,8 +2346,6 @@ class WebGLVoronoiRenderer {
     
     // Called when solved state changes
     onSolvedStateChanged(isSolved) {
-        console.log(`🎉 Puzzle ${isSolved ? 'SOLVED' : 'UNSOLVED'}!`);
-        
         const container = this.canvas.parentElement;
         if (container) {
             if (isSolved) {
@@ -2523,8 +2449,6 @@ WebGLVoronoiRenderer.prototype.dispose = function() {
     // Nullify other references
     this.voronoiPolygons = null;
     this.pieceZIndices = null;
-    
-    console.log('✅ WebGL renderer disposed and cleaned up');
 };
 
 // Note: stopAnimation not needed - complete disposal handles animation cleanup

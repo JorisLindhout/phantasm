@@ -11,6 +11,9 @@ import { levelTransitionManager } from './level-transition.js';
 import { isDevPanelEnabled, applyDevPanelVisibility } from './dev-panel.js';
 import { prefersReducedMotion, announce, updateRangeAriaValue, setDrawerExpanded } from './accessibility.js';
 import { configureLegacyColorPipeline } from './three-config.js';
+import { createLogger } from './logger.js';
+
+const log = createLogger('app');
 
 configureLegacyColorPipeline();
 
@@ -140,7 +143,7 @@ async function initializeApp() {
     showLoadingOverlay();
 
     if (typeof VoronoiPuzzle === 'undefined') {
-        console.error('VoronoiPuzzle class not found.');
+        log.error('VoronoiPuzzle class not found.');
         hideLoadingOverlay();
         return;
     }
@@ -176,7 +179,7 @@ async function initializeApp() {
         window.voronoiPuzzle.hideLoadingScreen?.();
         announce('Phantasm puzzle loaded.');
     } catch (error) {
-        console.error('Failed to initialize Phantasm:', error);
+        log.error('Failed to initialize Phantasm:', error);
         hideLoadingOverlay();
         announce('Failed to load puzzle.', 'assertive');
     }

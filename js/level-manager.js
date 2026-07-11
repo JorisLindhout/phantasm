@@ -16,6 +16,9 @@ import {
     manifestEntryToLevelConfig,
     getLevelById,
 } from './levels.config.js';
+import { createLogger } from './logger.js';
+
+const log = createLogger('levels');
 
 class LevelManager {
     constructor() {
@@ -59,7 +62,6 @@ class LevelManager {
      */
     init(puzzle) {
         this.puzzle = puzzle;
-        console.log(`🎮 Level Manager initialized with level: ${this.currentLevel}`);
         this.syncPuzzleConfig();
     }
 
@@ -113,7 +115,6 @@ class LevelManager {
         this.unlockedLevelIds = next;
         saveUnlockedLevelIds(this.unlockedLevelIds);
         this.rebuildLevelSelector();
-        console.log(`🔓 Unlocked level: ${levelId}`);
     }
 
     resetProgression() {
@@ -157,22 +158,20 @@ class LevelManager {
      */
     async setLevel(levelId, options = {}) {
         if (this.isChangingLevel) {
-            console.log(`⚠️ Level change already in progress, ignoring request for: ${levelId}`);
             return false;
         }
 
         if (!this.levelConfigurations[levelId]) {
-            console.error(`Level "${levelId}" not found`);
+            log.error(`Level "${levelId}" not found`);
             return false;
         }
 
         if (!this.canSelectLevel(levelId)) {
-            console.warn(`Level "${levelId}" is locked`);
+            log.warn(`Level "${levelId}" is locked`);
             return false;
         }
 
         const levelConfig = this.levelConfigurations[levelId];
-        console.log(`🎮 Switching to ${levelConfig.name}`);
 
         this.isChangingLevel = true;
 
@@ -191,10 +190,9 @@ class LevelManager {
                 this.hideLoadingScreen();
             }
 
-            console.log(`✅ Successfully switched to ${levelConfig.name}`);
             return true;
         } catch (error) {
-            console.error('Failed to switch level:', error);
+            log.error('Failed to switch level:', error);
             if (!options.silent) {
                 this.hideLoadingScreen();
             }
@@ -224,7 +222,6 @@ class LevelManager {
         }
 
         const levelConfig = this.levelConfigurations[levelId];
-        console.log(`🔄 Preloading ${levelConfig.name} for transition`);
 
         const resolved = resolveLevelConfig(levelConfig);
         this.puzzle.config.cellCount = resolved.cellCount;
@@ -242,8 +239,6 @@ class LevelManager {
             preserveOutgoing: true,
             deferPieceRelease: true,
         });
-
-        console.log(`✅ Preload ready for ${levelConfig.name}`);
     }
 
     /**
@@ -271,7 +266,6 @@ class LevelManager {
         }
 
         this.isChangingLevel = false;
-        console.log('✅ Level transition finalized');
     }
 
     /**
@@ -280,7 +274,7 @@ class LevelManager {
     async abortLevelTransition() {
         if (!this.puzzle) return;
 
-        console.warn('⚠️ Aborting level transition');
+        log.warn('Aborting level transition');
 
         if (this.puzzle.currentRenderer) {
             this.puzzle.currentRenderer.dispose?.();
@@ -310,8 +304,6 @@ class LevelManager {
             throw new Error('Puzzle not initialized');
         }
 
-        console.log(`🔄 Complete reinitialization for ${levelConfig.name}`);
-
         const resolved = resolveLevelConfig(levelConfig);
         this.puzzle.config.cellCount = resolved.cellCount;
         this.puzzle.config.animationSpeed = resolved.animationSpeed;
@@ -324,7 +316,6 @@ class LevelManager {
         }
 
         await this.puzzle.init();
-        console.log(`✅ Reinitialization complete for ${levelConfig.name}`);
     }
 
     /**
@@ -332,8 +323,6 @@ class LevelManager {
      */
     async disposePuzzle() {
         if (!this.puzzle) return;
-
-        console.log('🗑️ Disposing current puzzle state...');
 
         if (this.puzzle.stopAnimation) {
             this.puzzle.stopAnimation();
@@ -350,8 +339,6 @@ class LevelManager {
         if (this.puzzle.dispose) {
             this.puzzle.dispose();
         }
-
-        console.log('✅ Puzzle state disposed');
     }
 
     showLoadingScreen(message = 'Loading Level...') {
@@ -403,9 +390,8 @@ class LevelManager {
     saveLevelPreference(levelId) {
         try {
             localStorage.setItem('phantasm-level', levelId);
-            console.log(`💾 Saved level preference: ${levelId}`);
         } catch (error) {
-            console.warn('Failed to save level preference:', error);
+            log.warn('Failed to save level preference:', error);
         }
     }
 
@@ -413,11 +399,10 @@ class LevelManager {
         try {
             const saved = localStorage.getItem('phantasm-level');
             if (saved && this.levelConfigurations[saved]) {
-                console.log(`📁 Loaded level preference: ${saved}`);
                 return saved;
             }
         } catch (error) {
-            console.warn('Failed to load level preference:', error);
+            log.warn('Failed to load level preference:', error);
         }
         return null;
     }

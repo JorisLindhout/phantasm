@@ -7,22 +7,21 @@ A web-based Voronoi puzzle with WebGL 3D rendering, staged piece release, level 
 
 ## 🐛 Debugging & Error Reporting
 
-The project uses a simple, reliable debugging approach based on standard JavaScript console logging.
+The project uses a lightweight `js/logger.js` for app logging and console commands for manual diagnostics.
 
 ### 🚀 Debugging Approach
-- **Console Commands** - Global debug functions accessible via browser console
-- **Error Handling** - Critical errors are logged to console.error()
-- **Debug Utilities** - Separate debug-utils.js file with diagnostic tools
-- **Production Safe** - Debug code is isolated and easy to exclude from production builds
-- **No Dependencies** - Simple, lightweight debugging tools
+- **Console Commands** — Global debug functions accessible via browser console (dev only)
+- **Logger** — `logger.error()` always logs; `logger.warn()` is dev-only
+- **Debug Utilities** — `debug-utils.js` with diagnostic commands (loaded in dev only)
+- **Production** — Only errors surface in the console; debug commands are not bundled
 
 ### 🎯 Available Debug Commands
-Run `showDebugCommands()` in the console to see all available debugging utilities including:
-- `autoRecoverPieces()` - Auto-fix stuck/unreachable pieces
-- `debugLostPieces()` - Diagnose piece interaction issues
-- `checkGhostPieces()` - Detect invisible unresponsive pieces
-- `toggleInteractionDebug()` - Enable detailed interaction logging
-- And 10+ more diagnostic functions
+Run `showDebugCommands()` in the console to see all available debugging utilities:
+- `autoRecoverPieces()` — Auto-fix stuck/unreachable pieces
+- `debugLostPieces()` — Diagnose piece interaction issues
+- `checkGhostPieces()` — Detect invisible unresponsive pieces
+- `fixMispositionedPieces()` — Fix pieces positioned at origin
+- `testInteractionSystem()` — Run interaction diagnostics
 
 
 ## Table of Contents
@@ -277,12 +276,8 @@ showDebugCommands()
 autoRecoverPieces()           // Fix stuck/unreachable pieces
 debugLostPieces()            // Diagnose piece issues
 checkGhostPieces()           // Find invisible pieces
+fixMispositionedPieces()     // Fix pieces at origin
 testInteractionSystem()       // Run diagnostic tests
-
-// Toggle verbose logging
-toggleInteractionDebug()      // Mouse/click logging
-toggleMaterialUpdates()       // Visual update logging
-toggleNeonGlow()             // Glow effect logging
 
 // Theme system
 themeManager.setTheme('phantasm')
@@ -325,7 +320,6 @@ Run `showDebugCommands()` in the console to see all available tools, including:
 - **Ghost Piece Detection**: `checkGhostPieces()` - Finds invisible unresponsive pieces
 - **Scene Sync Fix**: `fixMispositionedPieces()` - Ensures pieces are properly positioned
 - **System Tests**: `testInteractionSystem()` - Run comprehensive diagnostics
-- **Debug Logging**: `toggleInteractionDebug()` - Enable detailed interaction logging
 
 #### Prevention Strategies:
 - **Object-Based Architecture**: Clean, maintainable code structure
@@ -382,7 +376,7 @@ Run `showDebugCommands()` in the console to see all available tools, including:
 
 ## 🔍 Debug Utilities
 
-The project includes a comprehensive set of debugging tools accessible via the browser console.
+Diagnostic commands are accessible via the browser console in development builds.
 
 ### Quick Start
 ```javascript
@@ -392,14 +386,11 @@ showDebugCommands()
 // Common troubleshooting
 autoRecoverPieces()           // Fix stuck pieces
 debugLostPieces()            // Diagnose interaction issues
+fixMispositionedPieces()     // Fix mispositioned pieces
 testInteractionSystem()       // Run system diagnostics
-
-// Enable verbose logging for specific systems
-toggleInteractionDebug()      // Mouse/click events
-toggleMaterialUpdates()       // Visual updates
 ```
 
-All debug utilities are defined in `js/debug-utils.js` and are automatically loaded with the application.
+`debug-utils.js` is loaded only when `import.meta.env.DEV` is true (via `app.js`).
 
 
 ## Future Development

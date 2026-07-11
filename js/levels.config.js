@@ -3,6 +3,10 @@
  * Add Level-N.svg, theme entry, and one row here to register a new level.
  */
 
+import { createLogger } from './logger.js';
+
+const log = createLogger('levels.config');
+
 export const LEVEL_MANIFEST = [
     {
         id: 'level-1',
@@ -87,7 +91,7 @@ export function saveUnlockedLevelIds(unlockedIds) {
     try {
         localStorage.setItem(UNLOCK_STORAGE_KEY, JSON.stringify(unlockedIds));
     } catch (error) {
-        console.warn('Failed to save unlocked levels:', error);
+        log.warn('Failed to save unlocked levels:', error);
     }
 }
 

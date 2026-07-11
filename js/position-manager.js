@@ -15,16 +15,6 @@ class PositionManager {
     constructor(originalPoints, canvasHeight) {
         this.originalPoints = originalPoints;
         this.canvasHeight = canvasHeight;
-        this.debugLogging = false; // Debug logging disabled
-    }
-    
-    /**
-     * Enable or disable debug logging for position calculations
-     * 
-     * @param {boolean} enabled - Whether to enable debug logging
-     */
-    setDebugLogging(enabled) {
-        this.debugLogging = enabled;
     }
     
     /**

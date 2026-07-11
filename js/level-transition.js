@@ -4,6 +4,9 @@
 
 import { announce, prefersReducedMotion } from './accessibility.js';
 import { getLevelById } from './levels.config.js';
+import { createLogger } from './logger.js';
+
+const log = createLogger('transition');
 
 export const SOLVED_HOLD_MS = 2000;
 export const CROSSFADE_MS = 800;
@@ -69,7 +72,7 @@ class LevelTransitionManager {
             const nextLevel = getLevelById(nextLevelId);
             announce(nextLevel ? `${nextLevel.name} ready.` : 'Next level ready.');
         } catch (error) {
-            console.error('Level transition failed:', error);
+            log.error('Level transition failed:', error);
             await window.levelManager?.abortLevelTransition?.();
             this.unblockInput();
             announce('Failed to load next level.', 'assertive');
