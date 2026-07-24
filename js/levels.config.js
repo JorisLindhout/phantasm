@@ -7,6 +7,21 @@ import { createLogger } from './logger.js';
 
 const log = createLogger('levels.config');
 
+/**
+ * Resolve difficulty values from a level configuration object.
+ * @param {object} levelConfig
+ * @returns {{ cellCount: number, animationSpeed: number, noiseAmplitude: number, morphIntervalMs: number }}
+ */
+export function resolveLevelConfig(levelConfig) {
+    const config = levelConfig?.config ?? levelConfig?.difficulty ?? levelConfig;
+    return {
+        cellCount: config.cellCount,
+        animationSpeed: config.animationSpeed,
+        noiseAmplitude: config.noiseAmplitude,
+        morphIntervalMs: config.morphIntervalMs ?? 3500,
+    };
+}
+
 export const LEVEL_MANIFEST = [
     {
         id: 'level-1',

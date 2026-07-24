@@ -24,69 +24,35 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
     constructor() {
         super();
         this.currentRenderer = null;
-        this.useWebGL = true; // WebGL rendering enabled
-        this.noise = new Noise(); // Shared noise instance
-        
-        // Audio setup
-        this.snapSound = null;
-        this.initAudio();
+        this.useWebGL = true;
     }
 
     async start() {
         await this.init();
     }
 
-    initAudio() {
-        // Get audio element reference (might be null if called before DOM ready)
-        this.snapSound = document.getElementById('snapSound');
-        
-        if (!this.snapSound) {
-            log.warn('Audio element not found - will retry on first play');
-        }
-        
-        // Unlock audio on first user interaction (for mobile browsers)
-        document.addEventListener('click', () => {
-            if (!this.snapSound) {
-                this.snapSound = document.getElementById('snapSound');
-            }
-            if (this.snapSound) {
-                this.snapSound.load();
-            }
-        }, { once: true });
-    }
-
+    /**
+     * Snap audio hook — no-op until a source is wired (see Future Development in README).
+     * Call sites stay in place so enabling sound is a small change later.
+     */
     playSnapSound() {
-        
-        // Lazy load audio element if not found yet
-        if (!this.snapSound) {
-            this.snapSound = document.getElementById('snapSound');
+        const snapSound = document.getElementById('snapSound');
+        if (!snapSound?.src && !snapSound?.querySelector('source')) {
+            return;
         }
-        
-        if (this.snapSound) {
-            // Reset and play to allow overlapping sounds
-            this.snapSound.currentTime = 0;
-            this.snapSound.play().catch(e => {
-                log.warn('Audio play blocked:', e.message);
-            });
-        } else {
-            log.warn('snapSound element not found - check if audio element exists in HTML');
-        }
-    }
 
-    updateRendererStatus(status) {
-        const statusElement = document.getElementById('rendererStatus');
-        if (statusElement) {
-            statusElement.textContent = `Renderer: ${status}`;
-        }
+        snapSound.currentTime = 0;
+        snapSound.play().catch((e) => {
+            log.warn('Audio play blocked:', e.message);
+        });
     }
 
     async init() {
         try {
-            // Initialize with the appropriate renderer
             await this.initializeRenderer();
         } catch (error) {
             log.error('Error initializing Phantasm:', error);
-            throw error; // Re-throw to be handled by the HTML initialization script
+            throw error;
         }
     }
 
@@ -122,9 +88,7 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
                     this.currentRenderer = new WebGLRenderer();
                     Object.assign(this.currentRenderer.config, this.config);
                     await this.currentRenderer.init({ deferPieceRelease });
-                    
-                    this.updateRendererStatus('WebGL (with true z-index layering)');
-                    
+
                     // Add WebGL mode class to container
                     const container = document.querySelector('.puzzle-container');
                     if (container) {
@@ -241,12 +205,6 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     constructor() {
         super();
         this.webglRenderer = null;
-        this.noise = new Noise();
-    }
-    
-    // Helper to get main puzzle instance for audio
-    getMainPuzzle() {
-        return window.voronoiPuzzle || null;
     }
 
     async init(options = {}) {
@@ -299,7 +257,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         this.touchTracker = new ActiveTouchTracker();
         this.capturedPointerId = null;
 
-        eventCanvas.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        this.addEventListener(eventCanvas, 'keydown', (e) => this.handleKeyDown(e));
 
         if (supportsPointerEvents()) {
             this.setupPointerListeners(eventCanvas);
@@ -313,25 +271,25 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     setupPointerListeners(eventCanvas) {
         const options = { passive: false };
 
-        eventCanvas.addEventListener('pointerdown', (e) => this.handlePointerDown(e), options);
-        eventCanvas.addEventListener('pointermove', (e) => this.handlePointerMove(e), options);
-        eventCanvas.addEventListener('pointerup', (e) => this.handlePointerEnd(e), options);
-        eventCanvas.addEventListener('pointercancel', (e) => this.handlePointerCancel(e), options);
-        eventCanvas.addEventListener('pointerleave', (e) => this.handlePointerLeave(e));
+        this.addEventListener(eventCanvas, 'pointerdown', (e) => this.handlePointerDown(e), options);
+        this.addEventListener(eventCanvas, 'pointermove', (e) => this.handlePointerMove(e), options);
+        this.addEventListener(eventCanvas, 'pointerup', (e) => this.handlePointerEnd(e), options);
+        this.addEventListener(eventCanvas, 'pointercancel', (e) => this.handlePointerCancel(e), options);
+        this.addEventListener(eventCanvas, 'pointerleave', (e) => this.handlePointerLeave(e));
     }
 
     setupMouseAndTouchListeners(eventCanvas) {
         const touchOptions = { passive: false };
 
-        eventCanvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
-        eventCanvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
-        eventCanvas.addEventListener('mouseup', (e) => this.handleMouseUp(e));
-        eventCanvas.addEventListener('mouseleave', (e) => this.handleMouseLeave(e));
+        this.addEventListener(eventCanvas, 'mousedown', (e) => this.handleMouseDown(e));
+        this.addEventListener(eventCanvas, 'mousemove', (e) => this.handleMouseMove(e));
+        this.addEventListener(eventCanvas, 'mouseup', (e) => this.handleMouseUp(e));
+        this.addEventListener(eventCanvas, 'mouseleave', (e) => this.handleMouseLeave(e));
 
-        eventCanvas.addEventListener('touchstart', (e) => this.handleTouchStart(e), touchOptions);
-        eventCanvas.addEventListener('touchmove', (e) => this.handleTouchMove(e), touchOptions);
-        eventCanvas.addEventListener('touchend', (e) => this.handleTouchEnd(e), touchOptions);
-        eventCanvas.addEventListener('touchcancel', (e) => this.handleTouchCancel(e), touchOptions);
+        this.addEventListener(eventCanvas, 'touchstart', (e) => this.handleTouchStart(e), touchOptions);
+        this.addEventListener(eventCanvas, 'touchmove', (e) => this.handleTouchMove(e), touchOptions);
+        this.addEventListener(eventCanvas, 'touchend', (e) => this.handleTouchEnd(e), touchOptions);
+        this.addEventListener(eventCanvas, 'touchcancel', (e) => this.handleTouchCancel(e), touchOptions);
     }
 
     handlePointerDown(e) {
@@ -996,10 +954,14 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     }
 
     dispose() {
+        this.removeAllEventListeners();
+
         if (this.webglRenderer) {
             this.webglRenderer.dispose();
             this.webglRenderer = null;
         }
+
+        super.dispose();
     }
 }
 

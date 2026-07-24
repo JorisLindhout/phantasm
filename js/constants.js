@@ -1,7 +1,7 @@
 /** Shared application constants */
 
-export const SNAP_THRESHOLD = 30;
-export const WEBGL_SNAP_THRESHOLD = 25;
+/** Distance (px) at which a piece snaps into its slot — auto-snap and mouse-up share this. */
+export const SNAP_THRESHOLD = 25;
 export const SOLVE_THRESHOLD = 10;
 export const MAX_CELL_COUNT = 80;
 export const MIN_CELL_COUNT = 5;

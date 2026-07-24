@@ -14,6 +14,7 @@ The project uses a lightweight `js/logger.js` for app logging and console comman
 
 ### 🎯 Available Debug Commands
 Run `showDebugCommands()` in the console to see all available debugging utilities:
+- `autoSnapPiece(pieceIndex)` — Manually snap a piece to its slot
 - `autoRecoverPieces()` — Layout + interaction repair for released loose pieces
 - `debugLostPieces()` — Diagnose released pieces missing a mesh
 - `fixMispositionedPieces()` — Repair separate-piece mesh visibility/position
@@ -166,12 +167,11 @@ js/
 ├── voronoi-coordinates.js
 ├── three-config.js       # Three.js renderer setup
 ├── polygon-geometry.js
-├── animated-path.js      # Path noise helpers + level config resolution
 ├── voronoi-topology-morph.js # Shared corner birth/death across the tiling
 ├── accessibility.js      # Screen reader + reduced motion helpers
 ├── constants.js          # Snap/solve thresholds
-├── utils.js              # Voronoi diagram utilities
-├── noise.js              # Perlin noise implementation
+├── utils.js              # pointInPolygon helper
+├── logger.js             # App error/warn logger
 └── debug-utils.js        # Debug utilities (dev only)
 ```
 
@@ -190,13 +190,7 @@ js/
 - **Object-Based Architecture**: Eliminates array synchronization issues
 
 ### 🎯 Coordinate System
-The application uses **WebGL coordinates** as the global standard throughout the system:
-- **Internal Calculations**: All piece positions, offsets, and transformations use WebGL coordinates (Y=0 at bottom, Y=height at top)
-- **Mouse Input**: Converted from screen coordinates to WebGL coordinates at input boundary
-- **Display Output**: Converted from WebGL coordinates to screen coordinates for display
-- **UV Mapping**: Correctly flipped for WebGL texture coordinates
-- **Camera Setup**: Orthographic camera configured for WebGL coordinate space
-- **Position Manager**: Centralized coordinate conversion and position calculations
+Pointer input is scaled from CSS pixels to the canvas's internal resolution. Puzzle logic and meshes share the same screen-space axes (Y increases downward) — no Y-flip between mouse and seed coordinates.
 
 ## File Structure
 
@@ -219,10 +213,10 @@ phantasm/
 │       ├── Level-2.svg           # Level 2 background (450×450)
 │       ├── Level-3.svg           # Level 3 background (450×450)
 │       ├── Level-4.svg           # Level 4 background (450×450)
-│       ├── Phantasm.svg          # Legacy theme asset
-│       └── sounds/               # Audio assets (snap sound not wired up yet)
-│           ├── snap.webm         # Placeholder
-│           └── snap.mp3          # Placeholder
+│       ├── Phantasm.svg          # Controls-drawer / console theme asset
+│       └── sounds/               # Future snap audio (placeholders; not wired)
+│           ├── snap.webm
+│           └── snap.mp3
 ├── .env.example                  # Documented environment variables
 ├── .env.development              # Local dev env (VITE_DEV_PANEL=true)
 ├── css/
@@ -251,7 +245,7 @@ Ghost slot outlines show where pieces belong. Loose pieces show a default outlin
 Access by clicking the caret at the bottom of the screen:
 
 - **Level**: Jump between levels (all levels selectable in dev; locked levels disabled in production builds with panel enabled)
-- **Cell Count**: Number of Voronoi pieces (5–60)
+- **Cell Count**: Number of Voronoi pieces (5–80)
 - **Animation Speed**: Boundary animation speed (0.1–2.0×)
 - **Noise Amplitude**: Boundary deformation intensity (0–50)
 - **Morph Interval (ms)**: Time between corner births/deaths (500–8000; shorter = harder)
@@ -260,8 +254,8 @@ Access by clicking the caret at the bottom of the screen:
 
 ### 🎨 Theme Development (Console Commands)
 ```javascript
-// Switch to available theme
-themeManager.setTheme('phantasm')   // Default cyan/green theme
+// Switch theme (levels normally own themes; console override for development)
+themeManager.setTheme('levelOne')   // Or levelTwo / levelThree / levelFour / phantasm
 
 // Theme information
 themeManager.getAvailableThemes()    // List all available themes
@@ -303,7 +297,7 @@ fixMispositionedPieces()     // Repair separate-piece meshes
 testInteractionSystem()       // Run diagnostic tests
 
 // Theme system
-themeManager.setTheme('phantasm')
+themeManager.setTheme('levelOne')
 themeManager.getCurrentTheme()
 ```
 
@@ -388,11 +382,10 @@ Run `showDebugCommands()` in the console to see all available tools, including:
 ### 📦 Core Libraries
 - **d3-delaunay** `^5.3.0`: Efficient Voronoi diagram generation
 - **Three.js** `^0.185`: WebGL 3D graphics library
-- **Custom Perlin Noise**: Smooth boundary animation implementation
 
 ### 🌐 Browser APIs
 - **WebGL**: Hardware-accelerated 3D graphics
-- **HTML5 Audio**: Snap playback hook in `playSnapSound()` (sound not finalized or wired to the `<audio>` element yet)
+- **HTML5 Audio**: `playSnapSound()` hook ready; enable by adding `#snapSound` with a source (placeholders under `public/assets/sounds/`)
 - **Local Storage**: Unlock progress (`phantasm-unlocked-levels`); level preference on manual switch (`phantasm-level`)
 - **Modern JavaScript**: ES modules (Vite bundle)
 
@@ -425,7 +418,7 @@ Only snap / player placement marks a piece solved — recovery never auto-comple
 
 
 ### Audio
-- **Snap sound** — find or engineer the right sound for piece snapping, then wire it into the existing `playSnapSound()` hook
+- **Snap sound** — pick/engineer the snap sound, uncomment `#snapSound` in `index.html` with `<source>` tags pointing at `assets/sounds/`, and `playSnapSound()` will start playing
 - Pickup/hover sounds, volume controls, and puzzle-complete fanfare (later)
 
 ### UX & polish

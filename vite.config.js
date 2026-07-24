@@ -31,15 +31,5 @@ export default defineConfig({
   // CSS configuration
   css: {
     devSourcemap: true
-  },
-  
-  // Asset handling
-  assetsInclude: [
-    '**/*.glb',
-    '**/*.gltf', 
-    '**/*.obj',
-    '**/*.mtl',
-    '**/*.fbx',
-    '**/*.dae'
-  ]
+  }
 })

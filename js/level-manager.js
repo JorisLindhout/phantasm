@@ -5,7 +5,7 @@
  * This ensures clean state and avoids coordinate system conflicts.
  */
 
-import { resolveLevelConfig } from './animated-path.js';
+import { resolveLevelConfig } from './levels.config.js';
 import {
     LEVEL_MANIFEST,
     getNextLevelId,

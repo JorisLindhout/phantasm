@@ -27,9 +27,3 @@ canvas.webgl-canvas {
 canvas.webgl-canvas:active {
     cursor: grabbing;
 }
-
-/* WebGL loading state */
-.puzzle-container.webgl-mode .loading {
-    /* WebGL specific loading styles if needed */
-    z-index: 15; /* Above WebGL canvas */
-}

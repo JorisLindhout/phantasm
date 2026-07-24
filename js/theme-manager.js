@@ -109,20 +109,9 @@ class ThemeManager {
         root.style.setProperty('--controls-piece-hover', phantasmTheme.colors.pieceHover.css);
         root.style.setProperty('--controls-piece-border-hover', ThemeUtils.getColorWithAlpha(phantasmTheme.colors.pieceHover, 0.6));
 
-        // Piece colors
-        root.style.setProperty('--piece-border', ThemeUtils.getColorWithAlpha(colors.pieceNormal, 0.3));
-        root.style.setProperty('--piece-border-hover', ThemeUtils.getColorWithAlpha(colors.pieceHover, 0.6));
-        root.style.setProperty('--piece-shadow-hover', `0 0 10px ${ThemeUtils.getColorWithAlpha(colors.pieceHover, 0.3)}`);
-        root.style.setProperty('--piece-shadow-drag', `0 10px 30px ${ThemeUtils.getColorWithAlpha(colors.pieceDragging, 0.5)}`);
-        
-        // Cell border colors
+        // Cell border (dev panel / controls)
         root.style.setProperty('--cell-border', ThemeUtils.getColorWithAlpha(colors.pieceNormal, 0.2));
-        root.style.setProperty('--cell-border-animated', ThemeUtils.getColorWithAlpha(colors.pieceHover, 0.4));
 
-        // Snap colors
-        root.style.setProperty('--snap-highlight-bg', ThemeUtils.getColorWithAlpha(colors.pieceSnapped, 0.3));
-        root.style.setProperty('--snap-highlight-border', colors.pieceSnapped.css);
-        
         // Solved state colors
         root.style.setProperty('--solved-color', colors.solved.css);
         root.style.setProperty('--solved-glow', colors.solvedGlow.rgba);
@@ -146,12 +135,10 @@ class ThemeManager {
 
         // Effects
         root.style.setProperty('--transition-speed', `${effects.animationSpeed}s`);
-        
+
         // Border radius (consistent across all themes)
         root.style.setProperty('--border-radius', '12px');
         root.style.setProperty('--border-radius-small', '4px');
-        root.style.setProperty('--pulse-duration', `${effects.pulseSpeed}s`);
-
     }
 
     /**
@@ -201,39 +188,11 @@ class ThemeManager {
      */
 
     /**
-     * Save theme preference to localStorage
-     */
-    saveThemePreference(themeName) {
-        try {
-            localStorage.setItem('phantasm-theme', themeName);
-        } catch (error) {
-            log.warn('Could not save theme preference:', error);
-        }
-    }
-
-    /**
-     * Load theme preference from localStorage
-     */
-    loadThemePreference() {
-        try {
-            const saved = localStorage.getItem('phantasm-theme');
-            if (saved && THEMES[saved]) {
-                this.applyTheme(saved);
-                return saved;
-            }
-        } catch (error) {
-            log.warn('Could not load theme preference:', error);
-        }
-        return this.currentTheme.name;
-    }
-
-    /**
-     * Apply theme and save preference
+     * Apply theme by name (console / level switching).
+     * Themes are driven by levels; no separate theme preference is persisted.
      */
     setTheme(themeName) {
-        if (this.applyTheme(themeName)) {
-            this.saveThemePreference(themeName);
-        }
+        this.applyTheme(themeName);
     }
 }
 

@@ -20,7 +20,7 @@
  *    Do not derive offset from pointer minus dragOffset using seed math. Track
  *    dragPointerStart + dragOffsetStart and apply computePieceOffsetFromDragDelta().
  *
- * 5. positionManager.getMeshPosition() IS NOT FOR SEPARATE MESHES
+ * 5. positionManager.getPiecePosition() IS NOT FOR SEPARATE MESHES
  *    It returns originalPoint + offset (correct for slot/snap logic only). Never use it
  *    to set separate-piece mesh.position or hit-detection repositioning.
  *

@@ -4,8 +4,7 @@
  */
 
 import * as THREE from 'three';
-import { SNAP_THRESHOLD, WEBGL_SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS, OUTLINE_OPACITY, SNAP_GLOW_DURATION_MS } from './constants.js';
-import { createAnimatedPolygon } from './animated-path.js';
+import { SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS, OUTLINE_OPACITY, SNAP_GLOW_DURATION_MS } from './constants.js';
 import { PuzzleTopologyMorph } from './voronoi-topology-morph.js';
 import { buildSeparatePieceGeometry } from './separate-piece-geometry.js';
 import { getSeparatePieceMeshPosition } from './drag-offset.js';
@@ -549,7 +548,7 @@ class WebGLVoronoiRenderer {
         const distance = Math.sqrt(offset.x * offset.x + offset.y * offset.y);
         
         // NEW: Auto-snap when piece gets close to its slot
-        if (distance <= WEBGL_SNAP_THRESHOLD && this.pieces[index].state === 'unsolved') {
+        if (distance <= SNAP_THRESHOLD && this.pieces[index].state === 'unsolved') {
             // Piece is close to its slot - trigger auto-snap
             // Add a small delay to prevent rapid cycling
             if (!this.pieces[index].autoSnapTimeout) {
@@ -562,7 +561,7 @@ class WebGLVoronoiRenderer {
         }
         
         // If piece has significant offset, create separate mesh
-        if (distance > WEBGL_SNAP_THRESHOLD) { // Increased threshold to prevent rapid cycling
+        if (distance > SNAP_THRESHOLD) { // Increased threshold to prevent rapid cycling
             // Piece is being moved out - update states (ARRAY SYSTEM)
             
             // NEW: Update object system
@@ -1735,12 +1734,6 @@ class WebGLVoronoiRenderer {
         }
         return this.voronoiPolygons[index];
     }
-
-    // Legacy helper: prefer getDisplayPolygon(index) when the cell index is known.
-    createAnimatedPath(originalPolygon, time, amplitude = null) {
-        const noiseAmplitude = amplitude !== null ? amplitude : this.config.noiseAmplitude;
-        return createAnimatedPolygon(originalPolygon, time, noiseAmplitude);
-    }
     
     // Update connected mesh geometry with animated boundaries
     updateConnectedMeshGeometry(time) {
@@ -1828,17 +1821,13 @@ class WebGLVoronoiRenderer {
     }
     
     dispose() {
-        // Clean up resources
-        
-        // Clean up connected mesh
         if (this.connectedMesh) {
             this.scene.remove(this.connectedMesh);
             this.connectedMesh.geometry.dispose();
             this.connectedMesh.material.dispose();
             this.connectedMesh = null;
         }
-        
-        // Clean up connected outline
+
         if (this.connectedOutline) {
             this.scene.remove(this.connectedOutline);
             this.connectedOutline.geometry.dispose();
@@ -1847,49 +1836,66 @@ class WebGLVoronoiRenderer {
         }
 
         this.disposeSlotGhostOutlines();
-        
-        // Clean up separate pieces using object system
-        this.pieces.forEach(piece => {
-            if (piece.mesh) {
-                this.scene.remove(piece.mesh);
-                piece.mesh.geometry.dispose();
-                piece.mesh.material.dispose();
-                piece.mesh = null;
-            }
-        });
-        
-        // Clean up separate outlines using object system
-        this.pieces.forEach(piece => {
-            if (piece.outline) {
-                this.scene.remove(piece.outline);
-                piece.outline.geometry.dispose();
-                piece.outline.material.dispose();
-                piece.outline = null;
-            }
-        });
-        
-        // Clean up separate glow outlines
-        this.separateGlowOutlines.forEach(glowLayers => {
-            if (glowLayers) {
-                this.removeNeonGlowOutline(glowLayers);
-            }
-        });
-        this.separateGlowOutlines = [];
 
-        this.clearAllSnapGlows();
-        
+        if (this.pieces) {
+            this.pieces.forEach(piece => {
+                if (piece.mesh) {
+                    this.scene.remove(piece.mesh);
+                    piece.mesh.geometry.dispose();
+                    piece.mesh.material.dispose();
+                    piece.mesh = null;
+                }
+                if (piece.outline) {
+                    this.scene.remove(piece.outline);
+                    piece.outline.geometry.dispose();
+                    piece.outline.material.dispose();
+                    piece.outline = null;
+                }
+            });
+            this.pieces = null;
+        }
+
+        if (this.separateGlowOutlines) {
+            this.separateGlowOutlines.forEach(glowLayers => {
+                if (glowLayers) {
+                    this.removeNeonGlowOutline(glowLayers);
+                }
+            });
+            this.separateGlowOutlines = null;
+        }
+
+        if (typeof this.clearAllSnapGlows === 'function') {
+            this.clearAllSnapGlows();
+        }
+
         if (this.backgroundTexture) {
             this.backgroundTexture.dispose();
+            this.backgroundTexture = null;
         }
-        
+
+        if (this.scene) {
+            this.scene.clear();
+            this.scene = null;
+        }
+
+        this.camera = null;
+
         if (this.renderer) {
             this.renderer.dispose();
+            this.renderer = null;
         }
-        
-        // Remove the WebGL canvas from DOM
+
         if (this.canvas && this.canvas.parentNode) {
             this.canvas.parentNode.removeChild(this.canvas);
+            this.canvas = null;
         }
+
+        this.voronoiPolygons = null;
+        this.displayPolygons = null;
+        this.pieceZIndices = null;
+        this.topologyMorph = null;
+        this.positionManager = null;
+        this.slots = null;
     }
     
     // Toggle grid outline visibility
@@ -2360,90 +2366,3 @@ class WebGLVoronoiRenderer {
 window.WebGLVoronoiRenderer = WebGLVoronoiRenderer;
 window.isWebGLSupported = isWebGLSupported;
 export { WebGLVoronoiRenderer, isWebGLSupported };
-
-// Enhanced dispose method for proper cleanup
-WebGLVoronoiRenderer.prototype.dispose = function() {
-    // Clean up connected mesh
-    if (this.connectedMesh) {
-        this.scene.remove(this.connectedMesh);
-        this.connectedMesh.geometry.dispose();
-        this.connectedMesh.material.dispose();
-        this.connectedMesh = null;
-    }
-    
-    // Clean up connected outline
-    if (this.connectedOutline) {
-        this.scene.remove(this.connectedOutline);
-        this.connectedOutline.geometry.dispose();
-        this.connectedOutline.material.dispose();
-        this.connectedOutline = null;
-    }
-    
-    // Clean up separate pieces
-    if (this.pieces) {
-        this.pieces.forEach(piece => {
-            if (piece.mesh) {
-                this.scene.remove(piece.mesh);
-                piece.mesh.geometry.dispose();
-                piece.mesh.material.dispose();
-                piece.mesh = null;
-            }
-            if (piece.outline) {
-                this.scene.remove(piece.outline);
-                piece.outline.geometry.dispose();
-                piece.outline.material.dispose();
-                piece.outline = null;
-            }
-        });
-        this.pieces = null;
-    }
-    
-    // Clean up glow outlines
-    if (this.separateGlowOutlines && Array.isArray(this.separateGlowOutlines)) {
-        this.separateGlowOutlines.forEach(glow => {
-            if (glow) {
-                this.scene.remove(glow);
-                if (glow.geometry) glow.geometry.dispose();
-                if (glow.material) glow.material.dispose();
-            }
-        });
-        this.separateGlowOutlines = null;
-    }
-
-    if (typeof this.clearAllSnapGlows === 'function') {
-        this.clearAllSnapGlows();
-    }
-    
-    // Clean up background texture
-    if (this.backgroundTexture) {
-        this.backgroundTexture.dispose();
-        this.backgroundTexture = null;
-    }
-    
-    // Clean up Three.js objects
-    if (this.scene) {
-        this.scene.clear();
-        this.scene = null;
-    }
-    
-    if (this.camera) {
-        this.camera = null;
-    }
-    
-    if (this.renderer) {
-        this.renderer.dispose();
-        this.renderer = null;
-    }
-    
-    // Remove the WebGL canvas from DOM
-    if (this.canvas && this.canvas.parentNode) {
-        this.canvas.parentNode.removeChild(this.canvas);
-        this.canvas = null;
-    }
-    
-    // Nullify other references
-    this.voronoiPolygons = null;
-    this.pieceZIndices = null;
-};
-
-// Note: stopAnimation not needed - complete disposal handles animation cleanup

@@ -2,12 +2,12 @@
  * Unsolved puzzle layout — batch sizing and collision-aware piece scatter.
  */
 
-import { WEBGL_SNAP_THRESHOLD } from './constants.js';
+import { SNAP_THRESHOLD } from './constants.js';
 import { polygonCenter } from './polygon-geometry.js';
 import { STAGE_GLOW_PADDING } from './stage-constants.js';
 
 /** Minimum offset magnitude so pieces stay outside auto-snap range. */
-export const SCATTER_MIN_DISTANCE = WEBGL_SNAP_THRESHOLD + 35;
+export const SCATTER_MIN_DISTANCE = SNAP_THRESHOLD + 35;
 
 /** Minimum center-to-center distance between scattered pieces. */
 export const SCATTER_MIN_SEPARATION = 40;

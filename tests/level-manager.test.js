@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { resolveLevelConfig } from '../js/animated-path.js';
+import { resolveLevelConfig } from '../js/levels.config.js';
 import { LevelManager } from '../js/level-manager.js';
 
 /**

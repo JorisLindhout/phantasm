@@ -1,7 +1,7 @@
 {
   "name": "phantasm",
   "version": "1.0.0",
-  "description": "A web-based puzzle prototype featuring animated Voronoi cells with Perlin noise boundaries.",
+  "description": "A web-based Voronoi puzzle with WebGL rendering, topology morph animation, and level progression.",
   "main": "index.html",
   "type": "module",
   "scripts": {

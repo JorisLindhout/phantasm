@@ -18,11 +18,8 @@ const log = createLogger('app');
 
 configureLegacyColorPipeline();
 
-import './noise.js';
 import './utils.js';
 import './base.js';
-import './coordinate-utils.js';
-import './position-manager.js';
 import './responsive-canvas.js';
 import './webgl-renderer.js';
 import { VoronoiPuzzle } from './main.js';

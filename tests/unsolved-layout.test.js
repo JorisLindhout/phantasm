@@ -9,7 +9,7 @@ import {
     SCATTER_MIN_DISTANCE,
     shuffleIndices,
 } from '../js/unsolved-layout.js';
-import { WEBGL_SNAP_THRESHOLD } from '../js/constants.js';
+import { SNAP_THRESHOLD } from '../js/constants.js';
 import { offsetDistance } from '../js/drag-offset.js';
 import { PieceReleaseManager } from '../js/piece-release-manager.js';
 
@@ -53,7 +53,7 @@ describe('scatterPiece', () => {
             stageSize: { width: 450, height: 450 },
         });
 
-        expect(offsetDistance(offset)).toBeGreaterThan(WEBGL_SNAP_THRESHOLD);
+        expect(offsetDistance(offset)).toBeGreaterThan(SNAP_THRESHOLD);
     });
 
     it('avoids overlapping existing placements when possible', () => {

@@ -2,47 +2,17 @@
 
 /* Configuration Variables - Managed by Theme System */
 :root {
-    /* Core Colors - Updated by ThemeManager */
-    /* --primary-color: #00DDFF; */
-    
-    /* UI Colors */
+    /* UI Colors — theme-manager overrides dynamic values */
     --background-color: #111111;
-    /* --canvas-background: #1a1a1a; */
-    /* --text-color: #ffffff; */
-    /* --text-muted: #888888; */
-    
-    /* Control colors (consistent across all themes) */
-    /* --control-hover: #00B8E6; */
-    /* --control-bg: rgba(17, 17, 17, 0.95); */
-    
-    /* Piece Colors - Dynamic */
-    /* --piece-border: rgba(0, 221, 255, 0.3); */
-    /* --piece-border-hover: rgba(0, 221, 255, 0.6); */
-    /* --piece-shadow-hover: 0 0 10px rgba(0, 221, 255, 0.3); */
-    /* --piece-shadow-drag: 0 10px 30px rgba(0, 221, 255, 0.5); */
-    
-    /* Snap Colors */
-    /* --snap-highlight-bg: rgba(0, 255, 100, 0.3); */
-    /* --snap-highlight-border: #00FF64; */
-    
-    /* Cell Colors (Legacy - kept for compatibility) */
-    /*--cell-border: var(--piece-border);
-    --cell-border-animated: var(--piece-border-hover);*/
-    
+
     /* Sizing */
     --border-radius: 12px;
     --border-radius-small: 4px;
     --gap: 20px;
     --gap-small: 2px;
-    
-    /* Animations - Managed by Theme System */
+
+    /* Animations — Managed by Theme System */
     --transition-speed: 0.2s;
-    --pulse-duration: 1s;
-    
-    /* Effects */
-    --glow-intensity: 0.8;
-    --scale-hover: 1.02;
-    --scale-dragging: 1.1;
 
     /* Space around the puzzle stage for solved-state glow (matches STAGE_GLOW_PADDING) */
     --stage-glow-padding: 48px;
@@ -91,16 +61,6 @@ body {
     padding-bottom: max(10px, env(safe-area-inset-bottom));
 }
 
-h1 {
-    text-align: center;
-    margin: 0 0 10px 0;
-    color: #00DDFF; /* Fallback */
-    color: var(--primary-color); /* Theme override */
-    font-size: 1.8rem;
-    font-weight: 300;
-    flex-shrink: 0;
-}
-
 /* Puzzle Container — transparent wrapper; stage holds the puzzle */
 .puzzle-container {
     position: relative;
@@ -145,27 +105,6 @@ h1 {
     100% {
         box-shadow: 0 0 40px var(--solved-glow);
     }
-}
-
-/* Info Text */
-.info {
-    text-align: center;
-    color: #888888; /* Fallback */
-    color: var(--text-muted); /* Theme override */
-    font-size: 0.8rem;
-    flex-shrink: 0;
-    margin: 5px 0;
-}
-
-/* Loading State */
-.loading {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #00DDFF; /* Fallback */
-    color: var(--primary-color); /* Theme override */
-    font-size: 1.1rem;
 }
 
 /* Loading Overlay */

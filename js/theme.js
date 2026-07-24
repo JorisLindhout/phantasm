@@ -10,7 +10,6 @@ const COLORS = {
     fluidBlue: { hex: 0x00DDFF, css: '#00DDFF', rgba: 'rgba(0, 221, 255, 1)' },
     fluidGreen: { hex: 0x00FF64, css: '#00FF64', rgba: 'rgba(0, 255, 100, 1)' },
     fluidOrange: { hex: 0xFF6600, css: '#FF6600', rgba: 'rgba(255, 102, 0, 1)' },
-    fluidRed: { hex: 0xFF4444, css: '#FF4444', rgba: 'rgba(255, 68, 68, 1)' },
     
     
     // Tinted variations for effects
@@ -123,15 +122,8 @@ export const THEMES = {
             solvedGlow: COLORS.solvedGlow
         },
         effects: {
-            glowIntensity: 0.8,
             animationSpeed: 0.2,
-            pulseSpeed: 1.0,
-            scaleHover: 1.02,
-            scaleDragging: 1.1,
-            opacityNormal: 1.0,
-            opacityHover: 0.8,
             opacityDragging: 0.9,
-            opacitySnapped: 1.0
         },
         levelGradient: {
             gradientStart: COLORS.fluidBlue,
@@ -167,15 +159,8 @@ export const THEMES = {
             solvedGlow: LEVEL1_COLORS.forestGreen
         },
         effects: {
-            glowIntensity: 0.8,
             animationSpeed: 0.2,
-            pulseSpeed: 1.0,
-            scaleHover: 1.02,
-            scaleDragging: 1.1,
-            opacityNormal: 1.0,
-            opacityHover: 0.8,
             opacityDragging: 0.9,
-            opacitySnapped: 1.0
         },
         levelGradient: {
             gradientStart: LEVEL1_COLORS.keppel,
@@ -213,15 +198,8 @@ export const THEMES = {
             solvedGlow: LEVEL2_COLORS.cornflowerBlue
         },
         effects: {
-            glowIntensity: 0.8,
             animationSpeed: 0.2,
-            pulseSpeed: 1.0,
-            scaleHover: 1.02,
-            scaleDragging: 1.1,
-            opacityNormal: 1.0,
-            opacityHover: 0.8,
             opacityDragging: 0.9,
-            opacitySnapped: 1.0
         },
         levelGradient: {
             gradientStart: LEVEL2_COLORS.cornflowerBlue,
@@ -259,15 +237,8 @@ export const THEMES = {
             solvedGlow: LEVEL3_COLORS.rossoCorsa,
         },
         effects: {
-            glowIntensity: 0.8,
             animationSpeed: 0.2,
-            pulseSpeed: 1.0,
-            scaleHover: 1.02,
-            scaleDragging: 1.1,
-            opacityNormal: 1.0,
-            opacityHover: 0.8,
             opacityDragging: 0.9,
-            opacitySnapped: 1.0
         },
         levelGradient: {
             gradientStart: LEVEL3_COLORS.rossoCorsa,
@@ -305,15 +276,8 @@ export const THEMES = {
             solvedGlow: LEVEL4_COLORS.kellyGreen,
         },
         effects: {
-            glowIntensity: 0.8,
             animationSpeed: 0.2,
-            pulseSpeed: 1.0,
-            scaleHover: 1.02,
-            scaleDragging: 1.1,
-            opacityNormal: 1.0,
-            opacityHover: 0.8,
             opacityDragging: 0.9,
-            opacitySnapped: 1.0
         },
         levelGradient: {
             gradientStart: LEVEL4_COLORS.kellyGreen,
@@ -332,15 +296,6 @@ export const UNSOLVED_STAGE_GLOW = COLORS.fluidOrange;
 /** Alpha for the unsolved stage halo on #111 background. */
 export const UNSOLVED_STAGE_GLOW_ALPHA = 0.45;
 
-// Visual state definitions
-export const VISUAL_STATES = {
-    NORMAL: 'normal',
-    HOVER: 'hover',
-    DRAGGING: 'dragging',
-    SNAPPED: 'snapped',
-    DISABLED: 'disabled'
-};
-
 // Utility functions
 export const ThemeUtils = {
     /**
@@ -351,13 +306,6 @@ export const ThemeUtils = {
         const g = (colorConfig.hex >> 8) & 0xFF;
         const b = colorConfig.hex & 0xFF;
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    },
-    
-    /**
-     * Convert hex to Three.js Color
-     */
-    hexToThreeColor(hex) {
-        return new THREE.Color(hex);
     },
     
     /**
