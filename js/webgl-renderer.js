@@ -12,7 +12,7 @@ import { ensureUnsolvedPieceBackground } from './piece-material.js';
 import { configureRendererColors, configureTextureColors } from './three-config.js';
 import { LEVEL_HEIGHT, LEVEL_WIDTH } from './stage-constants.js';
 import { SLOT_GHOST_OPACITY, LOOSE_PIECE_Z_BASE, isPolygonWithinStage, scatterPiece, polygonRadius } from './unsolved-layout.js';
-import { polygonCenter } from './polygon-geometry.js';
+import { buildBoundaryVertices, polygonCenter, updateBoundaryVertices } from './polygon-geometry.js';
 import { createLogger } from './logger.js';
 import { PositionManager } from './position-manager.js';
 
@@ -1173,17 +1173,14 @@ class WebGLVoronoiRenderer {
                 continue;
             }
 
-            const shape = new THREE.Shape();
-            polygon.forEach(([x, y], vertexIndex) => {
-                if (vertexIndex === 0) {
-                    shape.moveTo(x, y);
-                } else {
-                    shape.lineTo(x, y);
-                }
-            });
-            shape.closePath();
+            // Use updateable line-segment geometry (same as piece outlines) so
+            // ghost slots can morph with createAnimatedPath each frame.
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute(
+                'position',
+                new THREE.Float32BufferAttribute(buildBoundaryVertices(polygon), 3)
+            );
 
-            const geometry = new THREE.EdgesGeometry(new THREE.ShapeGeometry(shape), 1);
             const material = new THREE.LineBasicMaterial({
                 color: this.getThemeColor('slotOutline'),
                 transparent: true,
@@ -1206,6 +1203,26 @@ class WebGLVoronoiRenderer {
             if (outline) {
                 outline.visible = this.slots[i].state === 'empty';
             }
+        }
+    }
+
+    /**
+     * Morph empty-slot ghost outlines with the same animated polygon as pieces,
+     * so the grid always matches piece shapes.
+     */
+    updateSlotGhostOutlineGeometries(time) {
+        if (!this.slotGhostOutlines?.length) return;
+
+        for (let i = 0; i < this.slotGhostOutlines.length; i++) {
+            const outline = this.slotGhostOutlines[i];
+            if (!outline?.visible) continue;
+
+            const polygon = this.voronoiPolygons[i];
+            if (!polygon || polygon.length < 3) continue;
+
+            const positions = outline.geometry.attributes.position.array;
+            updateBoundaryVertices(positions, this.createAnimatedPath(polygon, time));
+            outline.geometry.attributes.position.needsUpdate = true;
         }
     }
 
@@ -1541,6 +1558,9 @@ class WebGLVoronoiRenderer {
         if (this.slotHoverOverlay && this.hoveredSlotIndex !== undefined) {
             this.updateSlotHoverOverlayGeometry(this.hoveredSlotIndex, time);
         }
+
+        // Keep empty-slot grid outlines in sync with animated piece shapes
+        this.updateSlotGhostOutlineGeometries(time);
     }
     
     // Create animated path using noise (similar to 2D version)
