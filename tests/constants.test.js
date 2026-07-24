@@ -5,6 +5,7 @@ import {
     MAX_CELL_COUNT,
     GLOW_LAYER_CONFIGS,
     WEBGL_SNAP_THRESHOLD,
+    SNAP_GLOW_DURATION_MS,
 } from '../js/constants.js';
 
 describe('constants', () => {
@@ -24,5 +25,10 @@ describe('constants', () => {
     it('keeps the original webgl snap threshold separate from base snap threshold', () => {
         expect(WEBGL_SNAP_THRESHOLD).toBe(25);
         expect(SNAP_THRESHOLD).toBe(30);
+    });
+
+    it('keeps snap glow flash short and noticeable', () => {
+        expect(SNAP_GLOW_DURATION_MS).toBeGreaterThanOrEqual(250);
+        expect(SNAP_GLOW_DURATION_MS).toBeLessThanOrEqual(600);
     });
 });

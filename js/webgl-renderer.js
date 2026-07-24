@@ -4,7 +4,7 @@
  */
 
 import * as THREE from 'three';
-import { SNAP_THRESHOLD, WEBGL_SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS, OUTLINE_OPACITY } from './constants.js';
+import { SNAP_THRESHOLD, WEBGL_SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS, OUTLINE_OPACITY, SNAP_GLOW_DURATION_MS } from './constants.js';
 import { createAnimatedPolygon } from './animated-path.js';
 import { buildSeparatePieceGeometry } from './separate-piece-geometry.js';
 import { getSeparatePieceMeshPosition } from './drag-offset.js';
@@ -15,6 +15,7 @@ import { SLOT_GHOST_OPACITY, LOOSE_PIECE_Z_BASE, isPolygonWithinStage, scatterPi
 import { buildBoundaryVertices, polygonCenter, updateBoundaryVertices } from './polygon-geometry.js';
 import { createLogger } from './logger.js';
 import { PositionManager } from './position-manager.js';
+import { snapGlowLayerHex, snapGlowFadeFactor } from './snap-glow.js';
 
 const log = createLogger('webgl');
 
@@ -75,6 +76,9 @@ class WebGLVoronoiRenderer {
         // Track dragging state for glow timing
         this.isDragging = false;
         this.draggedPieceIndex = -1;
+
+        // Transient snap-in-place edge glows (independent of piece drag glow)
+        this.activeSnapGlows = [];
         
         // Theme system
         this.currentTheme = null; // Will be set by theme manager
@@ -637,13 +641,133 @@ class WebGLVoronoiRenderer {
         this.updateConnectedMeshVisibility();
     }
 
+    /**
+     * Level gradient hex stops for snap glow (falls back to snapped outline colors).
+     * @returns {{ start: number, end: number }}
+     */
+    getLevelGradientHexes() {
+        const gradient = this.currentTheme?.levelGradient;
+        if (gradient?.gradientStart?.hex != null && gradient?.gradientEnd?.hex != null) {
+            return {
+                start: gradient.gradientStart.hex,
+                end: gradient.gradientEnd.hex,
+            };
+        }
+        return {
+            start: this.getThemeColor('outlineSnapped'),
+            end: this.getThemeColor('pieceSnapped'),
+        };
+    }
+
+    /**
+     * Brief level-gradient edge glow on the grid cell (animated slot shape), then fade out.
+     * Lives independently of the separate-piece drag glow so reconnect can run immediately.
+     * @param {number} pieceIndex
+     */
+    playSnapGlowFlash(pieceIndex) {
+        const polygon = this.voronoiPolygons[pieceIndex];
+        if (!polygon || polygon.length < 3 || !this.scene) {
+            return;
+        }
+
+        const { start, end } = this.getLevelGradientHexes();
+        const layerCount = GLOW_LAYER_CONFIGS.length;
+        const homePosition = getSeparatePieceMeshPosition({ x: 0, y: 0 });
+        const position = new THREE.Vector3(homePosition.x, homePosition.y, this.getLoosePieceZ(0));
+
+        // Match the connected grid cell at this frame — not the loose piece's last shape.
+        const gridPolygon = this.createAnimatedPath(polygon, this.animationTime);
+
+        const glowLayers = this.createNeonGlowOutlineForPolygon(
+            gridPolygon,
+            position,
+            true,
+            (layerIndex) => snapGlowLayerHex(start, end, layerIndex, layerCount),
+        );
+
+        const baseOpacities = glowLayers.map((layer, i) => (
+            layer?.material?.opacity ?? GLOW_LAYER_CONFIGS[i]?.opacity ?? 0
+        ));
+
+        this.activeSnapGlows.push({
+            pieceIndex,
+            layers: glowLayers,
+            baseOpacities,
+            startTime: performance.now(),
+        });
+    }
+
+    /**
+     * Keep snap flashes locked to the morphing grid cell and fade them out.
+     * @param {number} time
+     */
+    updateActiveSnapGlows(time) {
+        if (!this.activeSnapGlows?.length) return;
+
+        const now = performance.now();
+        const homePosition = getSeparatePieceMeshPosition({ x: 0, y: 0 });
+        const position = {
+            x: homePosition.x,
+            y: homePosition.y,
+            z: this.getLoosePieceZ(0),
+        };
+
+        for (const entry of [...this.activeSnapGlows]) {
+            const elapsed = now - entry.startTime;
+            if (elapsed >= SNAP_GLOW_DURATION_MS) {
+                this.clearSnapGlowEntry(entry);
+                continue;
+            }
+
+            const originalPolygon = this.voronoiPolygons[entry.pieceIndex];
+            if (originalPolygon?.length >= 3 && entry.layers) {
+                const gridPolygon = this.createAnimatedPath(originalPolygon, time);
+                this.updateNeonGlowOutlineForPolygon(entry.layers, gridPolygon, position);
+            }
+
+            const fade = snapGlowFadeFactor(elapsed, SNAP_GLOW_DURATION_MS);
+            entry.layers?.forEach((layer, i) => {
+                if (layer?.material) {
+                    layer.material.opacity = entry.baseOpacities[i] * fade;
+                }
+            });
+        }
+    }
+
+    /**
+     * @param {{ layers: object[] | null, pieceIndex?: number }} entry
+     */
+    clearSnapGlowEntry(entry) {
+        if (!entry) return;
+
+        this.removeNeonGlowOutline(entry.layers);
+        entry.layers = null;
+
+        const idx = this.activeSnapGlows.indexOf(entry);
+        if (idx >= 0) {
+            this.activeSnapGlows.splice(idx, 1);
+        }
+    }
+
+    clearAllSnapGlows() {
+        if (!this.activeSnapGlows?.length) {
+            this.activeSnapGlows = [];
+            return;
+        }
+        const entries = [...this.activeSnapGlows];
+        entries.forEach((entry) => this.clearSnapGlowEntry(entry));
+        this.activeSnapGlows = [];
+    }
+
     // Auto-snap a piece to its slot
     autoSnapPieceToSlot(pieceIndex) {
         if (window.voronoiPuzzle && window.voronoiPuzzle.playSnapSound) {
             window.voronoiPuzzle.playSnapSound();
         }
 
+        this.playSnapGlowFlash(pieceIndex);
         this.resetPieceToConnected(pieceIndex);
+        this.checkSolvedState();
     }
     
     getLoosePieceZ(zIndex = 0) {
@@ -780,12 +904,14 @@ class WebGLVoronoiRenderer {
     }
     
     // Create neon glow outline for a polygon with multiple layers for realistic glow effect
-    createNeonGlowOutlineForPolygon(polygon, position, visible = true) {
+    // Optional getLayerColor(layerIndex) overrides the default drag glow color per layer.
+    createNeonGlowOutlineForPolygon(polygon, position, visible = true, getLayerColor = null) {
         const glowLayers = [];
-        const glowColor = this.getThemeColor('pieceDragging');
+        const fallbackColor = this.getThemeColor('pieceDragging');
 
-        GLOW_LAYER_CONFIGS.forEach((config) => {
+        GLOW_LAYER_CONFIGS.forEach((config, layerIndex) => {
             const glowGeometry = this.createBoundaryGeometryForPolygon(polygon, config.scale);
+            const glowColor = getLayerColor ? getLayerColor(layerIndex) : fallbackColor;
 
             const glowMaterial = new THREE.LineBasicMaterial({
                 color: glowColor,
@@ -1561,6 +1687,9 @@ class WebGLVoronoiRenderer {
 
         // Keep empty-slot grid outlines in sync with animated piece shapes
         this.updateSlotGhostOutlineGeometries(time);
+
+        // Snap flashes track the same morphing grid cell as the connected mesh
+        this.updateActiveSnapGlows(time);
     }
     
     // Create animated path using noise (similar to 2D version)
@@ -1698,6 +1827,8 @@ class WebGLVoronoiRenderer {
             }
         });
         this.separateGlowOutlines = [];
+
+        this.clearAllSnapGlows();
         
         if (this.backgroundTexture) {
             this.backgroundTexture.dispose();
@@ -2229,6 +2360,10 @@ WebGLVoronoiRenderer.prototype.dispose = function() {
             }
         });
         this.separateGlowOutlines = null;
+    }
+
+    if (typeof this.clearAllSnapGlows === 'function') {
+        this.clearAllSnapGlows();
     }
     
     // Clean up background texture

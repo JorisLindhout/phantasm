@@ -20,6 +20,9 @@ export const GLOW_LAYER_CONFIGS = [
     { scale: 1.18, opacity: 0.05, zOffset: 0.10 },
 ];
 
+/** Duration of the snap-in-place edge glow flash (ms). */
+export const SNAP_GLOW_DURATION_MS = 400;
+
 export const OUTLINE_OPACITY = {
     normal: 0.8,
     hover: 1.0,
