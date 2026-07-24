@@ -29,4 +29,9 @@ describe('constants', () => {
         expect(SNAP_GLOW_DURATION_MS).toBeGreaterThanOrEqual(250);
         expect(SNAP_GLOW_DURATION_MS).toBeLessThanOrEqual(600);
     });
+
+    it('lets the snap glow finish before the solved hold freezes', () => {
+        // Level transition waits this long after final snap so fade completes on-screen
+        expect(SNAP_GLOW_DURATION_MS).toBe(400);
+    });
 });

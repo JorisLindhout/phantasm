@@ -16,6 +16,8 @@ import { buildBoundaryVertices, polygonCenter, updateBoundaryVertices } from './
 import { createLogger } from './logger.js';
 import { PositionManager } from './position-manager.js';
 import { snapGlowLayerHex, snapGlowFadeFactor } from './snap-glow.js';
+import { areAllPiecesFullySnapped } from './solve-state.js';
+import { prefersReducedMotion } from './accessibility.js';
 
 const log = createLogger('webgl');
 
@@ -89,6 +91,7 @@ class WebGLVoronoiRenderer {
         // Solved state tracking
         this.isSolved = false;
         this.solveThreshold = SOLVE_THRESHOLD;
+        this.solveTransitionTimeout = null;
 
         this.init();
     }
@@ -547,17 +550,23 @@ class WebGLVoronoiRenderer {
         // Calculate distance from origin
         const distance = Math.sqrt(offset.x * offset.x + offset.y * offset.y);
         
-        // NEW: Auto-snap when piece gets close to its slot
+        // Auto-snap when piece gets close to its slot
         if (distance <= SNAP_THRESHOLD && this.pieces[index].state === 'unsolved') {
-            // Piece is close to its slot - trigger auto-snap
-            // Add a small delay to prevent rapid cycling
+            // Already in-slot: snap immediately so solve can't race a pending timeout
+            // (offset near zero while the separate mesh is still out is what caused the freeze).
+            if (distance < this.solveThreshold) {
+                this.autoSnapPieceToSlot(index);
+                return;
+            }
+
+            // Slightly further out — short delay to prevent rapid cycling while dragging
             if (!this.pieces[index].autoSnapTimeout) {
                 this.pieces[index].autoSnapTimeout = setTimeout(() => {
                     this.autoSnapPieceToSlot(index);
                     this.pieces[index].autoSnapTimeout = null;
-                }, 100); // 100ms delay to prevent rapid cycling
+                }, 100);
             }
-            return; // Exit early to prevent further processing
+            return;
         }
         
         // If piece has significant offset, create separate mesh
@@ -771,12 +780,25 @@ class WebGLVoronoiRenderer {
 
     // Auto-snap a piece to its slot
     autoSnapPieceToSlot(pieceIndex) {
+        const piece = this.pieces[pieceIndex];
+        if (!piece || piece.state === 'solved') {
+            this.checkSolvedState();
+            return;
+        }
+
+        if (piece.autoSnapTimeout) {
+            clearTimeout(piece.autoSnapTimeout);
+            piece.autoSnapTimeout = null;
+        }
+
         if (window.voronoiPuzzle && window.voronoiPuzzle.playSnapSound) {
             window.voronoiPuzzle.playSnapSound();
         }
 
         this.playSnapGlowFlash(pieceIndex);
         this.resetPieceToConnected(pieceIndex);
+        // Paint the reconnected piece before solve → freezeForHold can run
+        this.render();
         this.checkSolvedState();
     }
     
@@ -1388,6 +1410,7 @@ class WebGLVoronoiRenderer {
         this.updateConnectedMeshVisibility();
         this.createSlotGhostOutlines();
         this.isSolved = false;
+        this.clearSolveTransitionTimeout();
         this.onSolvedStateChanged(false);
     }
 
@@ -1821,6 +1844,8 @@ class WebGLVoronoiRenderer {
     }
     
     dispose() {
+        this.clearSolveTransitionTimeout();
+
         if (this.connectedMesh) {
             this.scene.remove(this.connectedMesh);
             this.connectedMesh.geometry.dispose();
@@ -2304,33 +2329,13 @@ class WebGLVoronoiRenderer {
         }
     }
    
-    // Check if the puzzle is solved (all pieces are in correct positions)
+    // Check if the puzzle is solved (all pieces fully snapped into slots)
     checkSolvedState() {
         if (!this.pieces || this.pieces.length === 0) {
             return false;
         }
 
-        const unreleasedCount = this.pieces.filter((piece) => !piece.released).length;
-        if (unreleasedCount > 0) {
-            if (this.isSolved) {
-                this.isSolved = false;
-                this.onSolvedStateChanged(false);
-            }
-            return false;
-        }
-
-        let solvedPieces = 0;
-
-        for (let i = 0; i < this.pieces.length; i++) {
-            const offset = this.pieces[i].offset || { x: 0, y: 0 };
-            const distance = Math.sqrt(offset.x * offset.x + offset.y * offset.y);
-
-            if (distance < this.solveThreshold) {
-                solvedPieces++;
-            }
-        }
-
-        const isSolved = solvedPieces === this.pieces.length;
+        const isSolved = areAllPiecesFullySnapped(this.pieces);
 
         if (isSolved !== this.isSolved) {
             this.isSolved = isSolved;
@@ -2340,6 +2345,24 @@ class WebGLVoronoiRenderer {
         return isSolved;
     }
     
+    clearSolveTransitionTimeout() {
+        if (this.solveTransitionTimeout != null) {
+            clearTimeout(this.solveTransitionTimeout);
+            this.solveTransitionTimeout = null;
+        }
+    }
+
+    /**
+     * After the final snap glow has faded, paint a clean frame and start level progression.
+     */
+    beginSolvedTransition() {
+        if (!this.isSolved || !window.levelManager?.handlePuzzleSolved) return;
+
+        this.clearAllSnapGlows();
+        this.render();
+        window.levelManager.handlePuzzleSolved();
+    }
+
     // Called when solved state changes
     onSolvedStateChanged(isSolved) {
         const container = this.canvas.parentElement;
@@ -2351,9 +2374,18 @@ class WebGLVoronoiRenderer {
             }
         }
 
-        if (isSolved && window.levelManager?.handlePuzzleSolved) {
-            window.levelManager.handlePuzzleSolved();
+        this.clearSolveTransitionTimeout();
+
+        if (!isSolved || !window.levelManager?.handlePuzzleSolved) {
+            return;
         }
+
+        // Keep animating until the snap glow finishes fading, then freeze for the hold
+        const delayMs = prefersReducedMotion() ? 0 : SNAP_GLOW_DURATION_MS;
+        this.solveTransitionTimeout = setTimeout(() => {
+            this.solveTransitionTimeout = null;
+            this.beginSolvedTransition();
+        }, delayMs);
     }
 
     // Update canvas outline based on solved state

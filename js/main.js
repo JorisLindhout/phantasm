@@ -238,6 +238,8 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     freezeForHold() {
         this.stopAnimation();
         this.config.isAnimating = false;
+        // Keep the fully snapped board on screen for the hold (not the pre-snap frame)
+        this.render();
     }
 
     resumeAfterHold() {
@@ -840,43 +842,34 @@ class WebGLRenderer extends VoronoiPuzzleBase {
         const currentOffset = this.webglRenderer.pieces[draggedIndex].offset || { x: 0, y: 0 };
         const distance = Math.sqrt(currentOffset.x ** 2 + currentOffset.y ** 2);
                 
-        if (distance < this.snapThreshold) {            
-            // Note: Snap sound is played in webgl-renderer.js autoSnapPieceToSlot()
-            
-            // Snap back to original position
-            this.webglRenderer.pieces[draggedIndex].offset = { x: 0, y: 0 };
-            
-            // Add visual feedback for snap
+        if (distance < this.snapThreshold) {
+            // Fully reconnect before solve detection (autoSnap renders, then checks solved)
             this.snappedPieces.add(draggedIndex);
-            this.snapAnimationTime = 0; // Reset animation
-            
-            // Update visual state to snapped
+            this.snapAnimationTime = 0;
+
             if (this.webglRenderer) {
+                this.webglRenderer.autoSnapPieceToSlot(draggedIndex);
                 this.webglRenderer.updatePieceVisualState(draggedIndex, 'snapped');
-                this.webglRenderer.updatePiecePosition(draggedIndex, { x: 0, y: 0 });
             }
-            
-            // Reset snapped state after animation
+
             setTimeout(() => {
                 this.snappedPieces.delete(draggedIndex);
                 if (this.webglRenderer) {
                     this.webglRenderer.updatePieceVisualState(draggedIndex, 'normal');
                 }
             }, 2000);
-        } else {            
-            // Update visual state to normal (not snapped)
+        } else {
             if (this.webglRenderer) {
                 this.webglRenderer.updatePieceVisualState(draggedIndex, 'normal');
             }
         }
-        
-        // Always reset interaction state after handling the drop
+
         this.resetInteractionState();
-        
-        // Check if puzzle is solved after piece movement
-        if (this.webglRenderer && this.webglRenderer.checkSolvedState) {
+
+        // Non-snap drops still need a solve check (e.g. last piece auto-snapped mid-drag)
+        if (this.webglRenderer?.checkSolvedState) {
             this.webglRenderer.checkSolvedState();
-        }        
+        }
     }
     
     handleDragSlotHover(x, y) {
