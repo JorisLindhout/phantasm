@@ -35,6 +35,34 @@ describe('level gradient CSS variable', () => {
         expect(gradient.toLowerCase()).toContain('#7a4edf');
     });
 
+    it('sets level 3 SVG-matched gradient stops', () => {
+        themeManager.applyTheme('levelThree');
+
+        const root = document.documentElement.style;
+
+        expect(root.getPropertyValue('--level-gradient-start').trim().toLowerCase()).toBe('#d10700');
+        expect(root.getPropertyValue('--level-gradient-end').trim().toLowerCase()).toBe('#f94ec0');
+
+        const gradient = root.getPropertyValue('--level-gradient');
+        expect(gradient).toContain('135deg');
+        expect(gradient.toLowerCase()).toContain('#d10700');
+        expect(gradient.toLowerCase()).toContain('#f94ec0');
+    });
+
+    it('sets level 4 SVG-matched gradient stops', () => {
+        themeManager.applyTheme('levelFour');
+
+        const root = document.documentElement.style;
+
+        expect(root.getPropertyValue('--level-gradient-start').trim().toLowerCase()).toBe('#2bab08');
+        expect(root.getPropertyValue('--level-gradient-end').trim().toLowerCase()).toBe('#bb9b08');
+
+        const gradient = root.getPropertyValue('--level-gradient');
+        expect(gradient).toContain('135deg');
+        expect(gradient.toLowerCase()).toContain('#2bab08');
+        expect(gradient.toLowerCase()).toContain('#bb9b08');
+    });
+
     it('sets phantasm fallback gradient', () => {
         themeManager.applyTheme('phantasm');
 

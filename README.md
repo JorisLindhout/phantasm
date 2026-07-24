@@ -70,7 +70,7 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 
 ### 🎮 Level System & Progression
 - **Manifest-Driven Levels**: Ordered level list in `js/levels.config.js` (theme, SVG, difficulty, release batches)
-- **Unlock on Solve**: Level 2 unlocks when Level 1 is completed; progress saved in `phantasm-unlocked-levels`
+- **Unlock on Solve**: The next level unlocks when the current one is completed; progress saved in `phantasm-unlocked-levels`
 - **Automatic Level Transition**: Solved puzzle holds 2s, then crossfades into the next level's grid
 - **Completion Screen**: After the final level, a **done** screen with **Play again**
 - **Always Starts at Level 1**: Cold start loads Level 1 regardless of saved preferences
@@ -80,8 +80,10 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 #### Level Configurations
 | Level | Pieces | Speed | Noise | Release (phone / desktop) |
 |-------|--------|-------|-------|-------------------------|
-| Level 1 | 40 | 1.0× | 10px | 3 / 12 |
-| Level 2 | 60 | 0.8× | 15px | 2 / 10 |
+| Level 1 | 20 | 1.2× | 5px | 4 / 15 |
+| Level 2 | 40 | 1.0× | 10px | 3 / 12 |
+| Level 3 | 60 | 0.8× | 15px | 2 / 10 |
+| Level 4 | 80 | 0.6× | 20px | 1 / 7 |
 
 #### Adding a New Level
 1. Add `public/assets/Level-N.svg`
@@ -214,6 +216,8 @@ phantasm/
 │   └── assets/                   # Game images and audio (served at /assets/…)
 │       ├── Level-1.svg           # Level 1 background (450×450)
 │       ├── Level-2.svg           # Level 2 background (450×450)
+│       ├── Level-3.svg           # Level 3 background (450×450)
+│       ├── Level-4.svg           # Level 4 background (450×450)
 │       ├── Phantasm.svg          # Legacy theme asset
 │       └── sounds/               # Audio assets (snap sound not wired up yet)
 │           ├── snap.webm         # Placeholder
@@ -414,7 +418,7 @@ Only snap / player placement marks a piece solved — recovery never auto-comple
 ## Future Development
 
 ### Gameplay & content
-- **Level development** — new artwork and manifest entries (see [Adding a New Level](#adding-a-new-level)); only two levels shipped so far
+- **Level development** — new artwork and manifest entries (see [Adding a New Level](#adding-a-new-level))
 
 
 ### Audio

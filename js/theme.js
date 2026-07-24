@@ -58,6 +58,40 @@ const LEVEL2_COLORS = {
     marianBlueLight: { hex: 0x4a5ba8, css: '#4a5ba8', rgba: 'rgba(74, 91, 168, 1)' },
 };
 
+// Level 3 color palette — gradient bases #D10700 → #F94EC0
+const LEVEL3_COLORS = {
+    rossoCorsa: { hex: 0xd10700, css: '#d10700', rgba: 'rgba(209, 7, 0, 1)' },
+    brilliantRose: { hex: 0xf94ec0, css: '#f94ec0', rgba: 'rgba(249, 78, 192, 1)' },
+    darkMaroon: { hex: 0x1a0508, css: '#1a0508', rgba: 'rgba(26, 5, 8, 1)' },
+    deepWine: { hex: 0x6b1028, css: '#6b1028', rgba: 'rgba(107, 16, 40, 1)' },
+    burgundy: { hex: 0x8b2240, css: '#8b2240', rgba: 'rgba(139, 34, 64, 1)' },
+    antiqueGold: { hex: 0xd4b84a, css: '#d4b84a', rgba: 'rgba(212, 184, 74, 1)' },
+
+    // Light variations for effects
+    rossoCorsaLight: { hex: 0xe03a33, css: '#e03a33', rgba: 'rgba(224, 58, 51, 1)' },
+    brilliantRoseLight: { hex: 0xfa72ce, css: '#fa72ce', rgba: 'rgba(250, 114, 206, 1)' },
+    deepWineLight: { hex: 0x8a2440, css: '#8a2440', rgba: 'rgba(138, 36, 64, 1)' },
+    burgundyLight: { hex: 0xa53a58, css: '#a53a58', rgba: 'rgba(165, 58, 88, 1)' },
+    antiqueGoldLight: { hex: 0xe0ca66, css: '#e0ca66', rgba: 'rgba(224, 202, 102, 1)' },
+};
+
+// Level 4 color palette — gradient bases #2BAB08 → #BB9B08
+const LEVEL4_COLORS = {
+    kellyGreen: { hex: 0x2bab08, css: '#2bab08', rgba: 'rgba(43, 171, 8, 1)' },
+    oliveGold: { hex: 0xbb9b08, css: '#bb9b08', rgba: 'rgba(187, 155, 8, 1)' },
+    darkMoss: { hex: 0x0f1a02, css: '#0f1a02', rgba: 'rgba(15, 26, 2, 1)' },
+    deepForest: { hex: 0x1a4a0a, css: '#1a4a0a', rgba: 'rgba(26, 74, 10, 1)' },
+    fern: { hex: 0x3d6b1a, css: '#3d6b1a', rgba: 'rgba(61, 107, 26, 1)' },
+    amber: { hex: 0xd4b42a, css: '#d4b42a', rgba: 'rgba(212, 180, 42, 1)' },
+
+    // Light variations for effects
+    kellyGreenLight: { hex: 0x4fc02e, css: '#4fc02e', rgba: 'rgba(79, 192, 46, 1)' },
+    oliveGoldLight: { hex: 0xccb035, css: '#ccb035', rgba: 'rgba(204, 176, 53, 1)' },
+    deepForestLight: { hex: 0x2e6a18, css: '#2e6a18', rgba: 'rgba(46, 106, 24, 1)' },
+    fernLight: { hex: 0x558530, css: '#558530', rgba: 'rgba(85, 133, 48, 1)' },
+    amberLight: { hex: 0xe0c64a, css: '#e0c64a', rgba: 'rgba(224, 198, 74, 1)' },
+};
+
 // Theme definitions
 export const THEMES = {
     // Base Phantasm theme
@@ -194,7 +228,99 @@ export const THEMES = {
             gradientEnd: LEVEL2_COLORS.majorelleBlue,
             angle: '135deg',
         },
-    }
+    },
+
+    // Level Three theme
+    levelThree: {
+        name: 'Level 3',
+        baseImage: './assets/Level-3.svg',
+        colors: {
+            // Functional colors
+            primary: LEVEL3_COLORS.darkMaroon,
+
+            // Piece states
+            pieceNormal: LEVEL3_COLORS.brilliantRose,
+            pieceHover: LEVEL3_COLORS.brilliantRoseLight,
+            pieceDragging: LEVEL3_COLORS.brilliantRoseLight,
+            pieceSnapped: LEVEL3_COLORS.rossoCorsa,
+
+            // Slot states
+            slotHover: LEVEL3_COLORS.deepWine,
+            slotOutline: LEVEL3_COLORS.antiqueGold,
+
+            // Outline states
+            outlineNormal: LEVEL3_COLORS.brilliantRose,
+            outlineHover: LEVEL3_COLORS.brilliantRoseLight,
+            outlineDragging: LEVEL3_COLORS.brilliantRoseLight,
+            outlineSnapped: LEVEL3_COLORS.rossoCorsa,
+
+            // Game state colors
+            solved: LEVEL3_COLORS.burgundy,
+            solvedGlow: LEVEL3_COLORS.rossoCorsa,
+        },
+        effects: {
+            glowIntensity: 0.8,
+            animationSpeed: 0.2,
+            pulseSpeed: 1.0,
+            scaleHover: 1.02,
+            scaleDragging: 1.1,
+            opacityNormal: 1.0,
+            opacityHover: 0.8,
+            opacityDragging: 0.9,
+            opacitySnapped: 1.0
+        },
+        levelGradient: {
+            gradientStart: LEVEL3_COLORS.rossoCorsa,
+            gradientEnd: LEVEL3_COLORS.brilliantRose,
+            angle: '135deg',
+        },
+    },
+
+    // Level Four theme
+    levelFour: {
+        name: 'Level 4',
+        baseImage: './assets/Level-4.svg',
+        colors: {
+            // Functional colors
+            primary: LEVEL4_COLORS.darkMoss,
+
+            // Piece states
+            pieceNormal: LEVEL4_COLORS.oliveGold,
+            pieceHover: LEVEL4_COLORS.oliveGoldLight,
+            pieceDragging: LEVEL4_COLORS.oliveGoldLight,
+            pieceSnapped: LEVEL4_COLORS.kellyGreen,
+
+            // Slot states
+            slotHover: LEVEL4_COLORS.deepForest,
+            slotOutline: LEVEL4_COLORS.amber,
+
+            // Outline states
+            outlineNormal: LEVEL4_COLORS.oliveGold,
+            outlineHover: LEVEL4_COLORS.oliveGoldLight,
+            outlineDragging: LEVEL4_COLORS.oliveGoldLight,
+            outlineSnapped: LEVEL4_COLORS.kellyGreen,
+
+            // Game state colors
+            solved: LEVEL4_COLORS.fern,
+            solvedGlow: LEVEL4_COLORS.kellyGreen,
+        },
+        effects: {
+            glowIntensity: 0.8,
+            animationSpeed: 0.2,
+            pulseSpeed: 1.0,
+            scaleHover: 1.02,
+            scaleDragging: 1.1,
+            opacityNormal: 1.0,
+            opacityHover: 0.8,
+            opacityDragging: 0.9,
+            opacitySnapped: 1.0
+        },
+        levelGradient: {
+            gradientStart: LEVEL4_COLORS.kellyGreen,
+            gradientEnd: LEVEL4_COLORS.oliveGold,
+            angle: '135deg',
+        },
+    },
 };
 
 // Default theme

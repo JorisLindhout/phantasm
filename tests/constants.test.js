@@ -13,8 +13,8 @@ describe('constants', () => {
         expect(SOLVE_THRESHOLD).toBeLessThanOrEqual(SNAP_THRESHOLD);
     });
 
-    it('supports level 2 cell count in slider range', () => {
-        expect(MAX_CELL_COUNT).toBeGreaterThanOrEqual(60);
+    it('supports level 4 cell count in slider range', () => {
+        expect(MAX_CELL_COUNT).toBeGreaterThanOrEqual(80);
     });
 
     it('restores the original 10-layer neon glow configuration', () => {

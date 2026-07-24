@@ -3,7 +3,7 @@
 export const SNAP_THRESHOLD = 30;
 export const WEBGL_SNAP_THRESHOLD = 25;
 export const SOLVE_THRESHOLD = 10;
-export const MAX_CELL_COUNT = 60;
+export const MAX_CELL_COUNT = 80;
 export const MIN_CELL_COUNT = 5;
 export const DEFAULT_CELL_COUNT = 40;
 

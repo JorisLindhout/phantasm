@@ -13,25 +13,43 @@ import { calculateReleaseBatchSize } from '../js/unsolved-layout.js';
 
 describe('LEVEL_MANIFEST', () => {
     it('lists levels in progression order', () => {
-        expect(LEVEL_MANIFEST.map((level) => level.id)).toEqual(['level-1', 'level-2']);
+        expect(LEVEL_MANIFEST.map((level) => level.id)).toEqual([
+            'level-1',
+            'level-2',
+            'level-3',
+            'level-4',
+        ]);
     });
 
     it('maps manifest entries to level-manager config shape', () => {
         const config = manifestEntryToLevelConfig(LEVEL_MANIFEST[0]);
-        expect(config.config.cellCount).toBe(40);
-        expect(config.release.phone).toBe(3);
+        expect(config.config.cellCount).toBe(20);
+        expect(config.release.phone).toBe(4);
+    });
+
+    it('keeps former level-2 difficulty on level 3', () => {
+        const level3 = LEVEL_MANIFEST.find((level) => level.id === 'level-3');
+        expect(level3.difficulty).toEqual({
+            cellCount: 60,
+            animationSpeed: 0.8,
+            noiseAmplitude: 15,
+        });
+        expect(level3.release).toEqual({ phone: 2, tablet: 4, desktop: 6, large: 10 });
     });
 });
 
 describe('progression helpers', () => {
     it('returns next level id', () => {
         expect(getNextLevelId('level-1')).toBe('level-2');
-        expect(getNextLevelId('level-2')).toBeNull();
+        expect(getNextLevelId('level-2')).toBe('level-3');
+        expect(getNextLevelId('level-3')).toBe('level-4');
+        expect(getNextLevelId('level-4')).toBeNull();
     });
 
     it('detects final level', () => {
         expect(isFinalLevel('level-1')).toBe(false);
-        expect(isFinalLevel('level-2')).toBe(true);
+        expect(isFinalLevel('level-3')).toBe(false);
+        expect(isFinalLevel('level-4')).toBe(true);
     });
 
     it('returns undefined for unknown level', () => {
@@ -98,7 +116,7 @@ describe('LevelManager progression', () => {
     it('shows completion on final level solve', async () => {
         const { LevelManager } = await import('../js/level-manager.js');
         const manager = new LevelManager();
-        manager.currentLevel = 'level-2';
+        manager.currentLevel = 'level-4';
 
         manager.handlePuzzleSolved();
 

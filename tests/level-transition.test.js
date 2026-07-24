@@ -192,7 +192,7 @@ describe('LevelManager progression hook', () => {
     it('shows completion on final level solve', async () => {
         const { LevelManager } = await import('../js/level-manager.js');
         const levelManager = new LevelManager();
-        levelManager.currentLevel = 'level-2';
+        levelManager.currentLevel = 'level-4';
 
         levelManager.handlePuzzleSolved();
 
