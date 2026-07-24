@@ -33,8 +33,15 @@ describe('LEVEL_MANIFEST', () => {
             cellCount: 60,
             animationSpeed: 0.8,
             noiseAmplitude: 15,
+            morphIntervalMs: 2100,
         });
         expect(level3.release).toEqual({ phone: 2, tablet: 4, desktop: 6, large: 10 });
+    });
+
+    it('shortens morph interval on later levels', () => {
+        expect(LEVEL_MANIFEST.map((level) => level.difficulty.morphIntervalMs)).toEqual([
+            3500, 2800, 2100, 1500,
+        ]);
     });
 });
 

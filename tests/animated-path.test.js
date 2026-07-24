@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
     createAnimatedPolygon,
+    mapPointToHomePolygon,
     isWithinSnapThreshold,
     resolveLevelConfig,
 } from '../js/animated-path.js';
@@ -25,6 +26,22 @@ describe('createAnimatedPolygon', () => {
     });
 });
 
+describe('mapPointToHomePolygon', () => {
+    const square = [[0, 0], [100, 0], [100, 100], [0, 100]];
+
+    it('maps the centroid to itself', () => {
+        const [x, y] = mapPointToHomePolygon(50, 50, square);
+        expect(x).toBeCloseTo(50, 5);
+        expect(y).toBeCloseTo(50, 5);
+    });
+
+    it('projects an outside point onto the home boundary', () => {
+        const [x, y] = mapPointToHomePolygon(200, 50, square);
+        expect(x).toBeCloseTo(100, 1);
+        expect(y).toBeCloseTo(50, 1);
+    });
+});
+
 describe('isWithinSnapThreshold', () => {
     it('returns true when within threshold', () => {
         expect(isWithinSnapThreshold({ x: 10, y: 10 }, SNAP_THRESHOLD)).toBe(true);
@@ -39,23 +56,22 @@ describe('resolveLevelConfig', () => {
     it('reads nested config values used by level manager', () => {
         const resolved = resolveLevelConfig({
             id: 'level-2',
-            config: { cellCount: 60, animationSpeed: 0.8, noiseAmplitude: 15 },
+            config: { cellCount: 60, animationSpeed: 0.8, noiseAmplitude: 15, morphIntervalMs: 2100 },
         });
 
         expect(resolved).toEqual({
             cellCount: 60,
             animationSpeed: 0.8,
             noiseAmplitude: 15,
+            morphIntervalMs: 2100,
         });
     });
 
-    it('does not return undefined when config is nested correctly', () => {
+    it('defaults morphIntervalMs when omitted', () => {
         const resolved = resolveLevelConfig({
             config: { cellCount: 40, animationSpeed: 1.0, noiseAmplitude: 10 },
         });
 
-        expect(resolved.cellCount).toBe(40);
-        expect(resolved.animationSpeed).toBe(1.0);
-        expect(resolved.noiseAmplitude).toBe(10);
+        expect(resolved.morphIntervalMs).toBe(3500);
     });
 });

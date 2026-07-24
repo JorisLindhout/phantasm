@@ -113,6 +113,7 @@ function bindRangeAccessibility() {
         ['cellCount', 'cellCountValue'],
         ['animationSpeed', 'animationSpeedValue'],
         ['noiseAmplitude', 'noiseAmplitudeValue'],
+        ['morphInterval', 'morphIntervalValue'],
     ];
 
     bindings.forEach(([inputId, valueId]) => {

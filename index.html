@@ -197,6 +197,11 @@
                 <span id="noiseAmplitudeValue" aria-hidden="true">10</span>
             </div>
             <div class="control-group">
+                <label for="morphInterval">Morph Interval (ms):</label>
+                <input type="range" id="morphInterval" min="500" max="8000" step="100" value="3500" aria-valuemin="500" aria-valuemax="8000" aria-valuenow="3500" aria-valuetext="3500 milliseconds">
+                <span id="morphIntervalValue" aria-hidden="true">3500</span>
+            </div>
+            <div class="control-group">
                 <button type="button" data-action="regenerate">Regenerate Puzzle</button>
                 <button type="button" data-action="toggle-animation">Pause Animation</button>
                 <button type="button" data-action="toggle-grid-outlines">Toggle Grid Outlines</button>

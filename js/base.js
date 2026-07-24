@@ -12,6 +12,7 @@ class VoronoiConfig {
         this.cellCount = 40;
         this.animationSpeed = 1.0;
         this.noiseAmplitude = 10;
+        this.morphIntervalMs = 3500;
         this.isAnimating = true;
         this.time = 0;
     }
@@ -183,12 +184,30 @@ class VoronoiPuzzleBase {
         const noiseAmplitudeValue = document.getElementById('noiseAmplitudeValue');
         if (noiseAmplitudeSlider && noiseAmplitudeValue) {
             noiseAmplitudeSlider.addEventListener('input', (e) => {
-                this.config.noiseAmplitude = parseInt(e.target.value);
+                this.config.noiseAmplitude = parseInt(e.target.value, 10);
                 noiseAmplitudeValue.textContent = e.target.value;
+                e.target.setAttribute('aria-valuenow', e.target.value);
+                e.target.setAttribute('aria-valuetext', e.target.value);
                 
                 // Update WebGL renderer if available
                 if (this.webglRenderer && this.webglRenderer.updateConfig) {
                     this.webglRenderer.updateConfig({ noiseAmplitude: this.config.noiseAmplitude });
+                }
+            });
+        }
+
+        // Corner morph interval (ms between births/deaths)
+        const morphIntervalSlider = document.getElementById('morphInterval');
+        const morphIntervalValue = document.getElementById('morphIntervalValue');
+        if (morphIntervalSlider && morphIntervalValue) {
+            morphIntervalSlider.addEventListener('input', (e) => {
+                this.config.morphIntervalMs = parseInt(e.target.value, 10);
+                morphIntervalValue.textContent = e.target.value;
+                e.target.setAttribute('aria-valuenow', e.target.value);
+                e.target.setAttribute('aria-valuetext', `${e.target.value} milliseconds`);
+
+                if (this.webglRenderer && this.webglRenderer.updateConfig) {
+                    this.webglRenderer.updateConfig({ morphIntervalMs: this.config.morphIntervalMs });
                 }
             });
         }

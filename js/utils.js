@@ -19,7 +19,17 @@ function updateAnimationSpeed() {
 
 function updateNoiseAmplitude() {
     if (window.voronoiPuzzle && window.voronoiPuzzle.config) {
-        window.voronoiPuzzle.config.noiseAmplitude = parseInt(document.getElementById('noiseAmplitude').value);
+        window.voronoiPuzzle.config.noiseAmplitude = parseInt(document.getElementById('noiseAmplitude').value, 10);
+    }
+}
+
+function updateMorphInterval() {
+    if (window.voronoiPuzzle && window.voronoiPuzzle.config) {
+        const ms = parseInt(document.getElementById('morphInterval').value, 10);
+        window.voronoiPuzzle.config.morphIntervalMs = ms;
+        if (window.voronoiPuzzle.webglRenderer?.updateConfig) {
+            window.voronoiPuzzle.webglRenderer.updateConfig({ morphIntervalMs: ms });
+        }
     }
 }
 

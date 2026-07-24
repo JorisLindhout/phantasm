@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { SNAP_THRESHOLD, WEBGL_SNAP_THRESHOLD, SOLVE_THRESHOLD, GLOW_LAYER_CONFIGS, OUTLINE_OPACITY, SNAP_GLOW_DURATION_MS } from './constants.js';
 import { createAnimatedPolygon } from './animated-path.js';
+import { PuzzleTopologyMorph } from './voronoi-topology-morph.js';
 import { buildSeparatePieceGeometry } from './separate-piece-geometry.js';
 import { getSeparatePieceMeshPosition } from './drag-offset.js';
 import { ensureUnsolvedPieceBackground } from './piece-material.js';
@@ -50,6 +51,9 @@ class WebGLVoronoiRenderer {
         
         // Store Voronoi data for connected rendering
         this.voronoiPolygons = [];
+        this.displayPolygons = [];
+        this.topologyMorph = null;
+        this.topologyVersion = -1;
         this.connectedMesh = null; // Single mesh for all connected pieces
         this.connectedOutline = null; // Outline for connected mesh
         // Array backup system removed - using object system only
@@ -93,6 +97,9 @@ class WebGLVoronoiRenderer {
     // Update configuration (for slider changes)
     updateConfig(newConfig) {
         this.config = { ...this.config, ...newConfig };
+        if (newConfig.morphIntervalMs != null && this.topologyMorph) {
+            this.topologyMorph.intervalMs = newConfig.morphIntervalMs;
+        }
     }
     
     init() {
@@ -225,14 +232,19 @@ class WebGLVoronoiRenderer {
     
     // Initialize Voronoi data for connected rendering
     initializeVoronoi(polygons) {
-        this.voronoiPolygons = polygons.map(polygon => [...polygon]); // Deep copy
+        this.voronoiPolygons = polygons.map(polygon => [...polygon]); // Deep copy (immutable home)
+        this.topologyMorph = new PuzzleTopologyMorph(this.voronoiPolygons, {
+            intervalMs: this.config.morphIntervalMs ?? 3500,
+        });
+        this.displayPolygons = this.topologyMorph.getPolygons();
+        this.topologyVersion = this.topologyMorph.topologyVersion;
         
         // NEW: Initialize object-based system
         this.pieces = [];
         this.slots = [];
         
         for (let i = 0; i < polygons.length; i++) {
-            // Create piece object
+            // Create piece object — polygon stays home for hit-test / snap identity
             this.pieces[i] = {
                 id: i,
                 polygon: this.voronoiPolygons[i],
@@ -267,7 +279,7 @@ class WebGLVoronoiRenderer {
             };
         }
         
-        // Create the connected mesh that represents all pieces
+        // Create the connected mesh that represents all connected pieces
         this.createConnectedMesh();
 
         this.pieceZIndices = new Array(polygons.length).fill(0);
@@ -279,7 +291,10 @@ class WebGLVoronoiRenderer {
     
     // Create a single mesh that contains all connected Voronoi pieces
     createConnectedMesh() {
-        if (!this.voronoiPolygons.length || !this.backgroundTexture) return;
+        const sourcePolygons = this.displayPolygons?.length
+            ? this.displayPolygons
+            : this.voronoiPolygons;
+        if (!sourcePolygons.length || !this.backgroundTexture) return;
         
         // Create combined geometry for all pieces
         const combinedGeometry = new THREE.BufferGeometry();
@@ -289,20 +304,19 @@ class WebGLVoronoiRenderer {
         
         let vertexOffset = 0;
         
-        for (let pieceIndex = 0; pieceIndex < this.voronoiPolygons.length; pieceIndex++) {
-            const polygon = this.voronoiPolygons[pieceIndex];
+        for (let pieceIndex = 0; pieceIndex < sourcePolygons.length; pieceIndex++) {
+            const polygon = sourcePolygons[pieceIndex];
             if (!polygon || polygon.length < 3) continue;
             
             // Triangulate the polygon (simple fan triangulation)
             const centerX = polygon.reduce((sum, p) => sum + p[0], 0) / polygon.length;
             const centerY = polygon.reduce((sum, p) => sum + p[1], 0) / polygon.length;
             
-            // Add center vertex
+            // World-space UVs: silhouette is a window into the fixed mural (no stretch)
             vertices.push(centerX, centerY, 0);
             const centerUV = this.calculateBackgroundUV(centerX, centerY);
             uvs.push(centerUV.u, centerUV.v);
             
-            // Add polygon vertices
             for (let i = 0; i < polygon.length; i++) {
                 vertices.push(polygon[i][0], polygon[i][1], 0);
                 const vertexUV = this.calculateBackgroundUV(polygon[i][0], polygon[i][1]);
@@ -329,10 +343,9 @@ class WebGLVoronoiRenderer {
         
         // Create colors array for state-based visibility
         const colors = [];
-        let colorVertexIndex = 0;
         
-        for (let pieceIndex = 0; pieceIndex < this.voronoiPolygons.length; pieceIndex++) {
-            const polygon = this.voronoiPolygons[pieceIndex];
+        for (let pieceIndex = 0; pieceIndex < sourcePolygons.length; pieceIndex++) {
+            const polygon = sourcePolygons[pieceIndex];
             if (!polygon || polygon.length < 3) continue;
             
             // Determine if this slot should show the background image
@@ -341,12 +354,10 @@ class WebGLVoronoiRenderer {
             
             // Add center vertex color
             colors.push(1, 1, 1, alpha); // White with variable alpha
-            colorVertexIndex++;
             
             // Add polygon vertex colors
             for (let i = 0; i < polygon.length; i++) {
                 colors.push(1, 1, 1, alpha); // White with variable alpha
-                colorVertexIndex++;
             }
         }
         
@@ -412,7 +423,7 @@ class WebGLVoronoiRenderer {
         const edges = new Set(); // Track unique edges to avoid duplicates
         
         for (let pieceIndex = 0; pieceIndex < this.voronoiPolygons.length; pieceIndex++) {
-            const polygon = this.voronoiPolygons[pieceIndex];
+            const polygon = this.getDisplayPolygon(pieceIndex);
             if (!polygon || polygon.length < 3) continue;
             
             // Skip pieces that have been moved (they're separate meshes now)
@@ -676,7 +687,7 @@ class WebGLVoronoiRenderer {
         const position = new THREE.Vector3(homePosition.x, homePosition.y, this.getLoosePieceZ(0));
 
         // Match the connected grid cell at this frame — not the loose piece's last shape.
-        const gridPolygon = this.createAnimatedPath(polygon, this.animationTime);
+        const gridPolygon = this.getDisplayPolygon(pieceIndex);
 
         const glowLayers = this.createNeonGlowOutlineForPolygon(
             gridPolygon,
@@ -721,7 +732,7 @@ class WebGLVoronoiRenderer {
 
             const originalPolygon = this.voronoiPolygons[entry.pieceIndex];
             if (originalPolygon?.length >= 3 && entry.layers) {
-                const gridPolygon = this.createAnimatedPath(originalPolygon, time);
+                const gridPolygon = this.getDisplayPolygon(entry.pieceIndex);
                 this.updateNeonGlowOutlineForPolygon(entry.layers, gridPolygon, position);
             }
 
@@ -1101,10 +1112,8 @@ class WebGLVoronoiRenderer {
             this.hoveredPieceIndex = index;
             
             // Create hover overlay for the specific piece
-            const polygon = this.voronoiPolygons[index];
-            
-            // Create animated polygon for current time
-            const animatedPolygon = this.createAnimatedPath(polygon, this.animationTime);
+            const animatedPolygon = this.getDisplayPolygon(index);
+            if (!animatedPolygon || animatedPolygon.length < 3) return;
             
             // Create shape geometry
             const shape = new THREE.Shape();
@@ -1149,11 +1158,8 @@ class WebGLVoronoiRenderer {
             // Track which slot is hovered
             this.hoveredSlotIndex = index;
             
-            // Create slot hover overlay for the specific slot
-            const polygon = this.voronoiPolygons[index];
-            
-            // Create animated polygon for current time
-            const animatedPolygon = this.createAnimatedPath(polygon, this.animationTime);
+            const animatedPolygon = this.getDisplayPolygon(index);
+            if (!animatedPolygon || animatedPolygon.length < 3) return;
             
             // Create shape geometry
             const shape = new THREE.Shape();
@@ -1200,8 +1206,8 @@ class WebGLVoronoiRenderer {
     updateHoverOverlayGeometry(index, time) {
         if (!this.hoverOverlay || !this.voronoiPolygons[index]) return;
         
-        const polygon = this.voronoiPolygons[index];
-        const animatedPolygon = this.createAnimatedPath(polygon, time);
+        const animatedPolygon = this.getDisplayPolygon(index);
+        if (!animatedPolygon || animatedPolygon.length < 3) return;
         
         // Create new boundary geometry
         const newGeometry = this.createBoundaryGeometryForPolygon(animatedPolygon);
@@ -1215,8 +1221,8 @@ class WebGLVoronoiRenderer {
     updateSlotHoverOverlayGeometry(index, time) {
         if (!this.slotHoverOverlay || !this.voronoiPolygons[index]) return;
         
-        const polygon = this.voronoiPolygons[index];
-        const animatedPolygon = this.createAnimatedPath(polygon, time);
+        const animatedPolygon = this.getDisplayPolygon(index);
+        if (!animatedPolygon || animatedPolygon.length < 3) return;
         
         // Create new shape geometry
         const shape = new THREE.Shape();
@@ -1252,7 +1258,7 @@ class WebGLVoronoiRenderer {
         let colorIndex = 0;
         
         for (let pieceIndex = 0; pieceIndex < this.voronoiPolygons.length; pieceIndex++) {
-            const polygon = this.voronoiPolygons[pieceIndex];
+            const polygon = this.getDisplayPolygon(pieceIndex);
             if (!polygon || polygon.length < 3) continue;
             
             // Determine if this slot should show the background image
@@ -1293,14 +1299,14 @@ class WebGLVoronoiRenderer {
         this.disposeSlotGhostOutlines();
 
         for (let i = 0; i < this.voronoiPolygons.length; i++) {
-            const polygon = this.voronoiPolygons[i];
+            const polygon = this.getDisplayPolygon(i);
             if (!polygon || polygon.length < 3) {
                 this.slotGhostOutlines[i] = null;
                 continue;
             }
 
             // Use updateable line-segment geometry (same as piece outlines) so
-            // ghost slots can morph with createAnimatedPath each frame.
+            // ghost slots stay in sync with shared topology morph.
             const geometry = new THREE.BufferGeometry();
             geometry.setAttribute(
                 'position',
@@ -1333,7 +1339,7 @@ class WebGLVoronoiRenderer {
     }
 
     /**
-     * Morph empty-slot ghost outlines with the same animated polygon as pieces,
+     * Morph empty-slot ghost outlines with the same display polygon as pieces,
      * so the grid always matches piece shapes.
      */
     updateSlotGhostOutlineGeometries(time) {
@@ -1343,11 +1349,22 @@ class WebGLVoronoiRenderer {
             const outline = this.slotGhostOutlines[i];
             if (!outline?.visible) continue;
 
-            const polygon = this.voronoiPolygons[i];
+            const polygon = this.getDisplayPolygon(i);
             if (!polygon || polygon.length < 3) continue;
 
             const positions = outline.geometry.attributes.position.array;
-            updateBoundaryVertices(positions, this.createAnimatedPath(polygon, time));
+            const expectedFloats = polygon.length * 6; // 2 points × 3 floats per edge
+            if (positions.length !== expectedFloats) {
+                outline.geometry.dispose();
+                outline.geometry = new THREE.BufferGeometry();
+                outline.geometry.setAttribute(
+                    'position',
+                    new THREE.Float32BufferAttribute(buildBoundaryVertices(polygon), 3)
+                );
+                continue;
+            }
+
+            updateBoundaryVertices(positions, polygon);
             outline.geometry.attributes.position.needsUpdate = true;
         }
     }
@@ -1544,10 +1561,10 @@ class WebGLVoronoiRenderer {
         // Remove existing separate piece if any
         this.removeSeparatePiece(index);
         
-        const polygon = this.voronoiPolygons[index];
+        const polygon = this.getDisplayPolygon(index);
         if (!polygon || polygon.length < 3) return;
         
-        // Create geometry for this piece using ShapeGeometry (matches original rendering)
+        // World-space UVs from canvas coords — image stays undistorted as the silhouette morphs
         const uvFn = (x, y) => this.calculateBackgroundUV(x, y);
         const geometry = buildSeparatePieceGeometry(polygon, uvFn);
         
@@ -1662,9 +1679,21 @@ class WebGLVoronoiRenderer {
     
     animatePieceBoundaries(time) {
         this.animationTime = time;
+
+        let topologyChanged = false;
+        if (this.topologyMorph) {
+            const result = this.topologyMorph.update(time, this.config.noiseAmplitude ?? 10);
+            this.displayPolygons = result.polygons;
+            topologyChanged = result.topologyChanged;
+            this.topologyVersion = result.version;
+        }
         
-        // Update connected mesh geometry with animated boundaries
-        if (this.connectedMesh && this.voronoiPolygons.length > 0) {
+        // Topology change alters vertex counts — rebuild meshes that assume fixed layout
+        if (topologyChanged) {
+            this.createConnectedMesh();
+            this.createSlotGhostOutlines();
+            this.updateConnectedMeshVisibility();
+        } else if (this.connectedMesh && this.displayPolygons.length > 0) {
             this.updateConnectedMeshGeometry(time);
         }
         
@@ -1686,13 +1715,28 @@ class WebGLVoronoiRenderer {
         }
 
         // Keep empty-slot grid outlines in sync with animated piece shapes
-        this.updateSlotGhostOutlineGeometries(time);
+        if (!topologyChanged) {
+            this.updateSlotGhostOutlineGeometries(time);
+        }
 
         // Snap flashes track the same morphing grid cell as the connected mesh
         this.updateActiveSnapGlows(time);
     }
     
-    // Create animated path using noise (similar to 2D version)
+    /**
+     * Display outline for a cell — shared topology morph (same for piece + slot).
+     * @param {number} index
+     * @returns {Array<[number, number]>}
+     */
+    getDisplayPolygon(index) {
+        const display = this.displayPolygons[index];
+        if (display?.length >= 3) {
+            return display;
+        }
+        return this.voronoiPolygons[index];
+    }
+
+    // Legacy helper: prefer getDisplayPolygon(index) when the cell index is known.
     createAnimatedPath(originalPolygon, time, amplitude = null) {
         const noiseAmplitude = amplitude !== null ? amplitude : this.config.noiseAmplitude;
         return createAnimatedPolygon(originalPolygon, time, noiseAmplitude);
@@ -1708,38 +1752,35 @@ class WebGLVoronoiRenderer {
         
         let vertexIndex = 0;
         
-        for (let pieceIndex = 0; pieceIndex < this.voronoiPolygons.length; pieceIndex++) {
-            const originalPolygon = this.voronoiPolygons[pieceIndex];
-            if (!originalPolygon || originalPolygon.length < 3) continue;
+        for (let pieceIndex = 0; pieceIndex < this.displayPolygons.length; pieceIndex++) {
+            const animatedPolygon = this.getDisplayPolygon(pieceIndex);
+            if (!animatedPolygon || animatedPolygon.length < 3) continue;
             
             // Skip pieces that have been moved (they're separate meshes now)
             if (this.pieces[pieceIndex].mesh) {
-                vertexIndex += originalPolygon.length + 1; // +1 for center vertex
+                vertexIndex += animatedPolygon.length + 1; // +1 for center vertex
                 continue;
             }
-            
-            // Create animated polygon
-            const animatedPolygon = this.createAnimatedPath(originalPolygon, time);
             
             // Calculate animated center
             const centerX = animatedPolygon.reduce((sum, p) => sum + p[0], 0) / animatedPolygon.length;
             const centerY = animatedPolygon.reduce((sum, p) => sum + p[1], 0) / animatedPolygon.length;
             
-            // Update center vertex
+            // Update center vertex — UV from canvas position (fixed mural, morphing window)
             positions[vertexIndex * 3] = centerX;
             positions[vertexIndex * 3 + 1] = centerY;
-                // Sync UV coordinates with animated positions for proper texture alignment
-                const centerUV = this.calculateBackgroundUV(centerX, centerY);
-                uvs[vertexIndex * 2] = centerUV.u;
-                uvs[vertexIndex * 2 + 1] = centerUV.v;
+            const centerUV = this.calculateBackgroundUV(centerX, centerY);
+            uvs[vertexIndex * 2] = centerUV.u;
+            uvs[vertexIndex * 2 + 1] = centerUV.v;
             vertexIndex++;
             
-            // Update polygon vertices
             for (let i = 0; i < animatedPolygon.length; i++) {
                 positions[vertexIndex * 3] = animatedPolygon[i][0];
                 positions[vertexIndex * 3 + 1] = animatedPolygon[i][1];
-                // Sync UV coordinates with animated positions for proper texture alignment
-                const vertexUV = this.calculateBackgroundUV(animatedPolygon[i][0], animatedPolygon[i][1]);
+                const vertexUV = this.calculateBackgroundUV(
+                    animatedPolygon[i][0],
+                    animatedPolygon[i][1]
+                );
                 uvs[vertexIndex * 2] = vertexUV.u;
                 uvs[vertexIndex * 2 + 1] = vertexUV.v;
                 vertexIndex++;
@@ -1754,15 +1795,22 @@ class WebGLVoronoiRenderer {
     // Update separate piece geometry with animated boundaries
     updateSeparatePieceGeometry(piece, index, time) {
         const pieceObj = this.pieces[index];
-        const originalPolygon = pieceObj ? pieceObj.polygon : this.voronoiPolygons[index];
-        if (!originalPolygon) return;
+        if (!pieceObj) return;
 
-        const animatedPolygon = this.createAnimatedPath(originalPolygon, time);
+        const animatedPolygon = this.getDisplayPolygon(index);
+        if (!animatedPolygon || animatedPolygon.length < 3) return;
+
         const uvFn = (x, y) => this.calculateBackgroundUV(x, y);
         const newGeometry = buildSeparatePieceGeometry(animatedPolygon, uvFn);
 
         piece.geometry.dispose();
         piece.geometry = newGeometry;
+
+        if (pieceObj?.outline) {
+            const outlineGeometry = this.createBoundaryGeometryForPolygon(animatedPolygon);
+            pieceObj.outline.geometry.dispose();
+            pieceObj.outline.geometry = outlineGeometry;
+        }
 
         const neonGlow = this.separateGlowOutlines[index];
         if (neonGlow) {

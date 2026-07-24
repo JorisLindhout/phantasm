@@ -16,6 +16,7 @@ describe('level manager config application', () => {
             cellCount: 40,
             animationSpeed: 1.0,
             noiseAmplitude: 10,
+            morphIntervalMs: 3500,
         };
     });
 
@@ -24,23 +25,25 @@ describe('level manager config application', () => {
         puzzleConfig.cellCount = resolved.cellCount;
         puzzleConfig.animationSpeed = resolved.animationSpeed;
         puzzleConfig.noiseAmplitude = resolved.noiseAmplitude;
+        puzzleConfig.morphIntervalMs = resolved.morphIntervalMs;
     }
 
     it('applies level 2 settings without undefined values', () => {
         applyLevelConfig({
             id: 'level-2',
             name: 'Level 2',
-            config: { cellCount: 60, animationSpeed: 0.8, noiseAmplitude: 15 },
+            config: { cellCount: 60, animationSpeed: 0.8, noiseAmplitude: 15, morphIntervalMs: 2800 },
         });
 
         expect(puzzleConfig.cellCount).toBe(60);
         expect(puzzleConfig.animationSpeed).toBe(0.8);
         expect(puzzleConfig.noiseAmplitude).toBe(15);
+        expect(puzzleConfig.morphIntervalMs).toBe(2800);
     });
 
     it('would have failed with the old flat property access pattern', () => {
         const levelConfig = {
-            config: { cellCount: 60, animationSpeed: 0.8, noiseAmplitude: 15 },
+            config: { cellCount: 60, animationSpeed: 0.8, noiseAmplitude: 15, morphIntervalMs: 2100 },
         };
 
         // Old buggy pattern
@@ -48,6 +51,7 @@ describe('level manager config application', () => {
 
         applyLevelConfig(levelConfig);
         expect(puzzleConfig.cellCount).toBe(60);
+        expect(puzzleConfig.morphIntervalMs).toBe(2100);
     });
 });
 

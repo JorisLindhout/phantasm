@@ -73,6 +73,37 @@ class LevelManager {
         this.puzzle.config.cellCount = resolved.cellCount;
         this.puzzle.config.animationSpeed = resolved.animationSpeed;
         this.puzzle.config.noiseAmplitude = resolved.noiseAmplitude;
+        this.puzzle.config.morphIntervalMs = resolved.morphIntervalMs;
+        this.syncDevPanelControls();
+
+        if (this.puzzle.webglRenderer?.updateConfig) {
+            this.puzzle.webglRenderer.updateConfig({
+                noiseAmplitude: resolved.noiseAmplitude,
+                morphIntervalMs: resolved.morphIntervalMs,
+            });
+        }
+    }
+
+    /**
+     * Keep dev tuning sliders in sync with the active level config.
+     */
+    syncDevPanelControls() {
+        if (!this.puzzle?.config) return;
+        const { cellCount, animationSpeed, noiseAmplitude, morphIntervalMs } = this.puzzle.config;
+
+        const setSlider = (id, valueId, value) => {
+            const input = document.getElementById(id);
+            const label = document.getElementById(valueId);
+            if (!input || value == null) return;
+            input.value = String(value);
+            input.setAttribute('aria-valuenow', String(value));
+            if (label) label.textContent = String(value);
+        };
+
+        setSlider('cellCount', 'cellCountValue', cellCount);
+        setSlider('animationSpeed', 'animationSpeedValue', animationSpeed);
+        setSlider('noiseAmplitude', 'noiseAmplitudeValue', noiseAmplitude);
+        setSlider('morphInterval', 'morphIntervalValue', morphIntervalMs);
     }
 
     /**
@@ -224,6 +255,8 @@ class LevelManager {
         this.puzzle.config.cellCount = resolved.cellCount;
         this.puzzle.config.animationSpeed = resolved.animationSpeed;
         this.puzzle.config.noiseAmplitude = resolved.noiseAmplitude;
+        this.puzzle.config.morphIntervalMs = resolved.morphIntervalMs;
+        this.syncDevPanelControls();
 
         this.isChangingLevel = true;
         this.pendingLevelId = levelId;
@@ -305,6 +338,8 @@ class LevelManager {
         this.puzzle.config.cellCount = resolved.cellCount;
         this.puzzle.config.animationSpeed = resolved.animationSpeed;
         this.puzzle.config.noiseAmplitude = resolved.noiseAmplitude;
+        this.puzzle.config.morphIntervalMs = resolved.morphIntervalMs;
+        this.syncDevPanelControls();
 
         await this.disposePuzzle();
 
