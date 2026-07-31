@@ -57,7 +57,7 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 - **High Performance**: Optimized for 40–60 pieces with smooth animation
 
 ### ✨ Advanced Visual Effects
-- **Animated Boundaries**: Shared topology morph — occasional corner births/deaths across the whole tiling so pieces and slots stay flush; plus organic edge noise
+- **Animated Boundaries**: Shared topology morph — a fixed count of morph corners (seeded per level) that relocate via paired birth/death so pieces and slots stay flush without growing complexity; plus organic edge noise
 - **State-Based Rendering**: Different visual states for pieces (normal, hover, dragging, snapped)
 - **Neon Glow Effects**: Dynamic glowing outlines while dragging pieces
 - **Piece Scaling**: Smooth scaling animations for interactive feedback
@@ -75,16 +75,16 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 - **Automatic Level Transition**: Solved puzzle holds 2s, then crossfades into the next level's grid
 - **Completion Screen**: After the final level, a **done** screen with **Play again**
 - **Always Starts at Level 1**: Cold start loads Level 1 regardless of saved preferences
-- **Per-Level Difficulty**: Cell count, animation speed, noise amplitude, and morph interval defined per level
+- **Per-Level Difficulty**: Cell count, animation speed, noise amplitude, morph corner count, morph interval, and birth offset defined per level
 - **Per-Level Release Batches**: Fewer pieces released per tap on harder levels and smaller screens
 
 #### Level Configurations
-| Level | Pieces | Speed | Noise | Morph interval | Release (phone / desktop) |
-|-------|--------|-------|-------|----------------|-------------------------|
-| Level 1 | 20 | 1.2× | 5px | 3500ms | 4 / 15 |
-| Level 2 | 40 | 1.0× | 10px | 2800ms | 3 / 12 |
-| Level 3 | 60 | 0.8× | 15px | 2100ms | 2 / 10 |
-| Level 4 | 80 | 0.6× | 20px | 1500ms | 1 / 7 |
+| Level | Pieces | Speed | Noise | Morph corners | Morph interval | Birth offset | Release (phone / desktop) |
+|-------|--------|-------|-------|---------------|----------------|--------------|-------------------------|
+| Level 1 | 20 | 1.2× | 5px | 3 | 4000ms | 14px | 4 / 15 |
+| Level 2 | 40 | 1.0× | 10px | 5 | 3200ms | 16px | 3 / 12 |
+| Level 3 | 60 | 0.8× | 15px | 8 | 2400ms | 18px | 2 / 10 |
+| Level 4 | 80 | 0.6× | 20px | 12 | 1800ms | 20px | 1 / 7 |
 
 #### Adding a New Level
 1. Add `public/assets/Level-N.svg`
@@ -178,7 +178,7 @@ js/
 ### 🔧 Core Technologies
 1. **Voronoi Generation**: d3-delaunay library for efficient diagram generation
 2. **3D Rendering**: Three.js for WebGL-accelerated graphics
-3. **Animation**: Shared Voronoi topology morph (occasional corner birth/death so the whole tiling stays flush) plus edge noise; world-space UVs so the mural stays undistorted while silhouettes morph
+3. **Animation**: Shared Voronoi topology morph (fixed morph-corner count via seed + paired birth/death so the tiling stays flush) plus edge noise; world-space UVs so the mural stays undistorted while silhouettes morph
 4. **State Management**: Comprehensive piece and slot state tracking
 
 ### ⚡ Technical Highlights
@@ -248,7 +248,8 @@ Access by clicking the caret at the bottom of the screen:
 - **Cell Count**: Number of Voronoi pieces (5–80)
 - **Animation Speed**: Boundary animation speed (0.1–2.0×)
 - **Noise Amplitude**: Boundary deformation intensity (0–50)
-- **Morph Interval (ms)**: Time between corner births/deaths (500–8000; shorter = harder)
+- **Morph Interval (ms)**: Time between paired corner relocate events (500–8000; shorter = harder)
+- **Morph Corners**: How many morph corners are seeded for the level (0–20; applies on regenerate / level load)
 - **Regenerate Puzzle**: Create a new layout (returns to unsolved start)
 - **Toggle Animation** / **Toggle Grid Outlines**
 
@@ -414,7 +415,6 @@ Only snap / player placement marks a piece solved — recovery never auto-comple
 
 ### Gameplay & content
 - **Level development** — new artwork and manifest entries (see [Adding a New Level](#adding-a-new-level))
-- **Morph difficulty extras** — per-level `birthOffsetPx` (how far new corners bulge) and birth/death ratio (how often corners appear vs disappear); interval is already live as `morphIntervalMs`
 
 
 ### Audio

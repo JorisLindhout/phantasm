@@ -99,9 +99,14 @@ class WebGLVoronoiRenderer {
     // Update configuration (for slider changes)
     updateConfig(newConfig) {
         this.config = { ...this.config, ...newConfig };
-        if (newConfig.morphIntervalMs != null && this.topologyMorph) {
+        if (!this.topologyMorph) return;
+        if (newConfig.morphIntervalMs != null) {
             this.topologyMorph.intervalMs = newConfig.morphIntervalMs;
         }
+        if (newConfig.birthOffsetPx != null) {
+            this.topologyMorph.birthOffsetPx = newConfig.birthOffsetPx;
+        }
+        // morphCornerCount applies on next initializeVoronoi / regenerate
     }
     
     init() {
@@ -237,6 +242,8 @@ class WebGLVoronoiRenderer {
         this.voronoiPolygons = polygons.map(polygon => [...polygon]); // Deep copy (immutable home)
         this.topologyMorph = new PuzzleTopologyMorph(this.voronoiPolygons, {
             intervalMs: this.config.morphIntervalMs ?? 3500,
+            morphCornerCount: this.config.morphCornerCount ?? 3,
+            birthOffsetPx: this.config.birthOffsetPx ?? 18,
         });
         this.displayPolygons = this.topologyMorph.getPolygons();
         this.topologyVersion = this.topologyMorph.topologyVersion;

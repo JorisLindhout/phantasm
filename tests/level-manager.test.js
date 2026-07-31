@@ -17,6 +17,8 @@ describe('level manager config application', () => {
             animationSpeed: 1.0,
             noiseAmplitude: 10,
             morphIntervalMs: 3500,
+            morphCornerCount: 3,
+            birthOffsetPx: 18,
         };
     });
 
@@ -26,24 +28,42 @@ describe('level manager config application', () => {
         puzzleConfig.animationSpeed = resolved.animationSpeed;
         puzzleConfig.noiseAmplitude = resolved.noiseAmplitude;
         puzzleConfig.morphIntervalMs = resolved.morphIntervalMs;
+        puzzleConfig.morphCornerCount = resolved.morphCornerCount;
+        puzzleConfig.birthOffsetPx = resolved.birthOffsetPx;
     }
 
     it('applies level 2 settings without undefined values', () => {
         applyLevelConfig({
             id: 'level-2',
             name: 'Level 2',
-            config: { cellCount: 60, animationSpeed: 0.8, noiseAmplitude: 15, morphIntervalMs: 2800 },
+            config: {
+                cellCount: 60,
+                animationSpeed: 0.8,
+                noiseAmplitude: 15,
+                morphIntervalMs: 2800,
+                morphCornerCount: 5,
+                birthOffsetPx: 16,
+            },
         });
 
         expect(puzzleConfig.cellCount).toBe(60);
         expect(puzzleConfig.animationSpeed).toBe(0.8);
         expect(puzzleConfig.noiseAmplitude).toBe(15);
         expect(puzzleConfig.morphIntervalMs).toBe(2800);
+        expect(puzzleConfig.morphCornerCount).toBe(5);
+        expect(puzzleConfig.birthOffsetPx).toBe(16);
     });
 
     it('would have failed with the old flat property access pattern', () => {
         const levelConfig = {
-            config: { cellCount: 60, animationSpeed: 0.8, noiseAmplitude: 15, morphIntervalMs: 2100 },
+            config: {
+                cellCount: 60,
+                animationSpeed: 0.8,
+                noiseAmplitude: 15,
+                morphIntervalMs: 2100,
+                morphCornerCount: 8,
+                birthOffsetPx: 18,
+            },
         };
 
         // Old buggy pattern
@@ -52,6 +72,7 @@ describe('level manager config application', () => {
         applyLevelConfig(levelConfig);
         expect(puzzleConfig.cellCount).toBe(60);
         expect(puzzleConfig.morphIntervalMs).toBe(2100);
+        expect(puzzleConfig.morphCornerCount).toBe(8);
     });
 });
 

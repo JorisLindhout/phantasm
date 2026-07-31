@@ -11,6 +11,8 @@ class VoronoiConfig {
         this.animationSpeed = 1.0;
         this.noiseAmplitude = 10;
         this.morphIntervalMs = 3500;
+        this.morphCornerCount = 3;
+        this.birthOffsetPx = 18;
         this.isAnimating = true;
         this.time = 0;
     }
@@ -187,6 +189,25 @@ class VoronoiPuzzleBase {
 
                 if (this.webglRenderer && this.webglRenderer.updateConfig) {
                     this.webglRenderer.updateConfig({ morphIntervalMs: this.config.morphIntervalMs });
+                }
+            });
+        }
+
+        const morphCornerSlider = document.getElementById('morphCornerCount');
+        const morphCornerValue = document.getElementById('morphCornerCountValue');
+        if (morphCornerSlider && morphCornerValue) {
+            this.addEventListener(morphCornerSlider, 'input', (e) => {
+                this.config.morphCornerCount = parseInt(e.target.value, 10);
+                morphCornerValue.textContent = e.target.value;
+                e.target.setAttribute('aria-valuenow', e.target.value);
+                e.target.setAttribute('aria-valuetext', e.target.value);
+
+                if (this.webglRenderer && this.webglRenderer.updateConfig) {
+                    this.webglRenderer.updateConfig({ morphCornerCount: this.config.morphCornerCount });
+                }
+                // Corner count is applied at topology init — regenerate to re-seed
+                if (typeof this.regeneratePuzzle === 'function') {
+                    this.regeneratePuzzle();
                 }
             });
         }

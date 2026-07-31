@@ -9,6 +9,8 @@ describe('resolveLevelConfig', () => {
                 animationSpeed: 1.0,
                 noiseAmplitude: 10,
                 morphIntervalMs: 2800,
+                morphCornerCount: 5,
+                birthOffsetPx: 16,
             },
         });
 
@@ -17,10 +19,12 @@ describe('resolveLevelConfig', () => {
             animationSpeed: 1.0,
             noiseAmplitude: 10,
             morphIntervalMs: 2800,
+            morphCornerCount: 5,
+            birthOffsetPx: 16,
         });
     });
 
-    it('defaults morphIntervalMs when omitted', () => {
+    it('defaults morph fields when omitted', () => {
         const resolved = resolveLevelConfig({
             cellCount: 20,
             animationSpeed: 1.2,
@@ -28,5 +32,7 @@ describe('resolveLevelConfig', () => {
         });
 
         expect(resolved.morphIntervalMs).toBe(3500);
+        expect(resolved.morphCornerCount).toBe(3);
+        expect(resolved.birthOffsetPx).toBe(18);
     });
 });

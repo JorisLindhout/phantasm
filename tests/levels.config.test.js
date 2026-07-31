@@ -33,14 +33,22 @@ describe('LEVEL_MANIFEST', () => {
             cellCount: 60,
             animationSpeed: 0.8,
             noiseAmplitude: 15,
-            morphIntervalMs: 2100,
+            morphIntervalMs: 2400,
+            morphCornerCount: 8,
+            birthOffsetPx: 18,
         });
         expect(level3.release).toEqual({ phone: 2, tablet: 4, desktop: 6, large: 10 });
     });
 
     it('shortens morph interval on later levels', () => {
         expect(LEVEL_MANIFEST.map((level) => level.difficulty.morphIntervalMs)).toEqual([
-            3500, 2800, 2100, 1500,
+            4000, 3200, 2400, 1800,
+        ]);
+    });
+
+    it('raises morph corner count on later levels', () => {
+        expect(LEVEL_MANIFEST.map((level) => level.difficulty.morphCornerCount)).toEqual([
+            3, 5, 8, 12,
         ]);
     });
 });

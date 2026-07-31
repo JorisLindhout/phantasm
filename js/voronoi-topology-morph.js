@@ -1,6 +1,9 @@
 /**
  * Shared Voronoi topology morph — corner births/deaths on the global diagram
  * so adjacent pieces stay flush and the puzzle still tiles.
+ *
+ * Morph corner count stays constant: N corners are seeded at level start, then
+ * each event pairs a death with a birth on a free primal edge.
  */
 
 import { polygonCenter } from './polygon-geometry.js';
@@ -9,6 +12,7 @@ export const VERTEX_MERGE_EPSILON = 0.75;
 export const CORNER_MORPH_INTERVAL_MS = 3500;
 export const CORNER_MORPH_TRANSITION_MS = 1000;
 export const CORNER_BIRTH_OFFSET_PX = 18;
+export const DEFAULT_MORPH_CORNER_COUNT = 3;
 
 const TIME_SCALE = 0.002;
 const SPATIAL_SCALE = 0.015;
@@ -160,15 +164,42 @@ function edgeNormal(ax, ay, bx, by) {
 }
 
 /**
- * Insert a new corner on an edge (shared by 1–2 cells). Returns new vertex id or -1.
+ * Edge between two original (non-born) vertices — eligible for a morph corner.
+ * @param {{ vertices: Array<{ born?: boolean }> }} topology
+ * @param {{ a: number, b: number }} edge
+ * @returns {boolean}
+ */
+export function isPrimalEdge(topology, edge) {
+    if (!edge) return false;
+    const va = topology.vertices[edge.a];
+    const vb = topology.vertices[edge.b];
+    return Boolean(va && vb && !va.born && !vb.born);
+}
+
+/**
+ * Indices of primal edges in topology.edges.
+ * @param {{ vertices: Array<{ born?: boolean }>, edges: Array<{ a: number, b: number }> }} topology
+ * @returns {number[]}
+ */
+export function listPrimalEdgeIndices(topology) {
+    const indices = [];
+    for (let i = 0; i < topology.edges.length; i++) {
+        if (isPrimalEdge(topology, topology.edges[i])) {
+            indices.push(i);
+        }
+    }
+    return indices;
+}
+
+/**
  * @param {{ vertices: any[], cells: number[][], edges: any[] }} topology
  * @param {number} edgeIndex
  * @param {number} offsetPx
- * @returns {number}
+ * @returns {{ midX: number, midY: number, targetX: number, targetY: number } | null}
  */
-export function birthCornerOnEdge(topology, edgeIndex, offsetPx = CORNER_BIRTH_OFFSET_PX) {
+function computeBirthTargets(topology, edgeIndex, offsetPx) {
     const edge = topology.edges[edgeIndex];
-    if (!edge) return -1;
+    if (!edge) return null;
 
     const va = topology.vertices[edge.a];
     const vb = topology.vertices[edge.b];
@@ -189,9 +220,51 @@ export function birthCornerOnEdge(topology, edgeIndex, offsetPx = CORNER_BIRTH_O
         }
     }
 
-    const targetX = midX + nx * offsetPx * sign;
-    const targetY = midY + ny * offsetPx * sign;
+    return {
+        midX,
+        midY,
+        targetX: midX + nx * offsetPx * sign,
+        targetY: midY + ny * offsetPx * sign,
+    };
+}
 
+/**
+ * Insert born vertex into every cell ring that contains the edge.
+ * @param {{ cells: number[][], edges: any[] }} topology
+ * @param {{ a: number, b: number, cells: number[] }} edge
+ * @param {number} newId
+ */
+function insertVertexOnEdgeRings(topology, edge, newId) {
+    for (const cellIndex of edge.cells) {
+        const ring = topology.cells[cellIndex];
+        const n = ring.length;
+        for (let i = 0; i < n; i++) {
+            const curr = ring[i];
+            const next = ring[(i + 1) % n];
+            if ((curr === edge.a && next === edge.b) || (curr === edge.b && next === edge.a)) {
+                ring.splice(i + 1, 0, newId);
+                break;
+            }
+        }
+    }
+}
+
+/**
+ * Insert a new corner on an edge (shared by 1–2 cells). Returns new vertex id or -1.
+ * Only call on primal edges to avoid recursive subdivision.
+ * @param {{ vertices: any[], cells: number[][], edges: any[] }} topology
+ * @param {number} edgeIndex
+ * @param {number} offsetPx
+ * @returns {number}
+ */
+export function birthCornerOnEdge(topology, edgeIndex, offsetPx = CORNER_BIRTH_OFFSET_PX) {
+    const edge = topology.edges[edgeIndex];
+    if (!edge || !isPrimalEdge(topology, edge)) return -1;
+
+    const targets = computeBirthTargets(topology, edgeIndex, offsetPx);
+    if (!targets) return -1;
+
+    const { midX, midY, targetX, targetY } = targets;
     const newId = topology.vertices.length;
     topology.vertices.push({
         x: midX,
@@ -212,22 +285,67 @@ export function birthCornerOnEdge(topology, edgeIndex, offsetPx = CORNER_BIRTH_O
         },
     });
 
-    // Insert into each adjacent cell ring between edge.a and edge.b
-    for (const cellIndex of edge.cells) {
-        const ring = topology.cells[cellIndex];
-        const n = ring.length;
-        for (let i = 0; i < n; i++) {
-            const curr = ring[i];
-            const next = ring[(i + 1) % n];
-            if ((curr === edge.a && next === edge.b) || (curr === edge.b && next === edge.a)) {
-                ring.splice(i + 1, 0, newId);
-                break;
-            }
-        }
-    }
-
+    insertVertexOnEdgeRings(topology, edge, newId);
     rebuildEdges(topology);
     return newId;
+}
+
+/**
+ * Insert a morph corner at its final bulge position (no transition).
+ * @param {{ vertices: any[], cells: number[][], edges: any[] }} topology
+ * @param {number} edgeIndex
+ * @param {number} offsetPx
+ * @returns {number}
+ */
+export function seedCornerOnEdge(topology, edgeIndex, offsetPx = CORNER_BIRTH_OFFSET_PX) {
+    const edge = topology.edges[edgeIndex];
+    if (!edge || !isPrimalEdge(topology, edge)) return -1;
+
+    const targets = computeBirthTargets(topology, edgeIndex, offsetPx);
+    if (!targets) return -1;
+
+    const { targetX, targetY } = targets;
+    const newId = topology.vertices.length;
+    topology.vertices.push({
+        x: targetX,
+        y: targetY,
+        homeX: targetX,
+        homeY: targetY,
+        born: true,
+        transition: null,
+    });
+
+    insertVertexOnEdgeRings(topology, edge, newId);
+    rebuildEdges(topology);
+    return newId;
+}
+
+/**
+ * Seed up to `count` morph corners on distinct primal edges.
+ * Leaves at least one free primal edge when possible so paired births can run.
+ * @param {{ vertices: any[], cells: number[][], edges: any[] }} topology
+ * @param {number} count
+ * @param {number} [offsetPx]
+ * @returns {number} number of corners seeded
+ */
+export function seedMorphCorners(topology, count, offsetPx = CORNER_BIRTH_OFFSET_PX) {
+    if (count <= 0) return 0;
+
+    const initialPrimal = listPrimalEdgeIndices(topology);
+    const maxSeed = Math.max(0, Math.min(count, initialPrimal.length - 1));
+    let seeded = 0;
+
+    while (seeded < maxSeed) {
+        const primal = listPrimalEdgeIndices(topology);
+        // Keep at least one free primal edge for paired births
+        if (primal.length <= 1) break;
+
+        const edgeIndex = primal[Math.floor(Math.random() * primal.length)];
+        const id = seedCornerOnEdge(topology, edgeIndex, offsetPx);
+        if (id < 0) break;
+        seeded++;
+    }
+    return seeded;
 }
 
 /**
@@ -383,23 +501,46 @@ export function advanceCornerTransitions(topology, time) {
 }
 
 /**
+ * Count born vertices (including those mid-transition).
+ * @param {{ vertices: Array<{ born?: boolean }> }} topology
+ * @returns {number}
+ */
+export function countBornVertices(topology) {
+    let n = 0;
+    for (const v of topology.vertices) {
+        if (v.born) n++;
+    }
+    return n;
+}
+
+/**
  * Stateful morph controller for the whole puzzle.
  */
 export class PuzzleTopologyMorph {
     /**
      * @param {Array<Array<[number, number]>>} polygons
-     * @param {{ intervalMs?: number, transitionMs?: number, birthOffsetPx?: number }} [options]
+     * @param {{
+     *   intervalMs?: number,
+     *   transitionMs?: number,
+     *   birthOffsetPx?: number,
+     *   morphCornerCount?: number
+     * }} [options]
      */
     constructor(polygons, options = {}) {
         this.topology = buildSharedTopology(polygons);
         this.intervalMs = options.intervalMs ?? CORNER_MORPH_INTERVAL_MS;
         this.transitionMs = options.transitionMs ?? CORNER_MORPH_TRANSITION_MS;
         this.birthOffsetPx = options.birthOffsetPx ?? CORNER_BIRTH_OFFSET_PX;
+        this.morphCornerCount = options.morphCornerCount ?? DEFAULT_MORPH_CORNER_COUNT;
         this.nextEventAt = 0;
         this.topologyVersion = 0;
         this.enabled = true;
-        // First birth relatively soon so the effect is noticeable in play
-        this._firstEventDelayMs = 1500;
+
+        seedMorphCorners(this.topology, this.morphCornerCount, this.birthOffsetPx);
+        this.morphCornerCount = countBornVertices(this.topology);
+        if (this.morphCornerCount > 0) {
+            this.topologyVersion++;
+        }
     }
 
     /**
@@ -418,7 +559,7 @@ export class PuzzleTopologyMorph {
         }
 
         if (this.nextEventAt === 0) {
-            this.nextEventAt = time + (this._firstEventDelayMs ?? this.intervalMs * 0.4);
+            this.nextEventAt = time + this.intervalMs * (0.6 + Math.random() * 0.8);
         }
 
         let { topologyChanged } = advanceCornerTransitions(this.topology, time);
@@ -459,6 +600,7 @@ export class PuzzleTopologyMorph {
     }
 
     /**
+     * Pair a death of one idle born corner with a birth on a free primal edge.
      * @param {number} [time]
      * @returns {boolean}
      */
@@ -470,32 +612,35 @@ export class PuzzleTopologyMorph {
             }
         }
 
-        const preferDeath = bornIds.length > 0 && Math.random() < 0.45;
-        if (preferDeath) {
-            const id = bornIds[Math.floor(Math.random() * bornIds.length)];
-            const ok = beginCornerDeath(this.topology, id);
-            if (ok) {
-                const tr = this.topology.vertices[id].transition;
-                if (tr) {
-                    tr.duration = this.transitionMs;
-                    tr.startTime = time || 0;
-                }
-            }
-            return ok;
+        if (bornIds.length === 0) return false;
+
+        const deathId = bornIds[Math.floor(Math.random() * bornIds.length)];
+        const deathOk = beginCornerDeath(this.topology, deathId);
+        if (!deathOk) return false;
+
+        const deathTr = this.topology.vertices[deathId].transition;
+        if (deathTr) {
+            deathTr.duration = this.transitionMs;
+            deathTr.startTime = time || 0;
         }
 
-        if (this.topology.edges.length === 0) return false;
-        const edgeIndex = Math.floor(Math.random() * this.topology.edges.length);
-        const newId = birthCornerOnEdge(this.topology, edgeIndex, this.birthOffsetPx);
-        if (newId >= 0) {
-            const tr = this.topology.vertices[newId].transition;
-            if (tr) {
-                tr.duration = this.transitionMs;
-                tr.startTime = time || 0;
-            }
+        const primal = listPrimalEdgeIndices(this.topology);
+        if (primal.length === 0) {
+            // Death alone still progresses; birth will refill on a later tick if possible
             return true;
         }
-        return false;
+
+        const edgeIndex = primal[Math.floor(Math.random() * primal.length)];
+        const newId = birthCornerOnEdge(this.topology, edgeIndex, this.birthOffsetPx);
+        if (newId >= 0) {
+            const birthTr = this.topology.vertices[newId].transition;
+            if (birthTr) {
+                birthTr.duration = this.transitionMs;
+                birthTr.startTime = time || 0;
+            }
+        }
+
+        return true;
     }
 
     getPolygons() {

@@ -111,6 +111,7 @@ function bindRangeAccessibility() {
         ['animationSpeed', 'animationSpeedValue'],
         ['noiseAmplitude', 'noiseAmplitudeValue'],
         ['morphInterval', 'morphIntervalValue'],
+        ['morphCornerCount', 'morphCornerCountValue'],
     ];
 
     bindings.forEach(([inputId, valueId]) => {

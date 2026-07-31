@@ -10,7 +10,14 @@ const log = createLogger('levels.config');
 /**
  * Resolve difficulty values from a level configuration object.
  * @param {object} levelConfig
- * @returns {{ cellCount: number, animationSpeed: number, noiseAmplitude: number, morphIntervalMs: number }}
+ * @returns {{
+ *   cellCount: number,
+ *   animationSpeed: number,
+ *   noiseAmplitude: number,
+ *   morphIntervalMs: number,
+ *   morphCornerCount: number,
+ *   birthOffsetPx: number
+ * }}
  */
 export function resolveLevelConfig(levelConfig) {
     const config = levelConfig?.config ?? levelConfig?.difficulty ?? levelConfig;
@@ -19,6 +26,8 @@ export function resolveLevelConfig(levelConfig) {
         animationSpeed: config.animationSpeed,
         noiseAmplitude: config.noiseAmplitude,
         morphIntervalMs: config.morphIntervalMs ?? 3500,
+        morphCornerCount: config.morphCornerCount ?? 3,
+        birthOffsetPx: config.birthOffsetPx ?? 18,
     };
 }
 
@@ -28,7 +37,14 @@ export const LEVEL_MANIFEST = [
         name: 'Level 1',
         theme: 'levelOne',
         asset: './assets/Level-1.svg',
-        difficulty: { cellCount: 20, animationSpeed: 1.2, noiseAmplitude: 5, morphIntervalMs: 3500 },
+        difficulty: {
+            cellCount: 20,
+            animationSpeed: 1.2,
+            noiseAmplitude: 5,
+            morphIntervalMs: 4000,
+            morphCornerCount: 3,
+            birthOffsetPx: 14,
+        },
         release: { phone: 4, tablet: 7, desktop: 10, large: 15 },
         unlockedByDefault: true,
     },
@@ -37,7 +53,14 @@ export const LEVEL_MANIFEST = [
         name: 'Level 2',
         theme: 'levelTwo',
         asset: './assets/Level-2.svg',
-        difficulty: { cellCount: 40, animationSpeed: 1.0, noiseAmplitude: 10, morphIntervalMs: 2800 },
+        difficulty: {
+            cellCount: 40,
+            animationSpeed: 1.0,
+            noiseAmplitude: 10,
+            morphIntervalMs: 3200,
+            morphCornerCount: 5,
+            birthOffsetPx: 16,
+        },
         release: { phone: 3, tablet: 5, desktop: 8, large: 12 },
         unlockedByDefault: false,
     },
@@ -46,7 +69,14 @@ export const LEVEL_MANIFEST = [
         name: 'Level 3',
         theme: 'levelThree',
         asset: './assets/Level-3.svg',
-        difficulty: { cellCount: 60, animationSpeed: 0.8, noiseAmplitude: 15, morphIntervalMs: 2100 },
+        difficulty: {
+            cellCount: 60,
+            animationSpeed: 0.8,
+            noiseAmplitude: 15,
+            morphIntervalMs: 2400,
+            morphCornerCount: 8,
+            birthOffsetPx: 18,
+        },
         release: { phone: 2, tablet: 4, desktop: 6, large: 10 },
         unlockedByDefault: false,
     },
@@ -55,7 +85,14 @@ export const LEVEL_MANIFEST = [
         name: 'Level 4',
         theme: 'levelFour',
         asset: './assets/Level-4.svg',
-        difficulty: { cellCount: 80, animationSpeed: 0.6, noiseAmplitude: 20, morphIntervalMs: 1500 },
+        difficulty: {
+            cellCount: 80,
+            animationSpeed: 0.6,
+            noiseAmplitude: 20,
+            morphIntervalMs: 1800,
+            morphCornerCount: 12,
+            birthOffsetPx: 20,
+        },
         release: { phone: 1, tablet: 3, desktop: 4, large: 7 },
         unlockedByDefault: false,
     },

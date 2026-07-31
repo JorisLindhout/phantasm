@@ -74,12 +74,16 @@ class LevelManager {
         this.puzzle.config.animationSpeed = resolved.animationSpeed;
         this.puzzle.config.noiseAmplitude = resolved.noiseAmplitude;
         this.puzzle.config.morphIntervalMs = resolved.morphIntervalMs;
+        this.puzzle.config.morphCornerCount = resolved.morphCornerCount;
+        this.puzzle.config.birthOffsetPx = resolved.birthOffsetPx;
         this.syncDevPanelControls();
 
         if (this.puzzle.webglRenderer?.updateConfig) {
             this.puzzle.webglRenderer.updateConfig({
                 noiseAmplitude: resolved.noiseAmplitude,
                 morphIntervalMs: resolved.morphIntervalMs,
+                morphCornerCount: resolved.morphCornerCount,
+                birthOffsetPx: resolved.birthOffsetPx,
             });
         }
     }
@@ -89,7 +93,8 @@ class LevelManager {
      */
     syncDevPanelControls() {
         if (!this.puzzle?.config) return;
-        const { cellCount, animationSpeed, noiseAmplitude, morphIntervalMs } = this.puzzle.config;
+        const { cellCount, animationSpeed, noiseAmplitude, morphIntervalMs, morphCornerCount } =
+            this.puzzle.config;
 
         const setSlider = (id, valueId, value) => {
             const input = document.getElementById(id);
@@ -104,6 +109,7 @@ class LevelManager {
         setSlider('animationSpeed', 'animationSpeedValue', animationSpeed);
         setSlider('noiseAmplitude', 'noiseAmplitudeValue', noiseAmplitude);
         setSlider('morphInterval', 'morphIntervalValue', morphIntervalMs);
+        setSlider('morphCornerCount', 'morphCornerCountValue', morphCornerCount);
     }
 
     /**
@@ -256,6 +262,8 @@ class LevelManager {
         this.puzzle.config.animationSpeed = resolved.animationSpeed;
         this.puzzle.config.noiseAmplitude = resolved.noiseAmplitude;
         this.puzzle.config.morphIntervalMs = resolved.morphIntervalMs;
+        this.puzzle.config.morphCornerCount = resolved.morphCornerCount;
+        this.puzzle.config.birthOffsetPx = resolved.birthOffsetPx;
         this.syncDevPanelControls();
 
         this.isChangingLevel = true;
@@ -339,6 +347,8 @@ class LevelManager {
         this.puzzle.config.animationSpeed = resolved.animationSpeed;
         this.puzzle.config.noiseAmplitude = resolved.noiseAmplitude;
         this.puzzle.config.morphIntervalMs = resolved.morphIntervalMs;
+        this.puzzle.config.morphCornerCount = resolved.morphCornerCount;
+        this.puzzle.config.birthOffsetPx = resolved.birthOffsetPx;
         this.syncDevPanelControls();
 
         await this.disposePuzzle();
