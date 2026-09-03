@@ -17,6 +17,7 @@ import {
     supportsPointerEvents,
 } from './pointer-input.js';
 import { createLogger } from './logger.js';
+import { playSnapSound as playSynthesizedSnap, unlockSnapAudio } from './snap-sound.js';
 
 const log = createLogger('main');
 
@@ -31,20 +32,8 @@ class VoronoiPuzzle extends VoronoiPuzzleBase {
         await this.init();
     }
 
-    /**
-     * Snap audio hook — no-op until a source is wired (see Future Development in README).
-     * Call sites stay in place so enabling sound is a small change later.
-     */
     playSnapSound() {
-        const snapSound = document.getElementById('snapSound');
-        if (!snapSound?.src && !snapSound?.querySelector('source')) {
-            return;
-        }
-
-        snapSound.currentTime = 0;
-        snapSound.play().catch((e) => {
-            log.warn('Audio play blocked:', e.message);
-        });
+        playSynthesizedSnap();
     }
 
     async init() {
@@ -634,6 +623,8 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     }
 
     handleMouseDown(e) {
+        unlockSnapAudio();
+
         // Only reset interaction state if we're already dragging
         if (this.isDragging) {
             this.resetInteractionState();
