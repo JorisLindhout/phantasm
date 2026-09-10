@@ -1,6 +1,7 @@
 /**
  * Ordered level manifest — single source of truth for progression.
  * Add Level-N.svg, theme entry, and one row here to register a new level.
+ * `drone` is optional; omitted knobs inherit the engine default in drone-sound.js.
  */
 
 import { createLogger } from './logger.js';
@@ -46,6 +47,19 @@ export const LEVEL_MANIFEST = [
             birthOffsetPx: 14,
         },
         release: { phone: 4, tablet: 7, desktop: 10, large: 15 },
+        drone: {
+            freq: 91,
+            detuneHz: 0.33,
+            filterFreq: 1085,
+            filterQ: 1.4,
+            lfoRate: 0.65,
+            lfoDepth: 128,
+            slowRate: 0.187,
+            slowDepth: 681,
+            pitchDrift: 5.3,
+            wander: 226,
+            shimmer: 0.04,
+        },
         unlockedByDefault: true,
     },
     {
@@ -62,6 +76,19 @@ export const LEVEL_MANIFEST = [
             birthOffsetPx: 16,
         },
         release: { phone: 3, tablet: 5, desktop: 8, large: 12 },
+        drone: {
+            freq: 114,
+            detuneHz: 0.42,
+            filterFreq: 1400,
+            filterQ: 1.35,
+            lfoRate: 0.82,
+            lfoDepth: 175,
+            slowRate: 0.23,
+            slowDepth: 760,
+            pitchDrift: 6.4,
+            wander: 300,
+            shimmer: 0.046,
+        },
         unlockedByDefault: false,
     },
     {
@@ -78,6 +105,19 @@ export const LEVEL_MANIFEST = [
             birthOffsetPx: 18,
         },
         release: { phone: 2, tablet: 4, desktop: 6, large: 10 },
+        drone: {
+            freq: 136.5,
+            detuneHz: 0.52,
+            filterFreq: 1850,
+            filterQ: 1.25,
+            lfoRate: 1.05,
+            lfoDepth: 230,
+            slowRate: 0.28,
+            slowDepth: 820,
+            pitchDrift: 7.2,
+            wander: 380,
+            shimmer: 0.052,
+        },
         unlockedByDefault: false,
     },
     {
@@ -94,6 +134,19 @@ export const LEVEL_MANIFEST = [
             birthOffsetPx: 20,
         },
         release: { phone: 1, tablet: 3, desktop: 4, large: 7 },
+        drone: {
+            freq: 182,
+            detuneHz: 0.66,
+            filterFreq: 2400,
+            filterQ: 1.15,
+            lfoRate: 1.28,
+            lfoDepth: 290,
+            slowRate: 0.34,
+            slowDepth: 880,
+            pitchDrift: 8,
+            wander: 460,
+            shimmer: 0.058,
+        },
         unlockedByDefault: false,
     },
 ];
@@ -189,6 +242,7 @@ export function manifestEntryToLevelConfig(entry) {
         asset: entry.asset,
         config: entry.difficulty,
         release: entry.release,
+        drone: entry.drone,
         unlockedByDefault: entry.unlockedByDefault,
     };
 }

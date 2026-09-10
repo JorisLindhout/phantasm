@@ -25,6 +25,7 @@ describe('LEVEL_MANIFEST', () => {
         const config = manifestEntryToLevelConfig(LEVEL_MANIFEST[0]);
         expect(config.config.cellCount).toBe(20);
         expect(config.release.phone).toBe(4);
+        expect(config.drone.freq).toBe(91);
     });
 
     it('keeps former level-2 difficulty on level 3', () => {
@@ -50,6 +51,15 @@ describe('LEVEL_MANIFEST', () => {
         expect(LEVEL_MANIFEST.map((level) => level.difficulty.morphCornerCount)).toEqual([
             3, 5, 8, 12,
         ]);
+    });
+
+    it('raises drone pitch and filter across levels without setting bed gain', () => {
+        const drones = LEVEL_MANIFEST.map((level) => level.drone);
+        expect(drones.map((drone) => drone.freq)).toEqual([91, 114, 136.5, 182]);
+        expect(drones.map((drone) => drone.filterFreq)).toEqual([1085, 1400, 1850, 2400]);
+        for (const drone of drones) {
+            expect(drone.toneGain).toBeUndefined();
+        }
     });
 });
 

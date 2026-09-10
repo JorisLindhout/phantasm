@@ -70,13 +70,21 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 - **Persistent Preferences**: Unlock progress saved between sessions; manual level choice saved when using the dev panel
 
 ### 🎮 Level System & Progression
-- **Manifest-Driven Levels**: Ordered level list in `js/levels.config.js` (theme, SVG, difficulty, release batches)
+- **Manifest-Driven Levels**: Ordered level list in `js/levels.config.js` (theme, SVG, difficulty, release batches, drone)
 - **Unlock on Solve**: The next level unlocks when the current one is completed; progress saved in `phantasm-unlocked-levels`
 - **Automatic Level Transition**: Solved puzzle holds 2s, then crossfades into the next level's grid
 - **Completion Screen**: After the final level, a **done** screen with **Play again**
 - **Always Starts at Level 1**: Cold start loads Level 1 regardless of saved preferences
-- **Per-Level Difficulty**: Cell count, animation speed, noise amplitude, morph corner count, morph interval, and birth offset defined per level
+- **Per-Level Difficulty**: Cell count, animation speed, noise amplitude, morph corner count, morph interval, birth offset, and drone timbre defined per level
 - **Per-Level Release Batches**: Fewer pieces released per tap on harder levels and smaller screens
+
+### 🔊 Synthesized Audio
+- **No audio files**: Snap clicks, the piece-release cue, and the looping drone are Web Audio graphs — nothing under `public/assets/`
+- **Shared mixer**: One `AudioContext` with master / drone / sfx buses; the drone is the loudness reference so one-shots stay matched
+- **Per-level drone**: Pitch, filter, and motion rise across levels via optional `drone` knobs on `LEVEL_MANIFEST` (omitted keys inherit the engine default; leave `toneGain` off the row)
+- **When it plays**: Drone starts with the puzzle (first tap on iPhone/iPad); snap plays when a piece locks; the release cue plays only when you tap **+**, not on load
+- **Mute**: Speaker button next to **+** (sound on by default)
+- **Level changes**: The bed ramps into the next recipe during the bloom; completion fades it out; Play again restores Level 1
 
 #### Level Configurations
 | Level | Pieces | Speed | Noise | Morph corners | Morph interval | Birth offset | Release (phone / desktop) |
@@ -89,7 +97,7 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
 #### Adding a New Level
 1. Add `public/assets/Level-N.svg`
 2. Add a theme block in `js/theme.js` (palette + `baseImage` pointing at `./assets/Level-N.svg`)
-3. Append one entry to `LEVEL_MANIFEST` in `js/levels.config.js`
+3. Append one entry to `LEVEL_MANIFEST` in `js/levels.config.js` (`drone` optional; omitted knobs inherit the default bed)
 
 ## Quick Start
 
@@ -106,7 +114,7 @@ Run `showDebugCommands()` in the console to see all available debugging utilitie
    ```
 4. **Browser will auto-open** to `http://localhost:8080`
 5. **Interact** with puzzle pieces by clicking and dragging
-6. **Release more pieces** with the **+** button (top-right)
+6. **Release more pieces** with the **+** button (top-right); mute with the speaker beside it
 7. **Dev tuning panel** (local dev only): click the caret at the bottom to adjust cell count, speed, noise, and switch levels manually
 
 ### Environment Variables
@@ -128,7 +136,7 @@ npm test             # Run unit tests (Vitest)
 
 ### Deployment (Cloudflare)
 
-Production builds are static files in `dist/`. Game images and audio must live in `public/assets/` so Vite copies them into `dist/assets/` — runtime paths like `./assets/Level-1.svg` resolve from there.
+Production builds are static files in `dist/`. Game images must live in `public/assets/` so Vite copies them into `dist/assets/` — runtime paths like `./assets/Level-1.svg` resolve from there. Audio is synthesized at runtime (no sound files to copy).
 
 The repo includes `wrangler.jsonc` for Cloudflare Workers static assets:
 
@@ -149,10 +157,14 @@ js/
 ├── main.js               # VoronoiPuzzle + WebGLRenderer controller
 ├── base.js               # Base puzzle logic
 ├── webgl-renderer.js     # WebGL 3D renderer (Three.js)
-├── levels.config.js      # Level manifest (order, difficulty, release batches)
+├── levels.config.js      # Level manifest (order, difficulty, release batches, drone)
 ├── level-manager.js      # Level switching, unlock, progression
 ├── level-transition.js   # Phantasm Bloom transitions + completion screen
 ├── piece-release-manager.js  # Staged piece release (+ button)
+├── game-audio.js         # Shared AudioContext, mix buses, mute, iOS unlock
+├── drone-sound.js        # Looping bed; per-level params from the manifest
+├── snap-sound.js         # Synthesized snap + piece-release clicks
+├── audio-toggle.js       # Stage-corner mute button
 ├── unsolved-layout.js    # Scatter placement and batch sizing
 ├── dev-panel.js          # VITE_DEV_PANEL visibility helper
 ├── theme.js              # Theme definitions and utilities
@@ -208,20 +220,17 @@ phantasm/
 │   ├── web-app-manifest-192x192.png
 │   ├── web-app-manifest-512x512.png
 │   ├── site.webmanifest          # PWA manifest
-│   └── assets/                   # Game images and audio (served at /assets/…)
+│   └── assets/                   # Game images (served at /assets/…)
 │       ├── Level-1.svg           # Level 1 background (450×450)
 │       ├── Level-2.svg           # Level 2 background (450×450)
 │       ├── Level-3.svg           # Level 3 background (450×450)
 │       ├── Level-4.svg           # Level 4 background (450×450)
-│       ├── Phantasm.svg          # Controls-drawer / console theme asset
-│       └── sounds/               # Future snap audio (placeholders; not wired)
-│           ├── snap.webm
-│           └── snap.mp3
+│       └── Phantasm.svg          # Controls-drawer / console theme asset
 ├── .env.example                  # Documented environment variables
 ├── .env.development              # Local dev env (VITE_DEV_PANEL=true)
 ├── css/
 │   ├── base.css                  # Base colors, stage glow, loading overlay
-│   ├── controls.css              # UI controls + release button
+│   ├── controls.css              # UI controls, release button, audio toggle
 │   ├── progression.css           # Level transition + completion overlays
 │   ├── responsive.css            # Responsive design
 │   └── webgl.css                 # WebGL 3D specific styles
@@ -235,9 +244,10 @@ phantasm/
 ### Player Controls (production)
 1. **Click and drag** (or touch / keyboard) any loose piece to move it
 2. **Tap +** (top-right) to release more pieces from the pool
-3. **Auto-snap** when a piece is within 25px of its slot
-4. **Complete a level** — solved image holds briefly, then crossfades into the next level automatically
-5. **Complete all levels** → **done** screen → **Play again**
+3. **Mute / unmute** with the speaker button next to **+**
+4. **Auto-snap** when a piece is within 25px of its slot
+5. **Complete a level** — solved image holds briefly, then crossfades into the next level automatically
+6. **Complete all levels** → **done** screen → **Play again**
 
 Ghost slot outlines show where pieces belong. Loose pieces show a default outline so they remain visible on the dark background.
 
@@ -274,17 +284,19 @@ npm test              # Run all tests once
 npm run test:watch    # Watch mode during development
 ```
 
-Tests cover level manifest validation, unlock/progression logic, unsolved layout batch sizing, responsive stage layout, reduced-motion behavior, and core geometry/coordinate invariants.
+Tests cover level manifest validation, unlock/progression logic, unsolved layout batch sizing, synthesized audio mix and drone unlock, responsive stage layout, reduced-motion behavior, and core geometry/coordinate invariants.
 
 ### ♿ Accessibility
 - Screen reader announcements for level completion and game completion (`js/accessibility.js`)
-- Reduced motion: level transitions skip the 2s hold and use a shorter crossfade
+- Reduced motion: level transitions skip the 2s hold and use a shorter crossfade; the drone ramps faster
+- Mute control is a real button (`aria-pressed`, “Mute sound” / “Unmute sound”)
 
 ### 🛠️ Development Tools
 - **Dev Panel**: Enable with `VITE_DEV_PANEL=true` in `.env.development`
 - **Theme System**: Browser console theme switching via `themeManager`
 - **Debug Utilities**: Global functions in `debug-utils.js` (loaded in dev only)
 - **Hot Reload**: Vite dev server with HMR
+- **Sound lab**: local gitignored `sound-lab.html` (served at `/sound-lab.html`) for hunting drone/snap recipes by ear, then paste knobs into `LEVEL_MANIFEST` / `js/snap-sound.js`
 
 ### 🔧 Debug Utilities (Console Commands)
 ```javascript
@@ -358,12 +370,11 @@ Run `showDebugCommands()` in the console to see all available tools, including:
 ### ✅ Fully Supported
 - **Chrome/Edge** 80+ (WebGL)
 - **Firefox** 75+ (WebGL)
-- **Safari** 13+ (WebGL)
+- **Safari** 13+ (WebGL). On iPhone/iPad, Web Audio starts on the first tap so the bed reaches the speaker (a load-time context over LAN HTTP stays silent).
 
 ### ⚠️ Limited Support
 - **Older browsers**: WebGL required for functionality
 - **Mobile browsers**: Touch interactions supported, performance may vary
-- **IE11**: Not supported (requires ES6+ features)
 
 ### 🎯 Recommended
 - **Desktop browsers** with WebGL support for best performance
@@ -386,7 +397,7 @@ Run `showDebugCommands()` in the console to see all available tools, including:
 
 ### 🌐 Browser APIs
 - **WebGL**: Hardware-accelerated 3D graphics
-- **HTML5 Audio**: `playSnapSound()` hook ready; enable by adding `#snapSound` with a source (placeholders under `public/assets/sounds/`)
+- **Web Audio**: Synthesized snap, piece-release, and looping drone (`js/game-audio.js`, `js/drone-sound.js`, `js/snap-sound.js`); no HTML5 `<audio>` files
 - **Local Storage**: Unlock progress (`phantasm-unlocked-levels`); level preference on manual switch (`phantasm-level`)
 - **Modern JavaScript**: ES modules (Vite bundle)
 
@@ -418,8 +429,7 @@ Only snap / player placement marks a piece solved — recovery never auto-comple
 
 
 ### Audio
-- **Snap sound** — pick/engineer the snap sound, uncomment `#snapSound` in `index.html` with `<source>` tags pointing at `assets/sounds/`, and `playSnapSound()` will start playing
-- Pickup/hover sounds, volume controls, and puzzle-complete fanfare (later)
+- Pickup / hover cues and a puzzle-complete fanfare (mute and the per-level drone bed are already in)
 
 ### UX & polish
 - **Completion screen** — design a fitting ending screen after the final level (replacing the current minimal **done** + Play again)

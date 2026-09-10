@@ -13,6 +13,7 @@ import {
     isAudioEnabled,
     isGestureUnlockRequired,
 } from './game-audio.js';
+import { getLevelById } from './levels.config.js';
 
 export const DRONE_SOUND = {
     wave: 'sine',
@@ -33,52 +34,15 @@ export const DRONE_SOUND = {
     shimmer: 0.04,
 };
 
-/** Timbre evolves; toneGain stays put so loudness stays matched to the mixer. */
-export const DRONE_BY_LEVEL = {
-    'level-1': DRONE_SOUND,
-    'level-2': {
-        ...DRONE_SOUND,
-        freq: 114,
-        detuneHz: 0.42,
-        filterFreq: 1400,
-        filterQ: 1.35,
-        lfoRate: 0.82,
-        lfoDepth: 175,
-        slowRate: 0.23,
-        slowDepth: 760,
-        pitchDrift: 6.4,
-        wander: 300,
-        shimmer: 0.046,
-    },
-    'level-3': {
-        ...DRONE_SOUND,
-        freq: 136.5,
-        detuneHz: 0.52,
-        filterFreq: 1850,
-        filterQ: 1.25,
-        lfoRate: 1.05,
-        lfoDepth: 230,
-        slowRate: 0.28,
-        slowDepth: 820,
-        pitchDrift: 7.2,
-        wander: 380,
-        shimmer: 0.052,
-    },
-    'level-4': {
-        ...DRONE_SOUND,
-        freq: 182,
-        detuneHz: 0.66,
-        filterFreq: 2400,
-        filterQ: 1.15,
-        lfoRate: 1.28,
-        lfoDepth: 290,
-        slowRate: 0.34,
-        slowDepth: 880,
-        pitchDrift: 8,
-        wander: 460,
-        shimmer: 0.058,
-    },
-};
+function resolveLevelId(levelId) {
+    return getLevelById(levelId)?.id ?? 'level-1';
+}
+
+/** Merge a level's drone overrides with the engine default. Missing `drone` uses the default. */
+export function droneParamsForLevel(levelId) {
+    const entry = getLevelById(resolveLevelId(levelId));
+    return { ...DRONE_SOUND, ...(entry?.drone ?? {}) };
+}
 
 export const DRONE_LEVEL_RAMP_S = 2.2;
 export const DRONE_MANUAL_RAMP_S = 0.8;
@@ -92,10 +56,6 @@ let wanderBuffer = null;
 /** @type {ReturnType<typeof setTimeout> | number} */
 let stopTimer = 0;
 let activeLevelId = 'level-1';
-
-export function droneParamsForLevel(levelId) {
-    return DRONE_BY_LEVEL[levelId] ?? DRONE_SOUND;
-}
 
 function getNoiseBuffer(audio) {
     if (noiseBuffer) return noiseBuffer;
@@ -267,7 +227,7 @@ function startSources(nodes, audio) {
  * @param {{ seconds?: number }} [options]
  */
 export function startDroneForLevel(levelId = 'level-1', options = {}) {
-    activeLevelId = DRONE_BY_LEVEL[levelId] ? levelId : 'level-1';
+    activeLevelId = resolveLevelId(levelId);
     if (!isAudioEnabled() && !drone) {
         return false;
     }
@@ -302,7 +262,7 @@ export function startDroneForLevel(levelId = 'level-1', options = {}) {
 export function setDroneForLevel(levelId, options = {}) {
     const reduced = prefersReducedMotion();
     const seconds = options.seconds ?? (reduced ? 0.2 : DRONE_LEVEL_RAMP_S);
-    activeLevelId = DRONE_BY_LEVEL[levelId] ? levelId : 'level-1';
+    activeLevelId = resolveLevelId(levelId);
 
     if (!drone) {
         return startDroneForLevel(activeLevelId, { seconds });

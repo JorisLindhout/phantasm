@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
     DRONE_SOUND,
-    DRONE_BY_LEVEL,
     droneParamsForLevel,
     startDroneForLevel,
     setDroneForLevel,
@@ -33,7 +32,7 @@ describe('drone sound', () => {
     });
 
     it('keeps the designed level 1 recipe', () => {
-        expect(DRONE_BY_LEVEL['level-1']).toEqual(DRONE_SOUND);
+        expect(droneParamsForLevel('level-1')).toEqual(DRONE_SOUND);
         expect(DRONE_SOUND).toEqual({
             wave: 'sine',
             freq: 91,
@@ -65,6 +64,7 @@ describe('drone sound', () => {
         expect(level4.lfoRate).toBeGreaterThan(level1.lfoRate);
         expect(level4.toneGain).toBe(level1.toneGain);
         expect(level4.noiseGain).toBe(level1.noiseGain);
+        expect(droneParamsForLevel('level-99')).toEqual(DRONE_SOUND);
     });
 
     it('starts a looping graph on first unlock', () => {
