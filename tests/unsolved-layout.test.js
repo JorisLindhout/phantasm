@@ -12,6 +12,11 @@ import {
 import { SNAP_THRESHOLD } from '../js/constants.js';
 import { offsetDistance } from '../js/drag-offset.js';
 import { PieceReleaseManager } from '../js/piece-release-manager.js';
+import { playReleaseSound } from '../js/snap-sound.js';
+
+vi.mock('../js/snap-sound.js', () => ({
+    playReleaseSound: vi.fn(),
+}));
 
 describe('calculateReleaseBatchSize', () => {
     it('returns smaller batches on narrow stages', () => {
@@ -114,6 +119,7 @@ describe('shuffleIndices', () => {
 
 describe('PieceReleaseManager', () => {
     beforeEach(() => {
+        playReleaseSound.mockClear();
         document.body.innerHTML = `
             <button id="releasePiecesBtn" type="button">+</button>
             <div class="stage"><canvas width="450" height="450"></canvas></div>
@@ -165,6 +171,7 @@ describe('PieceReleaseManager', () => {
 
         expect(released).toBe(8);
         expect(releasePiece).toHaveBeenCalledTimes(8);
+        expect(playReleaseSound).toHaveBeenCalledTimes(1);
         expect(manager.getRemainingCount()).toBe(2);
     });
 
@@ -208,5 +215,21 @@ describe('PieceReleaseManager', () => {
         expect(window.voronoiPuzzle.bringPieceToFront).not.toHaveBeenCalled();
 
         delete window.voronoiPuzzle;
+    });
+
+    it('does not play the release sound when no pieces land', () => {
+        const manager = new PieceReleaseManager();
+        const webglRenderer = {
+            canvas: document.querySelector('canvas'),
+            voronoiPolygons: [],
+            releasePiece: vi.fn(),
+            recoverOffscreenLoosePieces: vi.fn(),
+        };
+
+        manager.reset(0);
+        const released = manager.releaseNextBatch(webglRenderer);
+
+        expect(released).toBe(0);
+        expect(playReleaseSound).not.toHaveBeenCalled();
     });
 });

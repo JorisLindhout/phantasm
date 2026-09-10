@@ -9,6 +9,7 @@ import {
     shuffleIndices,
 } from './unsolved-layout.js';
 import { polygonCenter } from './polygon-geometry.js';
+import { playReleaseSound } from './snap-sound.js';
 
 class PieceReleaseManager {
     constructor() {
@@ -155,6 +156,11 @@ class PieceReleaseManager {
 
         webglRenderer.recoverOffscreenLoosePieces?.();
         this.updateButtonVisibility(webglRenderer);
+
+        if (releasedCount > 0) {
+            playReleaseSound();
+        }
+
         return releasedCount;
     }
 

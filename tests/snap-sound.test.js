@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
     SNAP_SOUND,
+    RELEASE_SOUND,
     playSnap,
     playSnapSound,
+    playReleaseSound,
     unlockSnapAudio,
     resetSnapAudioContext,
 } from '../js/snap-sound.js';
@@ -83,16 +85,16 @@ describe('snap sound', () => {
         vi.restoreAllMocks();
     });
 
-    it('keeps the designed snap recipe', () => {
-        expect(SNAP_SOUND).toEqual({
+    it('keeps the designed release recipe', () => {
+        expect(RELEASE_SOUND).toEqual({
             wave: 'sawtooth',
-            freq: 640,
-            freqEnd: 1180,
-            duration: 0.012,
-            attack: 0.011,
-            toneGain: 0.1,
-            noiseGain: 0.775,
-            noiseFreq: 1340,
+            freq: 7740,
+            freqEnd: 7770,
+            duration: 0.116,
+            attack: 0.021,
+            toneGain: 0.555,
+            noiseGain: 0.14,
+            noiseFreq: 10510,
             noiseQ: 1.1,
         });
     });
@@ -146,6 +148,24 @@ describe('snap sound', () => {
 
         expect(ctx.createOscillator).toHaveBeenCalled();
         expect(ctx.createBufferSource).toHaveBeenCalled();
+    });
+
+    it('plays the release cue through the shared context', () => {
+        const ctx = createMockAudioContext();
+        function MockAudioContext() {
+            return ctx;
+        }
+        vi.stubGlobal('AudioContext', MockAudioContext);
+
+        playReleaseSound();
+
+        const { osc } = ctx._nodes;
+        expect(osc.type).toBe('sawtooth');
+        expect(osc.frequency.setValueAtTime).toHaveBeenCalledWith(7740, ctx.currentTime);
+        expect(osc.frequency.exponentialRampToValueAtTime).toHaveBeenCalledWith(
+            7770,
+            ctx.currentTime + RELEASE_SOUND.duration
+        );
     });
 
     it('no-ops when Web Audio is unavailable', () => {

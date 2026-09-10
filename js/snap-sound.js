@@ -14,6 +14,19 @@ export const SNAP_SOUND = {
     noiseQ: 1.1,
 };
 
+/** Cue when a batch of pieces is released onto the stage. */
+export const RELEASE_SOUND = {
+    wave: 'sawtooth',
+    freq: 7740,
+    freqEnd: 7770,
+    duration: 0.116,
+    attack: 0.021,
+    toneGain: 0.555,
+    noiseGain: 0.14,
+    noiseFreq: 10510,
+    noiseQ: 1.1,
+};
+
 /** @type {AudioContext | null} */
 let snapAudioContext = null;
 
@@ -95,13 +108,21 @@ export function playSnap(audio, params = SNAP_SOUND) {
     noise.stop(t + dur);
 }
 
-export function playSnapSound() {
+function playSound(params) {
     const audio = unlockSnapAudio();
     if (!audio) {
         return;
     }
 
-    playSnap(audio, SNAP_SOUND);
+    playSnap(audio, params);
+}
+
+export function playSnapSound() {
+    playSound(SNAP_SOUND);
+}
+
+export function playReleaseSound() {
+    playSound(RELEASE_SOUND);
 }
 
 /** Test helper — drop the shared context so the next unlock creates a new one. */
