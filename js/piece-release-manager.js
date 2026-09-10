@@ -39,7 +39,7 @@ class PieceReleaseManager {
 
             const renderer = window.voronoiPuzzle?.webglRenderer;
             if (renderer) {
-                this.releaseNextBatch(renderer);
+                this.releaseNextBatch(renderer, { playSound: true });
             }
         });
     }
@@ -93,14 +93,15 @@ class PieceReleaseManager {
      * @returns {number}
      */
     releaseInitialBatch(webglRenderer) {
-        return this.releaseNextBatch(webglRenderer);
+        return this.releaseNextBatch(webglRenderer, { playSound: false });
     }
 
     /**
      * @param {object} webglRenderer
+     * @param {{ playSound?: boolean }} [options]
      * @returns {number}
      */
-    releaseNextBatch(webglRenderer) {
+    releaseNextBatch(webglRenderer, { playSound = false } = {}) {
         if (!webglRenderer || window.levelTransitionManager?.isTransitioning) {
             this.updateButtonVisibility();
             return 0;
@@ -160,7 +161,7 @@ class PieceReleaseManager {
         webglRenderer.recoverOffscreenLoosePieces?.();
         this.updateButtonVisibility(webglRenderer);
 
-        if (releasedCount > 0) {
+        if (playSound && releasedCount > 0) {
             playReleaseSound();
         }
 

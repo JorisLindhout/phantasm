@@ -27,6 +27,7 @@ let sfxGain = null;
 let droneGain = null;
 /** @type {Array<() => void>} */
 const resetHooks = [];
+let audioEnabled = true;
 
 export function registerAudioReset(hook) {
     resetHooks.push(hook);
@@ -57,7 +58,7 @@ function ensureMixer(audio) {
     }
 
     masterGain = audio.createGain();
-    masterGain.gain.value = MIX.master;
+    masterGain.gain.value = audioEnabled ? MIX.master : 0;
     masterGain.connect(audio.destination);
 
     sfxGain = audio.createGain();
@@ -115,6 +116,36 @@ export function getDroneInput() {
     return droneGain ?? audio.destination;
 }
 
+export function isAudioEnabled() {
+    return audioEnabled;
+}
+
+/**
+ * Mute or unmute the shared master bus. Default is on.
+ * @param {boolean} enabled
+ * @returns {boolean}
+ */
+export function setAudioEnabled(enabled) {
+    audioEnabled = Boolean(enabled);
+    applyMasterMute();
+    return audioEnabled;
+}
+
+function applyMasterMute() {
+    if (!masterGain || !audioContext) {
+        return;
+    }
+
+    const now = audioContext.currentTime;
+    const target = audioEnabled ? MIX.master : 0;
+    masterGain.gain.cancelScheduledValues(now);
+    masterGain.gain.setValueAtTime(Math.max(0, masterGain.gain.value), now);
+    masterGain.gain.linearRampToValueAtTime(Math.max(0.0001, target), now + 0.08);
+    if (!audioEnabled) {
+        masterGain.gain.setValueAtTime(0, now + 0.1);
+    }
+}
+
 /**
  * @param {number} value
  * @param {number} [seconds]
@@ -143,4 +174,5 @@ export function resetGameAudio() {
     masterGain = null;
     sfxGain = null;
     droneGain = null;
+    audioEnabled = true;
 }

@@ -94,7 +94,7 @@ canvas.webgl-canvas.transition-outgoing.is-fading {
     pointer-events: none;
 }
 
-.stage.transition-locked ~ .release-pieces-btn,
+.stage.transition-locked ~ .stage-actions .release-pieces-btn,
 body:has(.stage.transition-locked) .release-pieces-btn {
     visibility: hidden;
     pointer-events: none;

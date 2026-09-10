@@ -8,6 +8,7 @@ import {
     unlockSnapAudio,
     resetSnapAudioContext,
 } from '../js/snap-sound.js';
+import { setAudioEnabled } from '../js/game-audio.js';
 import { createMockAudioContext } from './audio-mock.js';
 
 describe('snap sound', () => {
@@ -117,5 +118,19 @@ describe('snap sound', () => {
         vi.stubGlobal('webkitAudioContext', undefined);
 
         expect(() => playSnapSound()).not.toThrow();
+    });
+
+    it('skips one-shots while muted', () => {
+        const ctx = createMockAudioContext();
+        function MockAudioContext() {
+            return ctx;
+        }
+        vi.stubGlobal('AudioContext', MockAudioContext);
+
+        setAudioEnabled(false);
+        playSnapSound();
+        playReleaseSound();
+
+        expect(ctx.createOscillator).not.toHaveBeenCalled();
     });
 });

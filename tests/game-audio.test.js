@@ -8,6 +8,8 @@ import {
     getSfxInput,
     fadeDroneBus,
     resetGameAudio,
+    isAudioEnabled,
+    setAudioEnabled,
 } from '../js/game-audio.js';
 import { SNAP_SOUND } from '../js/snap-sound.js';
 import { DRONE_SOUND } from '../js/drone-sound.js';
@@ -57,5 +59,21 @@ describe('game audio mix', () => {
         fadeDroneBus(0, 1);
         const droneBus = ctx._nodes.gains[2];
         expect(droneBus.gain.linearRampToValueAtTime).toHaveBeenCalled();
+    });
+
+    it('defaults to audio on and mutes the master bus', () => {
+        const ctx = createMockAudioContext();
+        function MockAudioContext() {
+            return ctx;
+        }
+        vi.stubGlobal('AudioContext', MockAudioContext);
+
+        expect(isAudioEnabled()).toBe(true);
+        unlockGameAudio();
+        expect(setAudioEnabled(false)).toBe(false);
+        expect(isAudioEnabled()).toBe(false);
+        const master = ctx._nodes.gains[0];
+        expect(master.gain.linearRampToValueAtTime).toHaveBeenCalled();
+        expect(setAudioEnabled(true)).toBe(true);
     });
 });

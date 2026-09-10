@@ -125,7 +125,7 @@ body {
 }
 
 body.is-app-loading .container,
-body.is-app-loading #releasePiecesBtn,
+body.is-app-loading #stageActions,
 body.is-app-loading #completionOverlay {
     visibility: hidden;
 }

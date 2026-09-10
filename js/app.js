@@ -7,13 +7,14 @@ import { Delaunay } from 'd3-delaunay';
 import { themeManager } from './theme-manager.js';
 import { levelManager } from './level-manager.js';
 import { pieceReleaseManager } from './piece-release-manager.js';
+import { bindAudioToggle } from './audio-toggle.js';
 import { levelTransitionManager } from './level-transition.js';
 import { isDevPanelEnabled, applyDevPanelVisibility } from './dev-panel.js';
 import { prefersReducedMotion, announce, updateRangeAriaValue, setDrawerExpanded } from './accessibility.js';
 import { configureLegacyColorPipeline } from './three-config.js';
 import { createLogger } from './logger.js';
 import { showLoadingOverlay, hideLoadingOverlay } from './loading-overlay.js';
-import { unlockAndStartBed } from './drone-sound.js';
+import { startDroneOnLoad } from './drone-sound.js';
 
 const log = createLogger('app');
 
@@ -154,6 +155,7 @@ async function initializeApp() {
 
         window.pieceReleaseManager = pieceReleaseManager;
         pieceReleaseManager.bindButton();
+        bindAudioToggle();
 
         window.voronoiPuzzle = new VoronoiPuzzle();
         await window.voronoiPuzzle.start();
@@ -171,10 +173,7 @@ async function initializeApp() {
         updateAnimationButtonLabel(window.voronoiPuzzle.config.isAnimating);
 
         await hideLoadingOverlay({ announceLoaded: 'Phantasm puzzle loaded.' });
-
-        const armBed = () => unlockAndStartBed();
-        window.addEventListener('pointerdown', armBed, { once: true });
-        window.addEventListener('keydown', armBed, { once: true });
+        startDroneOnLoad();
     } catch (error) {
         log.error('Failed to initialize Phantasm:', error);
         await hideLoadingOverlay({

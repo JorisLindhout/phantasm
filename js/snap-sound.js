@@ -2,7 +2,7 @@
  * Synthesized piece-snap click (Web Audio). No audio files.
  */
 
-import { unlockGameAudio, getSfxInput, resetGameAudio } from './game-audio.js';
+import { unlockGameAudio, getSfxInput, resetGameAudio, isAudioEnabled } from './game-audio.js';
 
 export const SNAP_SOUND = {
     wave: 'sawtooth',
@@ -88,6 +88,10 @@ export function playSnap(audio, params = SNAP_SOUND, output = audio.destination)
 }
 
 function playSound(params) {
+    if (!isAudioEnabled()) {
+        return;
+    }
+
     const audio = unlockGameAudio();
     const output = getSfxInput();
     if (!audio || !output) {

@@ -71,7 +71,7 @@
         }
 
         body.is-app-loading .container,
-        body.is-app-loading #releasePiecesBtn,
+        body.is-app-loading #stageActions,
         body.is-app-loading #completionOverlay {
             visibility: hidden;
         }
@@ -126,41 +126,93 @@
         </div>
     </div>
 
-    <button
-        type="button"
-        id="releasePiecesBtn"
-        class="release-pieces-btn"
-        aria-label="Release more puzzle pieces"
-    >
-        <svg class="release-pieces-btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <defs>
-                <linearGradient id="releasePiecesGradV" gradientUnits="userSpaceOnUse" x1="12" y1="5" x2="12" y2="19">
-                    <stop offset="0%" style="stop-color: var(--level-gradient-start, #888888)" />
-                    <stop offset="100%" style="stop-color: var(--level-gradient-end, #aaaaaa)" />
-                </linearGradient>
-                <linearGradient id="releasePiecesGradH" gradientUnits="userSpaceOnUse" x1="5" y1="12" x2="19" y2="12">
-                    <stop offset="0%" style="stop-color: var(--level-gradient-start, #888888)" />
-                    <stop offset="100%" style="stop-color: var(--level-gradient-end, #aaaaaa)" />
-                </linearGradient>
-            </defs>
-            <path
-                class="release-pieces-btn__glyph release-pieces-btn__glyph--vertical"
-                d="M12 5v14"
-                fill="none"
-                stroke="url(#releasePiecesGradV)"
-                stroke-width="3"
-                stroke-linecap="round"
-            />
-            <path
-                class="release-pieces-btn__glyph release-pieces-btn__glyph--horizontal"
-                d="M5 12h14"
-                fill="none"
-                stroke="url(#releasePiecesGradH)"
-                stroke-width="3"
-                stroke-linecap="round"
-            />
-        </svg>
-    </button>
+    <div class="stage-actions" id="stageActions">
+        <button
+            type="button"
+            id="releasePiecesBtn"
+            class="stage-action-btn release-pieces-btn"
+            aria-label="Release more puzzle pieces"
+        >
+            <svg class="stage-action-btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <defs>
+                    <linearGradient id="releasePiecesGradV" gradientUnits="userSpaceOnUse" x1="12" y1="5" x2="12" y2="19">
+                        <stop offset="0%" style="stop-color: var(--level-gradient-start, #888888)" />
+                        <stop offset="100%" style="stop-color: var(--level-gradient-end, #aaaaaa)" />
+                    </linearGradient>
+                    <linearGradient id="releasePiecesGradH" gradientUnits="userSpaceOnUse" x1="5" y1="12" x2="19" y2="12">
+                        <stop offset="0%" style="stop-color: var(--level-gradient-start, #888888)" />
+                        <stop offset="100%" style="stop-color: var(--level-gradient-end, #aaaaaa)" />
+                    </linearGradient>
+                </defs>
+                <path
+                    class="stage-action-btn__glyph release-pieces-btn__glyph--vertical"
+                    d="M12 5v14"
+                    fill="none"
+                    stroke="url(#releasePiecesGradV)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                />
+                <path
+                    class="stage-action-btn__glyph release-pieces-btn__glyph--horizontal"
+                    d="M5 12h14"
+                    fill="none"
+                    stroke="url(#releasePiecesGradH)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                />
+            </svg>
+        </button>
+
+        <button
+            type="button"
+            id="audioToggleBtn"
+            class="stage-action-btn audio-toggle-btn"
+            aria-pressed="true"
+            aria-label="Mute sound"
+        >
+            <svg class="stage-action-btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <defs>
+                    <linearGradient id="audioToggleGrad" gradientUnits="userSpaceOnUse" x1="4" y1="5" x2="20" y2="19">
+                        <stop offset="0%" style="stop-color: var(--level-gradient-start, #888888)" />
+                        <stop offset="100%" style="stop-color: var(--level-gradient-end, #aaaaaa)" />
+                    </linearGradient>
+                </defs>
+                <path
+                    class="stage-action-btn__glyph"
+                    d="M4 10h3.2L12 6.2v11.6L7.2 14H4z"
+                    fill="none"
+                    stroke="url(#audioToggleGrad)"
+                    stroke-width="1.5"
+                    stroke-linejoin="round"
+                    stroke-linecap="round"
+                />
+                <path
+                    class="stage-action-btn__glyph audio-toggle-btn__wave"
+                    d="M15.2 9.1a3.4 3.4 0 0 1 0 5.8"
+                    fill="none"
+                    stroke="url(#audioToggleGrad)"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                />
+                <path
+                    class="stage-action-btn__glyph audio-toggle-btn__wave"
+                    d="M17.8 7a6.2 6.2 0 0 1 0 10"
+                    fill="none"
+                    stroke="url(#audioToggleGrad)"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                />
+                <path
+                    class="stage-action-btn__glyph audio-toggle-btn__slash"
+                    d="M5.5 18.5L18.5 5.5"
+                    fill="none"
+                    stroke="url(#audioToggleGrad)"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                />
+            </svg>
+        </button>
+    </div>
 
     <div id="completionOverlay" class="completion-overlay" hidden>
         <div class="completion-gradient" aria-hidden="true"></div>

@@ -6,6 +6,7 @@ import {
     startDroneForLevel,
     setDroneForLevel,
     unlockAndStartBed,
+    startDroneOnLoad,
     isDroneRunning,
     resetDrone,
 } from '../js/drone-sound.js';
@@ -101,5 +102,38 @@ describe('drone sound', () => {
         unlockAndStartBed();
         const pitch = ctx._nodes.oscillators[0].frequency;
         expect(pitch.setTargetAtTime).toHaveBeenCalledWith(136.5, ctx.currentTime, expect.any(Number));
+    });
+
+    it('starts the bed on load when the context is allowed to run', () => {
+        const ctx = createMockAudioContext();
+        function MockAudioContext() {
+            return ctx;
+        }
+        vi.stubGlobal('AudioContext', MockAudioContext);
+
+        startDroneOnLoad();
+
+        expect(isDroneRunning()).toBe(true);
+        expect(ctx.createOscillator.mock.calls.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it('resumes a suspended context from any tap, not only piece drags', async () => {
+        const ctx = createMockAudioContext('suspended');
+        ctx.resume = vi.fn(async () => {
+            ctx.state = 'running';
+        });
+        function MockAudioContext() {
+            return ctx;
+        }
+        vi.stubGlobal('AudioContext', MockAudioContext);
+
+        startDroneOnLoad();
+        expect(isDroneRunning()).toBe(true);
+
+        document.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+        await Promise.resolve();
+
+        expect(ctx.resume).toHaveBeenCalled();
+        expect(ctx.state).toBe('running');
     });
 });

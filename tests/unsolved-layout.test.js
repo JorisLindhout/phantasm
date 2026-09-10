@@ -171,8 +171,41 @@ describe('PieceReleaseManager', () => {
 
         expect(released).toBe(8);
         expect(releasePiece).toHaveBeenCalledTimes(8);
-        expect(playReleaseSound).toHaveBeenCalledTimes(1);
+        expect(playReleaseSound).not.toHaveBeenCalled();
         expect(manager.getRemainingCount()).toBe(2);
+    });
+
+    it('plays the release sound only when the player requests more pieces', () => {
+        const manager = new PieceReleaseManager();
+        const stage = document.querySelector('.stage');
+        stage.getBoundingClientRect = () => ({
+            width: 900,
+            height: 450,
+            top: 0,
+            left: 0,
+            right: 900,
+            bottom: 450,
+        });
+
+        const canvas = document.querySelector('canvas');
+        const webglRenderer = {
+            canvas,
+            voronoiPolygons: Array.from({ length: 10 }, () => [
+                [200, 200],
+                [250, 200],
+                [250, 250],
+                [200, 250],
+            ]),
+            releasePiece: vi.fn(),
+            recoverOffscreenLoosePieces: vi.fn(),
+        };
+
+        manager.reset(10);
+        manager.releaseInitialBatch(webglRenderer);
+        expect(playReleaseSound).not.toHaveBeenCalled();
+
+        manager.releaseNextBatch(webglRenderer, { playSound: true });
+        expect(playReleaseSound).toHaveBeenCalledTimes(1);
     });
 
     it('calls bringPieceToFront on the active renderer, not the disposed outer puzzle', () => {
@@ -227,7 +260,7 @@ describe('PieceReleaseManager', () => {
         };
 
         manager.reset(0);
-        const released = manager.releaseNextBatch(webglRenderer);
+        const released = manager.releaseNextBatch(webglRenderer, { playSound: true });
 
         expect(released).toBe(0);
         expect(playReleaseSound).not.toHaveBeenCalled();

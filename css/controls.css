@@ -258,14 +258,26 @@
     }
 }
 
-/* Staged piece release — fixed top-right, outside the stage */
-.release-pieces-btn {
+/* Stage corner actions — release + audio, outside the puzzle */
+.stage-actions {
     position: fixed;
     top: max(12px, env(safe-area-inset-top));
-    right: max(12px, env(safe-area-inset-right));
+    inset-inline-end: max(12px, env(safe-area-inset-right));
     z-index: 25;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.stage-action-btn {
+    pointer-events: auto;
+    flex-shrink: 0;
     width: 44px;
     height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 50%;
     border: 1px solid var(--cell-border);
     background: var(--control-bg);
@@ -274,29 +286,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
     transition: border-color var(--transition-speed) ease, background var(--transition-speed) ease;
 }
 
-.release-pieces-btn__icon {
+.stage-action-btn__icon {
     width: 1.75rem;
     height: 1.75rem;
     display: block;
     pointer-events: none;
 }
 
-.release-pieces-btn__glyph {
+.stage-action-btn__glyph {
     transition: stroke var(--transition-speed) ease;
 }
 
-.release-pieces-btn:hover,
-.release-pieces-btn:focus-visible {
+.stage-action-btn:hover,
+.stage-action-btn:focus-visible {
     border-color: var(--controls-primary-color);
     background: var(--canvas-background);
     outline: none;
 }
 
-.release-pieces-btn:hover .release-pieces-btn__glyph,
-.release-pieces-btn:focus-visible .release-pieces-btn__glyph {
+.stage-action-btn:hover .stage-action-btn__glyph,
+.stage-action-btn:focus-visible .stage-action-btn__glyph {
     stroke: var(--controls-primary-color);
 }
 
@@ -304,4 +319,30 @@
 .release-pieces-btn[hidden] {
     opacity: 0;
     pointer-events: none;
+}
+
+.audio-toggle-btn[aria-pressed="true"] .audio-toggle-btn__slash,
+.audio-toggle-btn[aria-pressed="false"] .audio-toggle-btn__wave {
+    display: none;
+}
+
+@media (min-width: 700px) {
+    .stage-actions {
+        flex-direction: row-reverse;
+    }
+}
+
+@media (max-width: 399px) {
+    .stage-actions {
+        top: max(8px, env(safe-area-inset-top));
+        inset-inline-end: max(8px, env(safe-area-inset-right));
+        gap: 6px;
+    }
+}
+
+@media (pointer: coarse) {
+    .stage-action-btn {
+        width: 44px;
+        height: 44px;
+    }
 }
