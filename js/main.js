@@ -17,7 +17,8 @@ import {
     supportsPointerEvents,
 } from './pointer-input.js';
 import { createLogger } from './logger.js';
-import { playSnapSound as playSynthesizedSnap, unlockSnapAudio } from './snap-sound.js';
+import { playSnapSound as playSynthesizedSnap } from './snap-sound.js';
+import { unlockAndStartBed } from './drone-sound.js';
 
 const log = createLogger('main');
 
@@ -623,7 +624,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     }
 
     handleMouseDown(e) {
-        unlockSnapAudio();
+        unlockAndStartBed();
 
         // Only reset interaction state if we're already dragging
         if (this.isDragging) {

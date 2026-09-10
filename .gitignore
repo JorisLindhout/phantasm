@@ -25,7 +25,7 @@ pnpm-debug.log*
 !.env.example
 
 # Local sound lab (not part of the game)
-snap-lab.html
+sound-lab.html
 
 # IDE
 .vscode/

@@ -8,71 +8,7 @@ import {
     unlockSnapAudio,
     resetSnapAudioContext,
 } from '../js/snap-sound.js';
-
-function createAudioParam() {
-    return {
-        value: 0,
-        setValueAtTime: vi.fn(),
-        exponentialRampToValueAtTime: vi.fn(),
-    };
-}
-
-function createMockAudioContext(state = 'running') {
-    const destination = { id: 'destination' };
-    const osc = {
-        type: 'sine',
-        frequency: createAudioParam(),
-        connect: vi.fn((node) => node),
-        start: vi.fn(),
-        stop: vi.fn(),
-    };
-    const tone = {
-        gain: createAudioParam(),
-        connect: vi.fn((node) => node),
-    };
-    const master = {
-        connect: vi.fn(),
-    };
-    const filter = {
-        type: 'lowpass',
-        frequency: createAudioParam(),
-        Q: createAudioParam(),
-        connect: vi.fn((node) => node),
-    };
-    const noiseGain = {
-        gain: createAudioParam(),
-        connect: vi.fn((node) => node),
-    };
-    const noise = {
-        buffer: null,
-        connect: vi.fn((node) => node),
-        start: vi.fn(),
-        stop: vi.fn(),
-    };
-    const channelData = new Float32Array(Math.ceil(44100 * SNAP_SOUND.duration));
-    const buffer = {
-        getChannelData: vi.fn(() => channelData),
-    };
-
-    const ctx = {
-        state,
-        currentTime: 1.25,
-        sampleRate: 44100,
-        destination,
-        resume: vi.fn().mockResolvedValue(undefined),
-        createGain: vi.fn()
-            .mockReturnValueOnce(master)
-            .mockReturnValueOnce(tone)
-            .mockReturnValueOnce(noiseGain),
-        createOscillator: vi.fn(() => osc),
-        createBiquadFilter: vi.fn(() => filter),
-        createBuffer: vi.fn(() => buffer),
-        createBufferSource: vi.fn(() => noise),
-        _nodes: { osc, tone, master, filter, noiseGain, noise, buffer, channelData },
-    };
-
-    return ctx;
-}
+import { createMockAudioContext } from './audio-mock.js';
 
 describe('snap sound', () => {
     beforeEach(() => {
@@ -103,7 +39,12 @@ describe('snap sound', () => {
         const ctx = createMockAudioContext();
         playSnap(ctx, SNAP_SOUND);
 
-        const { osc, tone, master, filter, noiseGain, noise } = ctx._nodes;
+        const osc = ctx._nodes.oscillators[0];
+        const tone = ctx._nodes.gains[1];
+        const master = ctx._nodes.gains[0];
+        const filter = ctx._nodes.filters[0];
+        const noiseGain = ctx._nodes.gains[2];
+        const noise = ctx._nodes.sources[0];
         const t = ctx.currentTime;
         const dur = SNAP_SOUND.duration;
         const atk = Math.min(SNAP_SOUND.attack, dur * 0.8);
@@ -137,7 +78,7 @@ describe('snap sound', () => {
         expect(ctx.resume).toHaveBeenCalled();
     });
 
-    it('plays through the shared context', () => {
+    it('plays through the shared sfx bus', () => {
         const ctx = createMockAudioContext();
         function MockAudioContext() {
             return ctx;
@@ -148,6 +89,9 @@ describe('snap sound', () => {
 
         expect(ctx.createOscillator).toHaveBeenCalled();
         expect(ctx.createBufferSource).toHaveBeenCalled();
+        const voice = ctx._nodes.gains[3];
+        const sfxBus = ctx._nodes.gains[1];
+        expect(voice.connect).toHaveBeenCalledWith(sfxBus);
     });
 
     it('plays the release cue through the shared context', () => {
@@ -159,7 +103,7 @@ describe('snap sound', () => {
 
         playReleaseSound();
 
-        const { osc } = ctx._nodes;
+        const osc = ctx._nodes.oscillators[0];
         expect(osc.type).toBe('sawtooth');
         expect(osc.frequency.setValueAtTime).toHaveBeenCalledWith(7740, ctx.currentTime);
         expect(osc.frequency.exponentialRampToValueAtTime).toHaveBeenCalledWith(

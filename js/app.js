@@ -13,6 +13,7 @@ import { prefersReducedMotion, announce, updateRangeAriaValue, setDrawerExpanded
 import { configureLegacyColorPipeline } from './three-config.js';
 import { createLogger } from './logger.js';
 import { showLoadingOverlay, hideLoadingOverlay } from './loading-overlay.js';
+import { unlockAndStartBed } from './drone-sound.js';
 
 const log = createLogger('app');
 
@@ -170,6 +171,10 @@ async function initializeApp() {
         updateAnimationButtonLabel(window.voronoiPuzzle.config.isAnimating);
 
         await hideLoadingOverlay({ announceLoaded: 'Phantasm puzzle loaded.' });
+
+        const armBed = () => unlockAndStartBed();
+        window.addEventListener('pointerdown', armBed, { once: true });
+        window.addEventListener('keydown', armBed, { once: true });
     } catch (error) {
         log.error('Failed to initialize Phantasm:', error);
         await hideLoadingOverlay({

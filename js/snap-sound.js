@@ -2,6 +2,8 @@
  * Synthesized piece-snap click (Web Audio). No audio files.
  */
 
+import { unlockGameAudio, getSfxInput, resetGameAudio } from './game-audio.js';
+
 export const SNAP_SOUND = {
     wave: 'sawtooth',
     freq: 640,
@@ -27,50 +29,27 @@ export const RELEASE_SOUND = {
     noiseQ: 1.1,
 };
 
-/** @type {AudioContext | null} */
-let snapAudioContext = null;
-
-function getAudioContextConstructor() {
-    return window.AudioContext || window.webkitAudioContext || null;
-}
-
 /**
  * Create (once) and resume the shared AudioContext.
  * Call from a user gesture so later timeout-based snaps can play.
  * @returns {AudioContext | null}
  */
 export function unlockSnapAudio() {
-    const AudioContextCtor = getAudioContextConstructor();
-    if (!AudioContextCtor) {
-        return null;
-    }
-
-    if (!snapAudioContext) {
-        try {
-            snapAudioContext = new AudioContextCtor();
-        } catch {
-            return null;
-        }
-    }
-
-    if (snapAudioContext.state === 'suspended') {
-        snapAudioContext.resume().catch(() => {});
-    }
-
-    return snapAudioContext;
+    return unlockGameAudio();
 }
 
 /**
  * Schedule one snap on an existing AudioContext.
  * @param {AudioContext} audio
  * @param {typeof SNAP_SOUND} [params]
+ * @param {AudioNode} [output]
  */
-export function playSnap(audio, params = SNAP_SOUND) {
+export function playSnap(audio, params = SNAP_SOUND, output = audio.destination) {
     const t = audio.currentTime;
     const dur = Math.max(0.008, params.duration);
     const atk = Math.min(Math.max(0.001, params.attack ?? 0.001), dur * 0.8);
     const master = audio.createGain();
-    master.connect(audio.destination);
+    master.connect(output);
 
     const osc = audio.createOscillator();
     osc.type = params.wave;
@@ -109,12 +88,13 @@ export function playSnap(audio, params = SNAP_SOUND) {
 }
 
 function playSound(params) {
-    const audio = unlockSnapAudio();
-    if (!audio) {
+    const audio = unlockGameAudio();
+    const output = getSfxInput();
+    if (!audio || !output) {
         return;
     }
 
-    playSnap(audio, params);
+    playSnap(audio, params, output);
 }
 
 export function playSnapSound() {
@@ -127,5 +107,5 @@ export function playReleaseSound() {
 
 /** Test helper — drop the shared context so the next unlock creates a new one. */
 export function resetSnapAudioContext() {
-    snapAudioContext = null;
+    resetGameAudio();
 }

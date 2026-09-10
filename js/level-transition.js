@@ -5,6 +5,7 @@
 import { announce, prefersReducedMotion } from './accessibility.js';
 import { getLevelById } from './levels.config.js';
 import { createLogger } from './logger.js';
+import { fadeDrone, setDroneForLevel, DRONE_LEVEL_RAMP_S } from './drone-sound.js';
 
 const log = createLogger('transition');
 
@@ -49,6 +50,9 @@ class LevelTransitionManager {
             this.blockInput();
             document.documentElement.style.setProperty('--crossfade-duration', `${fadeMs}ms`);
 
+            const droneRamp = reducedMotion ? 0.2 : DRONE_LEVEL_RAMP_S;
+            setDroneForLevel(nextLevelId, { seconds: droneRamp });
+
             await Promise.all([
                 this.delay(holdMs),
                 window.levelManager.preloadLevelForTransition(nextLevelId),
@@ -86,6 +90,7 @@ class LevelTransitionManager {
 
         this.isTransitioning = true;
 
+        fadeDrone(0, prefersReducedMotion() ? 0.2 : 1.2);
         await this.playCelebration();
 
         this.completionOverlay.hidden = false;

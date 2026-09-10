@@ -10,6 +10,7 @@ import {
 } from './unsolved-layout.js';
 import { polygonCenter } from './polygon-geometry.js';
 import { playReleaseSound } from './snap-sound.js';
+import { unlockAndStartBed } from './drone-sound.js';
 
 class PieceReleaseManager {
     constructor() {
@@ -33,6 +34,8 @@ class PieceReleaseManager {
             if (window.levelTransitionManager?.isTransitioning) {
                 return;
             }
+
+            unlockAndStartBed();
 
             const renderer = window.voronoiPuzzle?.webglRenderer;
             if (renderer) {

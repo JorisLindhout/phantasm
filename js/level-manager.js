@@ -18,6 +18,7 @@ import {
 } from './levels.config.js';
 import { createLogger } from './logger.js';
 import { showLoadingOverlay, hideLoadingOverlay } from './loading-overlay.js';
+import { setDroneForLevel } from './drone-sound.js';
 
 const log = createLogger('levels');
 
@@ -219,6 +220,7 @@ class LevelManager {
             this.currentLevel = levelId;
             this.rebuildLevelSelector();
             this.saveLevelPreference(levelId);
+            setDroneForLevel(levelId, { seconds: 0.8 });
 
             if (!options.silent) {
                 await this.hideLoadingScreen();
@@ -297,6 +299,7 @@ class LevelManager {
             this.pendingLevelId = null;
             this.rebuildLevelSelector();
             this.saveLevelPreference(this.currentLevel);
+            setDroneForLevel(this.currentLevel);
         }
 
         if (window.themeManager) {
@@ -332,6 +335,7 @@ class LevelManager {
 
         this.pendingLevelId = null;
         this.isChangingLevel = false;
+        setDroneForLevel(this.currentLevel, { seconds: 0.4 });
     }
 
     /**

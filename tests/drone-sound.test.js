@@ -1,0 +1,105 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import {
+    DRONE_SOUND,
+    DRONE_BY_LEVEL,
+    droneParamsForLevel,
+    startDroneForLevel,
+    setDroneForLevel,
+    unlockAndStartBed,
+    isDroneRunning,
+    resetDrone,
+} from '../js/drone-sound.js';
+import { resetGameAudio } from '../js/game-audio.js';
+import { createMockAudioContext } from './audio-mock.js';
+
+describe('drone sound', () => {
+    beforeEach(() => {
+        resetDrone();
+        resetGameAudio();
+    });
+
+    afterEach(() => {
+        resetDrone();
+        resetGameAudio();
+        vi.unstubAllGlobals();
+        vi.restoreAllMocks();
+        delete window.levelManager;
+    });
+
+    it('keeps the designed level 1 recipe', () => {
+        expect(DRONE_BY_LEVEL['level-1']).toEqual(DRONE_SOUND);
+        expect(DRONE_SOUND).toEqual({
+            wave: 'sine',
+            freq: 91,
+            detuneHz: 0.33,
+            toneGain: 0.119,
+            filterFreq: 1085,
+            filterQ: 1.4,
+            lfoRate: 0.65,
+            lfoDepth: 128,
+            noiseGain: 0.003,
+            noiseFreq: 720,
+            noiseQ: 8,
+            slowRate: 0.187,
+            slowDepth: 681,
+            pitchDrift: 5.3,
+            wander: 226,
+            shimmer: 0.04,
+        });
+    });
+
+    it('raises pitch and opens the filter across levels without changing bed gain', () => {
+        const level1 = droneParamsForLevel('level-1');
+        const level2 = droneParamsForLevel('level-2');
+        const level4 = droneParamsForLevel('level-4');
+
+        expect(level2.freq).toBeGreaterThan(level1.freq);
+        expect(level4.freq).toBeGreaterThan(level2.freq);
+        expect(level4.filterFreq).toBeGreaterThan(level1.filterFreq);
+        expect(level4.lfoRate).toBeGreaterThan(level1.lfoRate);
+        expect(level4.toneGain).toBe(level1.toneGain);
+        expect(level4.noiseGain).toBe(level1.noiseGain);
+    });
+
+    it('starts a looping graph on first unlock', () => {
+        const ctx = createMockAudioContext();
+        function MockAudioContext() {
+            return ctx;
+        }
+        vi.stubGlobal('AudioContext', MockAudioContext);
+
+        expect(startDroneForLevel('level-1')).toBe(true);
+        expect(isDroneRunning()).toBe(true);
+        expect(ctx.createOscillator.mock.calls.length).toBeGreaterThanOrEqual(5);
+        expect(ctx._nodes.sources.some((source) => source.loop)).toBe(true);
+    });
+
+    it('retargets the live graph when the level changes', () => {
+        const ctx = createMockAudioContext();
+        function MockAudioContext() {
+            return ctx;
+        }
+        vi.stubGlobal('AudioContext', MockAudioContext);
+
+        startDroneForLevel('level-1');
+        const oscCount = ctx.createOscillator.mock.calls.length;
+        setDroneForLevel('level-4', { seconds: 1 });
+
+        expect(ctx.createOscillator.mock.calls.length).toBe(oscCount);
+        const pitch = ctx._nodes.oscillators[0].frequency;
+        expect(pitch.setTargetAtTime).toHaveBeenCalledWith(182, ctx.currentTime, expect.any(Number));
+    });
+
+    it('uses the current level when unlocking the bed', () => {
+        const ctx = createMockAudioContext();
+        function MockAudioContext() {
+            return ctx;
+        }
+        vi.stubGlobal('AudioContext', MockAudioContext);
+        window.levelManager = { currentLevel: 'level-3' };
+
+        unlockAndStartBed();
+        const pitch = ctx._nodes.oscillators[0].frequency;
+        expect(pitch.setTargetAtTime).toHaveBeenCalledWith(136.5, ctx.currentTime, expect.any(Number));
+    });
+});
