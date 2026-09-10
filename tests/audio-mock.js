@@ -70,6 +70,7 @@ export function createMockAudioContext(state = 'running') {
         sampleRate: 44100,
         destination,
         resume: vi.fn().mockResolvedValue(undefined),
+        close: vi.fn().mockResolvedValue(undefined),
         createGain: vi.fn(() => {
             const node = createGainNode();
             gains.push(node);

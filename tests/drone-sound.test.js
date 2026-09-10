@@ -25,6 +25,11 @@ describe('drone sound', () => {
         vi.unstubAllGlobals();
         vi.restoreAllMocks();
         delete window.levelManager;
+        try {
+            delete navigator.audioSession;
+        } catch {
+            // ignore
+        }
     });
 
     it('keeps the designed level 1 recipe', () => {
@@ -135,5 +140,34 @@ describe('drone sound', () => {
 
         expect(ctx.resume).toHaveBeenCalled();
         expect(ctx.state).toBe('running');
+    });
+
+    it('waits for a tap before starting the bed on iOS', () => {
+        vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15'
+        );
+        Object.defineProperty(navigator, 'audioSession', {
+            configurable: true,
+            value: { type: 'auto' },
+        });
+        const ctor = vi.fn(function AudioContext() {
+            return createMockAudioContext();
+        });
+        vi.stubGlobal('AudioContext', ctor);
+
+        startDroneOnLoad();
+        expect(ctor).not.toHaveBeenCalled();
+        expect(isDroneRunning()).toBe(false);
+
+        document.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+
+        expect(ctor).toHaveBeenCalledTimes(1);
+        expect(isDroneRunning()).toBe(true);
+
+        try {
+            delete navigator.audioSession;
+        } catch {
+            // ignore
+        }
     });
 });

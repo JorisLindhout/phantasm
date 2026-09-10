@@ -35,7 +35,7 @@ class PieceReleaseManager {
                 return;
             }
 
-            unlockAndStartBed();
+            unlockAndStartBed({ fromGesture: true });
 
             const renderer = window.voronoiPuzzle?.webglRenderer;
             if (renderer) {

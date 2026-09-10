@@ -47,5 +47,6 @@ describe('audio toggle', () => {
         expect(button.getAttribute('aria-pressed')).toBe('true');
         expect(button.getAttribute('aria-label')).toBe('Mute sound');
         expect(unlockAndStartBed).toHaveBeenCalledTimes(1);
+        expect(unlockAndStartBed).toHaveBeenCalledWith({ fromGesture: true });
     });
 });

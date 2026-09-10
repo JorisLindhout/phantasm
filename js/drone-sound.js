@@ -3,7 +3,16 @@
  */
 
 import { prefersReducedMotion } from './accessibility.js';
-import { unlockGameAudio, getDroneInput, fadeDroneBus, MIX, registerAudioReset, isAudioEnabled } from './game-audio.js';
+import {
+    unlockGameAudio,
+    getDroneInput,
+    fadeDroneBus,
+    MIX,
+    registerAudioReset,
+    registerAudioGraphDispose,
+    isAudioEnabled,
+    isGestureUnlockRequired,
+} from './game-audio.js';
 
 export const DRONE_SOUND = {
     wave: 'sine',
@@ -258,17 +267,17 @@ function startSources(nodes, audio) {
  * @param {{ seconds?: number }} [options]
  */
 export function startDroneForLevel(levelId = 'level-1', options = {}) {
+    activeLevelId = DRONE_BY_LEVEL[levelId] ? levelId : 'level-1';
     if (!isAudioEnabled() && !drone) {
         return false;
     }
-    const audio = unlockGameAudio();
+    const audio = unlockGameAudio(options);
     const output = getDroneInput();
     if (!audio || !output) {
         return false;
     }
 
-    const params = droneParamsForLevel(levelId);
-    activeLevelId = DRONE_BY_LEVEL[levelId] ? levelId : 'level-1';
+    const params = droneParamsForLevel(activeLevelId);
     const reduced = prefersReducedMotion();
     const seconds = options.seconds ?? (reduced ? 0.2 : DRONE_MANUAL_RAMP_S);
 
@@ -293,12 +302,12 @@ export function startDroneForLevel(levelId = 'level-1', options = {}) {
 export function setDroneForLevel(levelId, options = {}) {
     const reduced = prefersReducedMotion();
     const seconds = options.seconds ?? (reduced ? 0.2 : DRONE_LEVEL_RAMP_S);
+    activeLevelId = DRONE_BY_LEVEL[levelId] ? levelId : 'level-1';
 
     if (!drone) {
-        return startDroneForLevel(levelId, { seconds });
+        return startDroneForLevel(activeLevelId, { seconds });
     }
 
-    activeLevelId = DRONE_BY_LEVEL[levelId] ? levelId : 'level-1';
     applyDroneParams(droneParamsForLevel(activeLevelId), seconds);
     fadeDroneBus(MIX.drone, Math.min(seconds, 0.8));
     return true;
@@ -333,8 +342,8 @@ export function stopDrone() {
     }, 240);
 }
 
-export function unlockAndStartBed() {
-    const audio = unlockGameAudio();
+export function unlockAndStartBed(options = {}) {
+    const audio = unlockGameAudio(options);
     if (!audio) {
         return null;
     }
@@ -344,19 +353,29 @@ export function unlockAndStartBed() {
     }
 
     const levelId = window.levelManager?.currentLevel ?? activeLevelId ?? 'level-1';
-    startDroneForLevel(levelId, { seconds: prefersReducedMotion() ? 0.2 : 0.6 });
+    startDroneForLevel(levelId, {
+        seconds: prefersReducedMotion() ? 0.2 : 0.6,
+        fromGesture: options.fromGesture,
+    });
     return audio;
 }
 
-const GESTURE_EVENTS = ['pointerdown', 'touchstart', 'keydown'];
+const GESTURE_EVENTS = ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown'];
+const GESTURE_LISTENER = { capture: true, passive: true };
 let gestureResumeArmed = false;
 
 function resumeDroneFromGesture() {
-    unlockAndStartBed();
-    const audio = unlockGameAudio();
+    const audio = unlockAndStartBed({ fromGesture: true });
     if (audio?.state === 'running') {
         detachGestureResume();
+        return;
     }
+
+    audio?.resume?.().then(() => {
+        if (audio.state === 'running') {
+            detachGestureResume();
+        }
+    }).catch(() => {});
 }
 
 function detachGestureResume() {
@@ -366,7 +385,7 @@ function detachGestureResume() {
 
     gestureResumeArmed = false;
     for (const eventName of GESTURE_EVENTS) {
-        document.removeEventListener(eventName, resumeDroneFromGesture, true);
+        document.removeEventListener(eventName, resumeDroneFromGesture, GESTURE_LISTENER);
     }
 }
 
@@ -377,16 +396,21 @@ function armGestureResume() {
 
     gestureResumeArmed = true;
     for (const eventName of GESTURE_EVENTS) {
-        document.addEventListener(eventName, resumeDroneFromGesture, true);
+        document.addEventListener(eventName, resumeDroneFromGesture, GESTURE_LISTENER);
     }
 }
 
 /**
- * Start the bed as soon as the app is ready. If the browser suspends audio,
- * keep a capture listener so any tap/key resumes it — not only piece drags.
+ * Start the bed as soon as the app is ready. On iOS, wait for a tap so the
+ * AudioContext is born inside a user gesture; a load-time context stays silent.
  * @returns {AudioContext | null}
  */
 export function startDroneOnLoad() {
+    if (isGestureUnlockRequired()) {
+        armGestureResume();
+        return null;
+    }
+
     const audio = unlockAndStartBed();
     if (audio?.state === 'running') {
         detachGestureResume();
@@ -401,13 +425,30 @@ export function isDroneRunning() {
     return drone !== null;
 }
 
-export function resetDrone() {
+function disposeDroneGraph() {
     window.clearTimeout(stopTimer);
-    detachGestureResume();
-    drone = null;
+    if (drone) {
+        const nodes = drone;
+        drone = null;
+        const sources = [
+            nodes.oscA, nodes.oscB, nodes.oscShimmer,
+            nodes.lfo, nodes.slowLfo, nodes.shimmerLfo,
+            nodes.wander, nodes.noise,
+        ];
+        for (const source of sources) {
+            try { source.stop(); } catch { /* already stopped */ }
+        }
+        try { nodes.master.disconnect(); } catch { /* already disconnected */ }
+    }
     noiseBuffer = null;
     wanderBuffer = null;
+}
+
+export function resetDrone() {
+    disposeDroneGraph();
+    detachGestureResume();
     activeLevelId = 'level-1';
 }
 
 registerAudioReset(resetDrone);
+registerAudioGraphDispose(disposeDroneGraph);

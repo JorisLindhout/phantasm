@@ -30,7 +30,7 @@ export function bindAudioToggle(button = document.getElementById('audioToggleBtn
         const enabled = setAudioEnabled(!isAudioEnabled());
         syncAudioToggle(button);
         if (enabled) {
-            unlockAndStartBed();
+            unlockAndStartBed({ fromGesture: true });
         }
     });
 }

@@ -624,7 +624,7 @@ class WebGLRenderer extends VoronoiPuzzleBase {
     }
 
     handleMouseDown(e) {
-        unlockAndStartBed();
+        unlockAndStartBed({ fromGesture: true });
 
         // Only reset interaction state if we're already dragging
         if (this.isDragging) {
